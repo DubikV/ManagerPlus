@@ -5,4 +5,34 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+
+
+    <!-- Phone -->
+    <string name="phone_sms_send">СМС відправлено!</string>
+    <string name="phone_sms_dont_send">Невдалося відправити СМС!</string>
+    <string name="phone_sms_delivered">СМС доставлено!</string>
+    <string name="phone_sms_not_delivered">СМС не доставлено!</string>
+    <string name="phone_number_not_found">Не вказано номер телефону!</string>
+
+    <!-- Synchronization-->
+    <string name="error_connection_server">З\'єдання з сервером не встановлено! Можливо адреса серверу внесенна некорректно.</string>
+    <string name="error_retrieving_data">Помилка отримання даних!</string>
+    <string name="error_processing_data">Помилка обробки даних!</string>
+    <string name="error_data_not_found">Дані не найдено!</string>
+    <string name="error_no_data">Відсутні дані! Потрібно загрузити дані з серверу!</string>
+    <string name="error_invalid_query">Помилка запиту!</string>
+    <string name="error_data_server">Помилка обробки данних на сервері!</string>
+    <string name="auth_error">Невірні логін або пароль.</string>
+    <string name="sync_error">Помилка сінхронізації.</string>
+    <string name="sync_timeout">Закінчився час синхронізації.</string>
+    <string name="sync_cancel">Відмінено синхронізацію.</string>
+    <string name="error_internet_connecting">Відсутнє зєднання з інтернетом!</string>
+    <string name="wrong_connection">Відсутнє зєднання з інтернетом!</string>
+
+    <!--AlertDialog-->
+    <string name="questions_title_info">Інфо</string>
+    <string name="questions_answer_yes">Так</string>
+    <string name="questions_answer_no">Ні</string>
+    <string name="questions_answer_ok">Ок</string>
+
 </resources>
