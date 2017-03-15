@@ -6,7 +6,10 @@ import android.database.Cursor;
 
 import com.gmail.vanyadubik.mobilemanager.db.MobileManagerContract.TrackListContract;
 import com.gmail.vanyadubik.mobilemanager.model.ParameterInfo;
+import com.gmail.vanyadubik.mobilemanager.model.db.Client_Element;
 import com.gmail.vanyadubik.mobilemanager.model.db.LocationPoint;
+import com.gmail.vanyadubik.mobilemanager.model.db.Visit_Element;
+import com.gmail.vanyadubik.mobilemanager.model.db.Waybill_Element;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -64,9 +67,64 @@ public class DataRepositoryImpl implements DataRepository{
     }
 
     @Override
+    public LocationPoint getLastTrackPoint() {
+        return null;
+    }
+
+    @Override
+    public LocationPoint getLocationPoint(String externalId) {
+        return null;
+    }
+
+    @Override
+    public Waybill_Element getLastWaybill() {
+        return null;
+    }
+
+    @Override
+    public List<Waybill_Element> getAllWaybill() {
+        return null;
+    }
+
+    @Override
+    public List<Visit_Element> getAllVisit() {
+        return null;
+    }
+
+    @Override
+    public List<Visit_Element> getVisitByPeriod(Date dateFrom, Date dateBy) {
+        return null;
+    }
+
+    @Override
+    public Client_Element getClient(String externalId) {
+        return null;
+    }
+
+    @Override
+    public void insertTrackPoint(LocationPoint locationPoint) {
+
+    }
+
+    @Override
     public void insertLocationPoint(LocationPoint locationPoint) {
         ContentValues values = convertLocationPoint(locationPoint);
         contentResolver.insert(TrackListContract.CONTENT_URI, values);
+    }
+
+    @Override
+    public void insertClient(Client_Element client) {
+
+    }
+
+    @Override
+    public void insertWaybill(Waybill_Element waybill) {
+
+    }
+
+    @Override
+    public void insertVisit(Visit_Element visit) {
+
     }
 
     @Override

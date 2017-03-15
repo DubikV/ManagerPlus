@@ -44,6 +44,7 @@ public class LocationPoint implements Serializable {
     }
 
     public static class Builder {
+
         private int id;
         private Date date;
         private String latitude;

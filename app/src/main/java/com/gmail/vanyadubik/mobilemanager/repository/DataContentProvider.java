@@ -15,8 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.gmail.vanyadubik.mobilemanager.db.MobileManagerContract.AUTHORITY;
+import static com.gmail.vanyadubik.mobilemanager.db.MobileManagerContract.ClientContract;
 import static com.gmail.vanyadubik.mobilemanager.db.MobileManagerContract.TrackListContract;
+import static com.gmail.vanyadubik.mobilemanager.db.MobileManagerContract.LocationPointContract;
 import static com.gmail.vanyadubik.mobilemanager.db.MobileManagerContract.UserSettings;
+import static com.gmail.vanyadubik.mobilemanager.db.MobileManagerContract.VisitContract;
+import static com.gmail.vanyadubik.mobilemanager.db.MobileManagerContract.WaybillContract;
 
 public class DataContentProvider extends ContentProvider{
 
@@ -28,6 +32,14 @@ public class DataContentProvider extends ContentProvider{
     private static final int TRACK_ID = 2;
     private static final int USER_SETTING_LIST = 3;
     private static final int USER_SETTING_ID = 4;
+    private static final int WAYBILL_LIST = 5;
+    private static final int WAYBILL_ID = 6;
+    private static final int VISIT_LIST = 7;
+    private static final int VISIT_ID = 8;
+    private static final int CLIENT_LIST = 9;
+    private static final int CLIENT_ID = 10;
+    private static final int LOCATION_POINT_LIST = 11;
+    private static final int LOCATION_POINT_ID = 12;
 
     public DataContentProvider() {
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
@@ -35,6 +47,14 @@ public class DataContentProvider extends ContentProvider{
         URI_MATCHER.addURI(AUTHORITY, TrackListContract.TABLE_NAME + "/#", TRACK_ID);
         URI_MATCHER.addURI(AUTHORITY, UserSettings.TABLE_NAME, USER_SETTING_LIST);
         URI_MATCHER.addURI(AUTHORITY, UserSettings.TABLE_NAME + "/#", USER_SETTING_ID);
+        URI_MATCHER.addURI(AUTHORITY, WaybillContract.TABLE_NAME, WAYBILL_LIST);
+        URI_MATCHER.addURI(AUTHORITY, WaybillContract.TABLE_NAME + "/#", WAYBILL_ID);
+        URI_MATCHER.addURI(AUTHORITY, VisitContract.TABLE_NAME, VISIT_LIST);
+        URI_MATCHER.addURI(AUTHORITY, VisitContract.TABLE_NAME + "/#", VISIT_ID);
+        URI_MATCHER.addURI(AUTHORITY, ClientContract.TABLE_NAME, CLIENT_LIST);
+        URI_MATCHER.addURI(AUTHORITY, ClientContract.TABLE_NAME + "/#", CLIENT_ID);
+        URI_MATCHER.addURI(AUTHORITY, LocationPointContract.TABLE_NAME, LOCATION_POINT_LIST);
+        URI_MATCHER.addURI(AUTHORITY, LocationPointContract.TABLE_NAME + "/#", LOCATION_POINT_ID);
     }
     @Override
     public boolean onCreate() {
@@ -62,6 +82,22 @@ public class DataContentProvider extends ContentProvider{
                 return UserSettings.CONTENT_ITEM_TYPE;
             case USER_SETTING_LIST:
                 return UserSettings.CONTENT_TYPE;
+            case WAYBILL_LIST:
+                return WaybillContract.CONTENT_TYPE;
+            case WAYBILL_ID:
+                return WaybillContract.CONTENT_ITEM_TYPE;
+            case VISIT_LIST:
+                return VisitContract.CONTENT_TYPE;
+            case VISIT_ID:
+                return VisitContract.CONTENT_ITEM_TYPE;
+            case CLIENT_LIST:
+                return ClientContract.CONTENT_TYPE;
+            case CLIENT_ID:
+                return ClientContract.CONTENT_ITEM_TYPE;
+            case LOCATION_POINT_LIST:
+                return LocationPointContract.CONTENT_TYPE;
+            case LOCATION_POINT_ID:
+                return LocationPointContract.CONTENT_ITEM_TYPE;
 
             default:
                 throw new RuntimeException("Cannot identify uri " + uri.toString());
@@ -185,6 +221,18 @@ public class DataContentProvider extends ContentProvider{
             case USER_SETTING_ID:
             case USER_SETTING_LIST:
                 return UserSettings.TABLE_NAME;
+            case WAYBILL_ID:
+            case WAYBILL_LIST:
+                return WaybillContract.TABLE_NAME;
+            case VISIT_ID:
+            case VISIT_LIST:
+                return VisitContract.TABLE_NAME;
+            case CLIENT_ID:
+            case CLIENT_LIST:
+                return ClientContract.TABLE_NAME;
+            case LOCATION_POINT_ID:
+            case LOCATION_POINT_LIST:
+                return LocationPointContract.TABLE_NAME;
             default:
                 throw new RuntimeException("Cannot identify uri " + uri.toString());
         }
@@ -198,6 +246,18 @@ public class DataContentProvider extends ContentProvider{
             case USER_SETTING_ID:
             case USER_SETTING_LIST:
                 return UserSettings.UNIQUE_COLUMNS;
+            case WAYBILL_ID:
+            case WAYBILL_LIST:
+                return WaybillContract.UNIQUE_COLUMNS;
+            case VISIT_ID:
+            case VISIT_LIST:
+                return VisitContract.UNIQUE_COLUMNS;
+            case CLIENT_ID:
+            case CLIENT_LIST:
+                return ClientContract.UNIQUE_COLUMNS;
+            case LOCATION_POINT_ID:
+            case LOCATION_POINT_LIST:
+                return LocationPointContract.UNIQUE_COLUMNS;
             default:
                 throw new RuntimeException("Cannot identify uri " + uri.toString());
         }
