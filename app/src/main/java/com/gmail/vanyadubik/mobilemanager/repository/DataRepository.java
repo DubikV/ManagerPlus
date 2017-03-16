@@ -17,7 +17,7 @@ public interface DataRepository {
 
     LocationPoint getLastTrackPoint();
 
-    LocationPoint getLocationPoint(String externalId);
+    LocationPoint getLocationPoint(String id);
 
     Waybill_Element getLastWaybill();
 

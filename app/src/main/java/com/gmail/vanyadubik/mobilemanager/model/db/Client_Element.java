@@ -5,10 +5,10 @@ public class Client_Element extends Element {
     private String name;
     private String address;
     private String phone;
-    private LocationPoint positionLP;
+    private String positionLP;
 
     public Client_Element(int id, String externalId, boolean deleted, boolean inDB,
-                          String name, String address, String phone, LocationPoint positionLP) {
+                          String name, String address, String phone, String positionLP) {
         super(id, externalId, deleted, inDB);
         this.name = name;
         this.address = address;
@@ -20,7 +20,7 @@ public class Client_Element extends Element {
         return name;
     }
 
-    public LocationPoint getPositionLP() {
+    public String getPositionLP() {
         return positionLP;
     }
 
@@ -44,7 +44,7 @@ public class Client_Element extends Element {
         private String name;
         private String address;
         private String phone;
-        private LocationPoint positionLP;
+        private String positionLP;
 
 
         public Builder id(int id) {
@@ -82,7 +82,7 @@ public class Client_Element extends Element {
             return this;
         }
 
-        public Builder positionLP(LocationPoint positionLP) {
+        public Builder positionLP(String positionLP) {
             this.positionLP = positionLP;
             return this;
         }

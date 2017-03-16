@@ -7,12 +7,12 @@ public class Visit_Element extends Element {
     private Date date;
     private Date dateVisit;
     private String clientExternalId;
-    private LocationPoint createLP;
-    private LocationPoint visitLP;
+    private String createLP;
+    private String visitLP;
     private String information;
 
     public Visit_Element(int id, String externalId, boolean deleted, boolean inDB,
-                Date date, Date dateVisit, String clientExternalId, LocationPoint createLP, LocationPoint visitLP, String information) {
+                Date date, Date dateVisit, String clientExternalId, String createLP, String visitLP, String information) {
         super(id, externalId, deleted, inDB);
         this.date = date;
         this.dateVisit = dateVisit;
@@ -34,11 +34,11 @@ public class Visit_Element extends Element {
         return clientExternalId;
     }
 
-    public LocationPoint getCreateLP() {
+    public String getCreateLP() {
         return createLP;
     }
 
-    public LocationPoint getVisitLP() {
+    public String getVisitLP() {
         return visitLP;
     }
 
@@ -58,8 +58,8 @@ public class Visit_Element extends Element {
         private Date date;
         private Date dateVisit;
         private String clientExternalId;
-        private LocationPoint createLP;
-        private LocationPoint visitLP;
+        private String createLP;
+        private String visitLP;
         private String information;
 
 
@@ -98,12 +98,12 @@ public class Visit_Element extends Element {
             return this;
         }
 
-        public Builder createLP(LocationPoint createLP) {
+        public Builder createLP(String createLP) {
             this.createLP = createLP;
             return this;
         }
 
-        public Builder visitLP(LocationPoint visitLP) {
+        public Builder visitLP(String visitLP) {
             this.visitLP = visitLP;
             return this;
         }

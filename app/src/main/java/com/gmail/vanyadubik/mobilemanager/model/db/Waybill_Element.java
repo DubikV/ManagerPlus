@@ -7,16 +7,16 @@ public class Waybill_Element extends Element {
     private Date date;
     private Date dateStart;
     private Date dateEnd;
-    private LocationPoint startLP;
-    private LocationPoint endLP;
+    private String startLP;
+    private String endLP;
 
     public Waybill_Element(int id, String externalId, boolean deleted, boolean inDB,
-            Date date, Date dateStart, Date dateEnd, LocationPoint startLP, LocationPoint endLP) {
+            Date date, Date dateStart, Date dateEnd, String startLP, String endLP) {
         super(id, externalId, deleted, inDB);
         this.startLP = startLP;
         this.endLP = endLP;
         this.date = date;
-        this.dateStart = dateEnd;
+        this.dateStart = dateStart;
         this.dateEnd = dateEnd;
     }
 
@@ -25,11 +25,11 @@ public class Waybill_Element extends Element {
         return date;
     }
 
-    public LocationPoint getStartLP() {
+    public String getStartLP() {
         return startLP;
     }
 
-    public LocationPoint getEndLP() {
+    public String getEndLP() {
         return endLP;
     }
 
@@ -53,8 +53,8 @@ public class Waybill_Element extends Element {
         private Date date;
         private Date dateStart;
         private Date dateEnd;
-        private LocationPoint startLP;
-        private LocationPoint endLP;
+        private String startLP;
+        private String endLP;
 
 
         public Builder id(int id) {
@@ -92,12 +92,12 @@ public class Waybill_Element extends Element {
             return this;
         }
 
-        public Builder startLP(LocationPoint startLP) {
+        public Builder startLP(String startLP) {
             this.startLP = startLP;
             return this;
         }
 
-        public Builder endLP(LocationPoint endLP) {
+        public Builder endLP(String endLP) {
             this.endLP = endLP;
             return this;
         }
