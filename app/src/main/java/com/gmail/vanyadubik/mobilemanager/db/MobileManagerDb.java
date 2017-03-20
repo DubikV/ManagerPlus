@@ -26,8 +26,8 @@ public class MobileManagerDb extends SQLiteOpenHelper {
         db.execSQL("create table " + TrackListContract.TABLE_NAME + "("
                 + TrackListContract._ID + " integer primary key AUTOINCREMENT,"
                 + TrackListContract.DATE + " integer,"
-                + TrackListContract.LATITUDE + " text,"
-                + TrackListContract.LONGITUDE + " text,"
+                + TrackListContract.LATITUDE + " real,"
+                + TrackListContract.LONGITUDE + " real,"
                 + TrackListContract.IN_CAR + " numeric,"
                 + "UNIQUE (" + TextUtils.join(", ", TrackListContract.UNIQUE_COLUMNS) + ")"
                 + ");");
@@ -35,8 +35,8 @@ public class MobileManagerDb extends SQLiteOpenHelper {
         db.execSQL("create table " + LocationPointContract.TABLE_NAME + "("
                 + LocationPointContract._ID + " integer primary key AUTOINCREMENT,"
                 + LocationPointContract.LOCATION_DATE + " integer,"
-                + LocationPointContract.LOCATION_LATITUDE + " text,"
-                + LocationPointContract.LOCATION_LONGITUDE + " text,"
+                + LocationPointContract.LOCATION_LATITUDE + " real,"
+                + LocationPointContract.LOCATION_LONGITUDE + " real,"
                 + LocationPointContract.LOCATION_IN_CAR + " numeric,"
                 + "UNIQUE (" + TextUtils.join(", ", LocationPointContract.UNIQUE_COLUMNS) + ")"
                 + ");");

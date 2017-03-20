@@ -7,11 +7,18 @@ public class LocationPoint implements Serializable {
 
     private int id;
     private Date date;
-    private String latitude;
-    private String longitude;
+    private double latitude;
+    private double longitude;
     private boolean inCar;
 
-    public LocationPoint(int id, Date date, String latitude, String longitude, boolean inCar) {
+    public LocationPoint(Date date, double latitude, double longitude, boolean inCar) {
+        this.date = date;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.inCar = inCar;
+    }
+
+    public LocationPoint(int id, Date date, double latitude, double longitude, boolean inCar) {
         this.id = id;
         this.date = date;
         this.latitude = latitude;
@@ -27,11 +34,11 @@ public class LocationPoint implements Serializable {
         return date;
     }
 
-    public String getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public String getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
@@ -47,8 +54,8 @@ public class LocationPoint implements Serializable {
 
         private int id;
         private Date date;
-        private String latitude;
-        private String longitude;
+        private double latitude;
+        private double longitude;
         private boolean inCar;
 
         public Builder id(int id) {
@@ -61,12 +68,12 @@ public class LocationPoint implements Serializable {
             return this;
         }
 
-        public Builder latitude(String latitude) {
+        public Builder latitude(double latitude) {
             this.latitude = latitude;
             return this;
         }
 
-        public Builder longitude(String longitude) {
+        public Builder longitude(double longitude) {
             this.longitude = longitude;
             return this;
         }

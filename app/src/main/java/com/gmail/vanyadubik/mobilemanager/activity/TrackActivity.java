@@ -2,9 +2,8 @@ package com.gmail.vanyadubik.mobilemanager.activity;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -12,8 +11,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.gmail.vanyadubik.mobilemanager.R;
+import com.gmail.vanyadubik.mobilemanager.gps.GPSTracker;
+import com.gmail.vanyadubik.mobilemanager.model.db.LocationPoint;
 
 public class TrackActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -42,6 +46,33 @@ public class TrackActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        Button btnShowLocation = (Button) findViewById(R.id.btnShowLocation);
+
+        // show location button click event
+        btnShowLocation.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                // create class object
+                GPSTracker gps = new GPSTracker(TrackActivity.this);
+
+                // check if GPS enabled
+                if(gps.canGetLocation()){
+
+                    LocationPoint locationPoint = gps.getLocationPoint();
+
+                    // \n is for new line
+                    Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + locationPoint.getLatitude() + "\nLong: " + locationPoint.getLongitude(), Toast.LENGTH_LONG).show();
+                }else{
+                    // can't get location
+                    // GPS or Network is not enabled
+                    // Ask user to enable GPS/network in settings
+                    gps.showSettingsAlert();
+                }
+
+            }
+        });
     }
 
     @Override

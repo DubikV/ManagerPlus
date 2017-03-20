@@ -34,5 +34,6 @@
     <string name="questions_answer_yes">Так</string>
     <string name="questions_answer_no">Ні</string>
     <string name="questions_answer_ok">Ок</string>
+    <string name="questions_title_cancel">Відмінити</string>
 
 </resources>

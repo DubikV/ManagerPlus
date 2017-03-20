@@ -70,8 +70,8 @@ public class ModelConverter {
         return LocationPoint.builder()
                 .id(cursor.getInt(cursor.getColumnIndex(TrackListContract._ID)))
                 .date(new Date(Long.valueOf(cursor.getString(cursor.getColumnIndex(TrackListContract.DATE)))))
-                .latitude(cursor.getString(cursor.getColumnIndex(TrackListContract.LATITUDE)))
-                .longitude(cursor.getString(cursor.getColumnIndex(TrackListContract.LONGITUDE)))
+                .latitude(cursor.getDouble(cursor.getColumnIndex(TrackListContract.LATITUDE)))
+                .longitude(cursor.getDouble(cursor.getColumnIndex(TrackListContract.LONGITUDE)))
                 .inCar(cursor.getInt(cursor.getColumnIndex(TrackListContract.IN_CAR))== 1)
                 .build();
     }
