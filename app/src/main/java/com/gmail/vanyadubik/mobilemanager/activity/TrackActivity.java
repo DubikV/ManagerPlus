@@ -17,9 +17,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.gmail.vanyadubik.mobilemanager.R;
-import com.gmail.vanyadubik.mobilemanager.service.GPSTrackerService;
+import com.gmail.vanyadubik.mobilemanager.gps.GPSTracker;
+import com.gmail.vanyadubik.mobilemanager.model.db.LocationPoint;
+import com.gmail.vanyadubik.mobilemanager.service.gps.GPSTrackerService;
+
+import org.joda.time.LocalDateTime;
+
+import java.util.Calendar;
+import java.util.TimeZone;
+
+import static com.gmail.vanyadubik.mobilemanager.common.Consts.MIN_TIME_WRITE_TRACK;
 
 public class TrackActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -56,31 +66,40 @@ public class TrackActivity extends AppCompatActivity
 
             @Override
             public void onClick(View arg0) {
-                Intent ishintent = new Intent(TrackActivity.this, GPSTrackerService.class);
-                PendingIntent pintent = PendingIntent.getService(TrackActivity.this, 0, ishintent, 0);
-                AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-                alarm.cancel(pintent);
-                alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),5000, pintent);
 
                 // create class object
-//                GPSTracker gps = new GPSTracker(TrackActivity.this);
-//
-//                // check if GPS enabled
-//                if(gps.canGetLocation()){
-//
-//                    LocationPoint locationPoint = gps.getLocationPoint();
-//
-//                    // \n is for new line
-//                    Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + locationPoint.getLatitude() + "\nLong: " + locationPoint.getLongitude(), Toast.LENGTH_LONG).show();
-//                }else{
-//                    // can't get location
-//                    // GPS or Network is not enabled
-//                    // Ask user to enable GPS/network in settings
-//                    gps.showSettingsAlert();
-//                }
+                GPSTracker gps = new GPSTracker(TrackActivity.this);
+
+                // check if GPS enabled
+                if(gps.canGetLocation()){
+
+                    LocationPoint locationPoint = gps.getLocationPoint();
+
+                    // \n is for new line
+                    Toast.makeText(getApplicationContext(), LocalDateTime.now().toDate().getTime() + "Your Location is - \nLat: " + locationPoint.getLatitude() + "\nLong: " + locationPoint.getLongitude(), Toast.LENGTH_LONG).show();
+
+                    Toast.makeText(getApplicationContext(),  Calendar.getInstance(TimeZone.getDefault()) + "Your Location is - \nLat: " + locationPoint.getLatitude() + "\nLong: " + locationPoint.getLongitude(), Toast.LENGTH_LONG).show();
+
+                }else{
+                    // can't get location
+                    // GPS or Network is not enabled
+                    // Ask user to enable GPS/network in settings
+                    gps.showSettingsAlert();
+                }
 
             }
         });
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent ishintent = new Intent(TrackActivity.this, GPSTrackerService.class);
+        PendingIntent pintent = PendingIntent.getService(TrackActivity.this, 0, ishintent, 0);
+        AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        alarm.cancel(pintent);
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),1000 * MIN_TIME_WRITE_TRACK, pintent);
     }
 
     @Override

@@ -44,9 +44,9 @@ public class GPSTracker extends Service implements LocationListener {
         this.mContext = context;
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
+
+    private Location getLocation() {
+
         locationManager = (LocationManager) mContext
                 .getSystemService(LOCATION_SERVICE);
 
@@ -57,9 +57,6 @@ public class GPSTracker extends Service implements LocationListener {
         // getting network status
         isNetworkEnabled = locationManager
                 .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-    }
-
-    private Location getLocation() {
 
         try {
 
@@ -164,7 +161,7 @@ public class GPSTracker extends Service implements LocationListener {
         alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?");
 
         // On pressing Settings button
-        alertDialog.setPositiveButton(mContext.getString(R.string.questions_title_cancel), new DialogInterface.OnClickListener() {
+        alertDialog.setPositiveButton(mContext.getString(R.string.action_settings), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog,int which) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 mContext.startActivity(intent);

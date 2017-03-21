@@ -21,7 +21,7 @@ public class Consts {
 
     // GPS
     public static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // meters
-    public static final long MIN_TIME_BW_UPDATES = 1; // seconds
-
+    public static final long MIN_TIME_BW_UPDATES = 60; // seconds
+    public static final long MIN_TIME_WRITE_TRACK = 5; // seconds
 
 }

@@ -1,4 +1,4 @@
-package com.gmail.vanyadubik.mobilemanager.service;
+package com.gmail.vanyadubik.mobilemanager.service.gps;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

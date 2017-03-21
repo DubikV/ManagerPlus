@@ -1,4 +1,4 @@
-package com.gmail.vanyadubik.mobilemanager.service;
+package com.gmail.vanyadubik.mobilemanager.service.gps;
 
 import android.Manifest;
 import android.app.Notification;
@@ -24,7 +24,14 @@ import com.gmail.vanyadubik.mobilemanager.activity.TrackActivity;
 import com.gmail.vanyadubik.mobilemanager.repository.DataRepository;
 import com.gmail.vanyadubik.mobilemanager.repository.DataRepositoryImpl;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 
 import static com.gmail.vanyadubik.mobilemanager.common.Consts.MIN_DISTANCE_CHANGE_FOR_UPDATES;
 import static com.gmail.vanyadubik.mobilemanager.common.Consts.MIN_TIME_BW_UPDATES;
@@ -115,9 +122,12 @@ public class GPSTrackerService extends Service implements LocationListener {
         }
 
         if (location != null){
-//            dataRepository.insertTrackPoint(new LocationPoint(LocalDate.now().toDateTimeAtCurrentTime(), location.getLatitude(),
+            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            DateTime dateTime = LocalDateTime.now(DateTimeZone.getDefault()).toDateTime();
+//            dataRepository.insertTrackPoint(new LocationPoint(dateTime, location.getLatitude(),
 //                    location.getLongitude(), true));
-            sendNotification("Ticker","GPSTracker","Date:"+LocalDate.now().toDateTimeAtCurrentTime() +"\nLat: " + location.getLatitude() + "\nLong: " + location.getLongitude());
+            sendNotification("Ticker","Mobile manager", dateFormat.format(dateTime) +"\nLat: " +
+                    new DecimalFormat("#.####").format(location.getLatitude()) + "\nLong: " + new DecimalFormat("#.####").format(location.getLongitude()));
         }
 
     }
@@ -158,7 +168,7 @@ public class GPSTrackerService extends Service implements LocationListener {
                 .setWhen(System.currentTimeMillis());
 
         Notification notification;
-        if (android.os.Build.VERSION.SDK_INT<=15) {
+        if (Build.VERSION.SDK_INT<=15) {
             notification = builder.getNotification(); // API-15 and lower
         }else{
             notification = builder.build();
