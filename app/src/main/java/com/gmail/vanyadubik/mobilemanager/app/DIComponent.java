@@ -5,6 +5,7 @@ import com.gmail.vanyadubik.mobilemanager.modules.DataApiModule;
 import com.gmail.vanyadubik.mobilemanager.modules.ErrorUtilsApiModule;
 import com.gmail.vanyadubik.mobilemanager.modules.NetworkUtilsApiModule;
 import com.gmail.vanyadubik.mobilemanager.modules.PhoneUtilsApiModule;
+import com.gmail.vanyadubik.mobilemanager.service.GPSTrackerService;
 import com.gmail.vanyadubik.mobilemanager.task.SyncIntentService;
 
 import javax.inject.Singleton;
@@ -16,7 +17,7 @@ import dagger.Component;
         NetworkUtilsApiModule.class, ActivityUtilsApiModule.class, ErrorUtilsApiModule.class, PhoneUtilsApiModule.class})
 public interface DIComponent {
 
-    //void inject(TrackActivity activity);
+    void inject(GPSTrackerService gpsTrackerService);
 
     void inject(SyncIntentService syncIntentService);
 }
