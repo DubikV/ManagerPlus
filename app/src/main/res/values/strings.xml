@@ -1,11 +1,15 @@
 <resources>
-    <string name="app_name">MobileManager</string>
+    <string name="app_name">Manager Plus</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Налаштування</string>
 
+
+    <!-- GPS -->
+    <string name="gps_is_setting">Налаштування місцезнаходження</string>
+    <string name="gps_is_enabled_open_settings">На пристрої вимкнене визначення місцезнаходження.</string>
 
     <!-- Phone -->
     <string name="phone_sms_send">СМС відправлено!</string>
@@ -34,6 +38,6 @@
     <string name="questions_answer_yes">Так</string>
     <string name="questions_answer_no">Ні</string>
     <string name="questions_answer_ok">Ок</string>
-    <string name="questions_title_cancel">Відмінити</string>
+    <string name="questions_title_cancel">Скасувати</string>
 
 </resources>
