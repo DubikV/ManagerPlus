@@ -9,7 +9,7 @@ public class UploadTrackListResponse {
     @Expose
     private String info;
     @Expose
-    @SerializedName("new_tracks")
+    @SerializedName("track_list")
     private List<LocationPointDTO> locationPoints;
 
     public UploadTrackListResponse() {

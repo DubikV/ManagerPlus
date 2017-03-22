@@ -41,14 +41,12 @@ public class GPSTracker extends Service implements LocationListener {
 
     public GPSTracker(Context context) {
         this.mContext = context;
-        getLocation();
+        locationManager = (LocationManager) mContext
+                .getSystemService(LOCATION_SERVICE);
     }
 
 
     private Location getLocation() {
-
-        locationManager = (LocationManager) mContext
-                .getSystemService(LOCATION_SERVICE);
 
         // getting GPS status
         isGPSEnabled = locationManager
@@ -149,6 +147,7 @@ public class GPSTracker extends Service implements LocationListener {
 
 
     public boolean canGetLocation() {
+        getLocation();
         return this.canGetLocation;
     }
 

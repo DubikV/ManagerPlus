@@ -6,9 +6,9 @@ import android.database.Cursor;
 
 import com.gmail.vanyadubik.managerplus.model.ParameterInfo;
 import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
-import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
+import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
 
 import org.joda.time.DateTime;
 
@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SIZE_TRACK_LIST_UPLOAD;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.ClientContract;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.LocationPointContract;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.TrackListContract;
@@ -57,9 +58,9 @@ public class DataRepositoryImpl implements DataRepository{
         try (Cursor cursor = contentResolver.query(
                 TrackListContract.CONTENT_URI,
                 TrackListContract.PROJECTION_ALL,
-                TrackListContract.UNLOADED + "=" + false,
-                new String[]{},
-                TrackListContract.DEFAULT_SORT_ORDER)) {
+                TrackListContract.UNLOADED + "=0",
+                null, String.format("%s limit "+String.valueOf(MIN_SIZE_TRACK_LIST_UPLOAD),
+                TrackListContract.DEFAULT_SORT_ORDER))) {
 
             if (cursor == null || !cursor.moveToFirst()) {
                 return null;

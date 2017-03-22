@@ -21,31 +21,35 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.common.Consts;
+import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.gps.GPSTracker;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.gps.GPSTrackerService;
+import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
+import com.gmail.vanyadubik.managerplus.task.SyncIntentService;
 
 import java.text.SimpleDateFormat;
 
 import javax.inject.Inject;
+
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_SYNK_TRACK;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 
 public class TrackActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     @Inject
     DataRepository dataRepository;
 
-    private GPSTracker gpsTracker;
+    @Inject
+    GPSTracker gpsTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track);
 
-       // ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
-
-        gpsTracker = new GPSTracker(TrackActivity.this);
+        ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -69,21 +73,12 @@ public class TrackActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         Button btnShowLocation = (Button) findViewById(R.id.btnShowLocation);
-
-        // show location button click event
         btnShowLocation.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
-
-                // create class object
-
-                // check if GPS enabled
                 if(gpsTracker.canGetLocation()){
-
                     LocationPoint locationPoint = gpsTracker.getLocationPoint();
-
-                    // \n is for new line
                     Toast.makeText(getApplicationContext(),
                             new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
                                     .format(locationPoint.getDateTime().getMillis())
@@ -91,12 +86,19 @@ public class TrackActivity extends AppCompatActivity
                                     + "\nLong: " + locationPoint.getLongitude(),
                             Toast.LENGTH_LONG).show();
                 }else{
-                    // can't get location
-                    // GPS or Network is not enabled
-                    // Ask user to enable GPS/network in settings
                     gpsTracker.showSettingsAlert();
                 }
 
+            }
+        });
+
+        Button btnSync = (Button) findViewById(R.id.btnSync);
+        btnSync.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                Intent intent = new Intent(TrackActivity.this, SyncIntentService.class);
+                startService(intent);
             }
         });
     }
@@ -106,18 +108,12 @@ public class TrackActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
 
-        if (!isGPSTrackerServiceRunning(GPSTrackerService.class)) {
+        startServices();
 
-            Intent ishintent = new Intent(TrackActivity.this, GPSTrackerService.class);
-            PendingIntent pintent = PendingIntent.getService(TrackActivity.this, 0, ishintent, 0);
-            AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            alarm.cancel(pintent);
-            alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * Consts.MIN_TIME_WRITE_TRACK, pintent);
-
-            if (gpsTracker.canGetLocation()) {
-                gpsTracker.showSettingsAlert();
-            }
+        if (!gpsTracker.canGetLocation()) {
+            gpsTracker.showSettingsAlert();
         }
+
     }
 
     @Override
@@ -177,7 +173,7 @@ public class TrackActivity extends AppCompatActivity
         return true;
     }
 
-    private boolean isGPSTrackerServiceRunning(Class<?> serviceClass) {
+    private boolean isServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -186,5 +182,26 @@ public class TrackActivity extends AppCompatActivity
             }
         }
         return false;
+    }
+
+    private void startServices(){
+        if (!isServiceRunning(GPSTrackerService.class)) {
+
+            Intent ishintent = new Intent(TrackActivity.this, GPSTrackerService.class);
+            PendingIntent pintent = PendingIntent.getService(TrackActivity.this, 0, ishintent, 0);
+            AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            alarm.cancel(pintent);
+            alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * MIN_TIME_WRITE_TRACK, pintent);
+        }
+
+        if (!isServiceRunning(SyncIntentTrackService.class)) {
+
+            Intent ishintent = new Intent(TrackActivity.this, SyncIntentTrackService.class);
+            PendingIntent pintent = PendingIntent.getService(TrackActivity.this, 0, ishintent, 0);
+            AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            alarm.cancel(pintent);
+            alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * MIN_TIME_SYNK_TRACK, pintent);
+        }
+
     }
 }

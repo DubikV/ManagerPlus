@@ -11,6 +11,7 @@
     <string name="gps_is_setting">Налаштування місцезнаходження</string>
     <string name="gps_is_enabled_open_settings">На пристрої вимкнене визначення місцезнаходження.</string>
     <string name="gps_is_enabled">Вимкнений GPS</string>
+    <string name="gps_tracer_name">GPS Tracker</string>
 
     <!-- Phone -->
     <string name="phone_sms_send">СМС відправлено!</string>
@@ -37,6 +38,12 @@
     <string name="questions_Sync">Загрузити дані з серверу?</string>
     <string name="syncing">Виконується синхронізація з сервером.</string>
     <string name="sync_success">Синхронізація успішна.</string>
+    <string name="sync_upload">Вивантаження даних на сервер</string>
+    <string name="sync_download">Завантаження даних з серверу</string>
+    <string name="sync_processing">Обробка даних на пристрої</string>
+    <string name="sync_tracklist">Вигрузка треків</string>
+    <string name="sync_tracklist_upload_error">Помилка в вивантаженні даних</string>
+    <string name="sync_tracklist_downloar_error">Помилка в завантаженні даних</string>
 
     <!--AlertDialog-->
     <string name="questions_title_info">Інфо</string>

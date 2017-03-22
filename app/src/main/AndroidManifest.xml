@@ -21,12 +21,14 @@
             android:name=".repository.DataContentProvider"
             android:authorities="com.gmail.vanyadubik.mbmanager.dbProvider"
             android:exported="false" />
-
+        <service
+            android:name=".service.gps.SyncIntentTrackService"
+            android:enabled="true"
+            android:exported="true"  />
         <service
             android:name=".service.gps.GPSTrackerService"
             android:enabled="true"
-            android:exported="true"  >
-        </service>
+            android:exported="true" />
         <receiver
         android:name=".service.gps.GPSTrackerReceiver"
         android:permission="android.permission.RECEIVE_BOOT_COMPLETED"

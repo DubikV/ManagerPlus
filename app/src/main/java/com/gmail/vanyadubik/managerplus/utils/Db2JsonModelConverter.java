@@ -6,7 +6,7 @@ import com.gmail.vanyadubik.managerplus.model.json.LocationPointDTO;
 public final class Db2JsonModelConverter {
     public static LocationPointDTO convertLocationPoint(LocationPoint locationPoint) {
         return new LocationPointDTO(
-                locationPoint.getDateTime(),
+                locationPoint.getDateTime().toDate(),
                 locationPoint.getLatitude(),
                 locationPoint.getLongitude(),
                 locationPoint.isInCar()

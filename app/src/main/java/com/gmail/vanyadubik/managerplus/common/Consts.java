@@ -15,6 +15,7 @@ public class Consts {
     public final static int STATUS_FINISHED_SYNC = 1;
     public final static int STATUS_ERROR_SYNC = -1;
     public final static int CONNECT_TIMEOUT_SECONDS_RETROFIT = 180;
+    public final static int MIN_SIZE_TRACK_LIST_UPLOAD = 100;
 
     // Name parameters
     public final static String LOGIN = "mLogin";
@@ -25,6 +26,7 @@ public class Consts {
     public static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // meters
     public static final long MIN_TIME_BW_UPDATES = 60; // seconds
     public static final long MIN_TIME_WRITE_TRACK = 5; // seconds
+    public static final long MIN_TIME_SYNK_TRACK = 60; // seconds
 
     // notifications
     public static final int DEFAULT_NOTIFICATION_GPS_TRACER_ID = 101;
