@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat;
 
 import javax.inject.Inject;
 
+import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_GPS_TRACER_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_CHANGE_FOR_UPDATES;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_BW_UPDATES;
 
@@ -43,7 +44,6 @@ public class GPSTrackerService extends Service implements LocationListener {
     DataRepository dataRepository;
 
     private NotificationManager notificationManager;
-    public static final int DEFAULT_NOTIFICATION_ID = 101;
 
     private Context mContext;
     private boolean isGPSEnabled, isNetworkEnabled;
@@ -150,7 +150,7 @@ public class GPSTrackerService extends Service implements LocationListener {
                 return;
             }
             locationManager.removeUpdates(GPSTrackerService.this);
-            notificationManager.cancel(DEFAULT_NOTIFICATION_ID);
+            notificationManager.cancel(DEFAULT_NOTIFICATION_GPS_TRACER_ID);
         }
     }
 
@@ -181,7 +181,7 @@ public class GPSTrackerService extends Service implements LocationListener {
             notification = builder.build();
         }
 
-        startForeground(DEFAULT_NOTIFICATION_ID, notification);
+        startForeground(DEFAULT_NOTIFICATION_GPS_TRACER_ID, notification);
     }
 
 

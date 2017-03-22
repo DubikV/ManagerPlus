@@ -26,4 +26,8 @@ public class Consts {
     public static final long MIN_TIME_BW_UPDATES = 60; // seconds
     public static final long MIN_TIME_WRITE_TRACK = 5; // seconds
 
+    // notifications
+    public static final int DEFAULT_NOTIFICATION_GPS_TRACER_ID = 101;
+    public static final int DEFAULT_NOTIFICATION_SYNC_TRACER_ID = 102;
+
 }

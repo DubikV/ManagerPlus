@@ -1,10 +1,16 @@
 package com.gmail.vanyadubik.managerplus.service.gps;
 
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.os.Build;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.gmail.vanyadubik.managerplus.R;
+import com.gmail.vanyadubik.managerplus.activity.TrackActivity;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.model.APIError;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
@@ -18,8 +24,6 @@ import com.gmail.vanyadubik.managerplus.task.SyncServiceFactory;
 import com.gmail.vanyadubik.managerplus.utils.ErrorUtils;
 import com.gmail.vanyadubik.managerplus.utils.NetworkUtils;
 
-import org.joda.time.LocalDate;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +31,7 @@ import javax.inject.Inject;
 
 import retrofit2.Response;
 
+import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_SYNC_TRACER_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_SYNC_TRACK;
 import static com.gmail.vanyadubik.managerplus.utils.Db2JsonModelConverter.convertLocationPoint;
 
@@ -40,6 +45,7 @@ public class SyncIntentTrackService extends IntentService{
     ErrorUtils errorUtils;
 
     private SyncService syncService;
+    private NotificationManager notificationManager;
 
     public SyncIntentTrackService() {
         super(SyncIntentTrackService.class.getName());
@@ -49,6 +55,8 @@ public class SyncIntentTrackService extends IntentService{
     public void onCreate() {
         super.onCreate();
         ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
+
+        notificationManager = (NotificationManager) this.getSystemService(this.NOTIFICATION_SERVICE);
     }
 
     @Override
@@ -97,7 +105,7 @@ public class SyncIntentTrackService extends IntentService{
 
     }
 
-    private UploadTrackListRequest getUploadData(List<LocationPoint> trackList) {
+    private List<LocationPointDTO> getUploadData(List<LocationPoint> trackList) {
 
         List<LocationPointDTO> result = new ArrayList<>();
 
@@ -106,7 +114,7 @@ public class SyncIntentTrackService extends IntentService{
             result.add(convertLocationPoint(locationPoint));
 
         }
-        return new UploadTrackListRequest(result);
+        return result;
     }
 
     private void updateDb(DownloadTrackListResultDTO response) {
@@ -114,5 +122,35 @@ public class SyncIntentTrackService extends IntentService{
         dataRepository.SetTrackListUloadedLocationTrack(response.getDateTimeStart(),
                 response.getDateTimeEnd());
 
+    }
+
+    //Send custom notification
+    public void sendNotification(String Ticker,String Title,String Text, boolean error) {
+
+        //These three lines makes Notification to open main activity after clicking on it
+        Intent notificationIntent = new Intent(this, TrackActivity.class);
+        notificationIntent.setAction(Intent.ACTION_MAIN);
+        notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+        PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setContentIntent(contentIntent)
+                .setOngoing(true)
+                .setSmallIcon(error ? R.mipmap.ic_gps_track_not_connect : R.mipmap.ic_gps_track_connect)
+                //  .setLargeIcon(mContext.getResources().getDrawable(R.drawable.ic_gps_track_connect))   // большая картинка
+                .setTicker(Ticker)
+                .setContentTitle(Title)
+                .setContentText(Text)
+                .setWhen(System.currentTimeMillis());
+
+        Notification notification;
+        if (Build.VERSION.SDK_INT<=15) {
+            notification = builder.getNotification(); // API-15 and lower
+        }else{
+            notification = builder.build();
+        }
+
+        startForeground(DEFAULT_NOTIFICATION_SYNC_TRACER_ID, notification);
     }
 }
