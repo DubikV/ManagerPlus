@@ -29,6 +29,7 @@ public class MobileManagerDb extends SQLiteOpenHelper {
                 + TrackListContract.LATITUDE + " real,"
                 + TrackListContract.LONGITUDE + " real,"
                 + TrackListContract.IN_CAR + " numeric,"
+                + TrackListContract.UNLOADED + " numeric,"
                 + "UNIQUE (" + TextUtils.join(", ", TrackListContract.UNIQUE_COLUMNS) + ")"
                 + ");");
 

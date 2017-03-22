@@ -3,35 +3,35 @@ package com.gmail.vanyadubik.managerplus.model.json;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Date;
+import org.joda.time.DateTime;
 
 public class LocationPointDTO {
     @Expose
-    private Date date;
+    private DateTime dateTime;
     @Expose
-    private String latitude;
+    private double latitude;
     @Expose
-    private String longitude;
+    private double longitude;
     @Expose
     @SerializedName("inCar")
     private boolean isInCar;
 
-    public LocationPointDTO(String latitude, Date date, String longitude, boolean isInCar) {
+    public LocationPointDTO(DateTime dateTime, double latitude, double longitude, boolean isInCar) {
+        this.dateTime = dateTime;
         this.latitude = latitude;
-        this.date = date;
         this.longitude = longitude;
         this.isInCar = isInCar;
     }
 
-    public Date getDate() {
-        return date;
+    public DateTime getDate() {
+        return dateTime;
     }
 
-    public String getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public String getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 

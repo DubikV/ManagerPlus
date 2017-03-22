@@ -2,9 +2,11 @@ package com.gmail.vanyadubik.managerplus.common;
 
 public class Consts {
 
-    public final static String TAGLOG = "MobileManager";
-    public final static String TAGLOG_PHONE = "MobileManager_Phone";
-    public final static String TAGLOG_GPS = "MobileManager_GPS";
+    public final static String TAGLOG = "ManagerPlus";
+    public final static String TAGLOG_PHONE = "ManagerPlus_Phone";
+    public final static String TAGLOG_GPS = "ManagerPlus_GPS";
+    public final static String TAGLOG_SYNC = "ManagerPlus_Sync";
+    public final static String TAGLOG_SYNC_TRACK = "ManagerPlus_Sync_Track";
 
     public static final String APPLICATION_PROPERTIES = "application.properties";
 

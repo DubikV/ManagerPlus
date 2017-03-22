@@ -20,6 +20,7 @@ public class MobileManagerContract {
         public static final String LATITUDE = "latitude";
         public static final String LONGITUDE = "longitude";
         public static final String IN_CAR = "incar";
+        public static final String UNLOADED = "unloaded";
 
         public static final Uri CONTENT_URI =
                 Uri.withAppendedPath(
@@ -39,7 +40,7 @@ public class MobileManagerContract {
                         + TABLE_NAME;
 
         public static final String[] PROJECTION_ALL =
-                {_ID, DATE, LATITUDE, LONGITUDE, IN_CAR};
+                {_ID, DATE, LATITUDE, LONGITUDE, IN_CAR, UNLOADED};
 
         public static final String[] UNIQUE_COLUMNS =
                 {DATE};

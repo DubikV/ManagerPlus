@@ -10,6 +10,8 @@ import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +38,26 @@ public class DataRepositoryImpl implements DataRepository{
                 TrackListContract.PROJECTION_ALL,
                 TrackListContract.DATE + ">=" + dateFrom.getTime() + " AND "
                         + TrackListContract.DATE + "<=" + dateBy.getTime(),
+                new String[]{},
+                TrackListContract.DEFAULT_SORT_ORDER)) {
+
+            if (cursor == null || !cursor.moveToFirst()) {
+                return null;
+            }
+
+            List<LocationPoint> result = new ArrayList<>();
+            while (cursor.moveToNext())
+                result.add(ModelConverter.buildLocationPoint(cursor));
+            return result;
+        }
+    }
+
+    @Override
+    public List<LocationPoint> getUloadedLocationTrack() {
+        try (Cursor cursor = contentResolver.query(
+                TrackListContract.CONTENT_URI,
+                TrackListContract.PROJECTION_ALL,
+                TrackListContract.UNLOADED + "=" + false,
                 new String[]{},
                 TrackListContract.DEFAULT_SORT_ORDER)) {
 
@@ -184,6 +206,19 @@ public class DataRepositoryImpl implements DataRepository{
     public void insertTrackPoint(LocationPoint locationPoint) {
         ContentValues values = ModelConverter.convertLocationPoint(locationPoint);
         contentResolver.insert(TrackListContract.CONTENT_URI, values);
+    }
+
+    @Override
+    public void SetTrackListUloadedLocationTrack(DateTime dateFrom, DateTime dateBy) {
+        ContentValues newTrackContentValues = new ContentValues();
+
+        newTrackContentValues.put(TrackListContract.UNLOADED, true);
+        contentResolver.update(
+                TrackListContract.CONTENT_URI,
+                newTrackContentValues,
+                TrackListContract.DATE+ ">='" + dateFrom.getMillis() + "' AND "
+                        + TrackListContract.DATE + "<='" + dateBy.getMillis() + "'",
+                null);
     }
 
     @Override

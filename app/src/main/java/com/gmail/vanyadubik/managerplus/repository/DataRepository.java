@@ -2,9 +2,11 @@ package com.gmail.vanyadubik.managerplus.repository;
 
 import com.gmail.vanyadubik.managerplus.model.ParameterInfo;
 import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
-import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
+import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
+
+import org.joda.time.DateTime;
 
 import java.util.Date;
 import java.util.List;
@@ -12,6 +14,8 @@ import java.util.List;
 public interface DataRepository {
 
     List<LocationPoint> getTrack(Date dateFrom, Date dateBy);
+
+    List<LocationPoint> getUloadedLocationTrack();
 
     String getUserSetting(String settingId);
 
@@ -30,6 +34,8 @@ public interface DataRepository {
     Client_Element getClient(String externalId);
 
     void insertTrackPoint(LocationPoint locationPoint);
+
+    void SetTrackListUloadedLocationTrack(DateTime dateFrom, DateTime dateBy);
 
     void insertLocationPoint(LocationPoint locationPoint);
 

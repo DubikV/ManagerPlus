@@ -25,6 +25,7 @@ public class ModelConverter {
         values.put(TrackListContract.LATITUDE, locationPoint.getLatitude());
         values.put(TrackListContract.LONGITUDE, locationPoint.getLongitude());
         values.put(TrackListContract.IN_CAR, locationPoint.isInCar());
+        values.put(TrackListContract.UNLOADED, false);
         return values;
     }
 

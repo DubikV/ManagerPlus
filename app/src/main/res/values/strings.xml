@@ -33,6 +33,10 @@
     <string name="sync_cancel">Відмінено синхронізацію.</string>
     <string name="error_internet_connecting">Відсутнє зєднання з інтернетом!</string>
     <string name="wrong_connection">Відсутнє зєднання з інтернетом!</string>
+    <string name="sync_start">Запущена синхронізація...</string>
+    <string name="questions_Sync">Загрузити дані з серверу?</string>
+    <string name="syncing">Виконується синхронізація з сервером.</string>
+    <string name="sync_success">Синхронізація успішна.</string>
 
     <!--AlertDialog-->
     <string name="questions_title_info">Інфо</string>
