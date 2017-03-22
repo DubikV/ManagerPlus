@@ -19,24 +19,23 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.TrackActivity;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
-import com.gmail.vanyadubik.managerplus.common.Consts;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
-import com.gmail.vanyadubik.managerplus.repository.DataRepositoryImpl;
-import com.gmail.vanyadubik.managerplus.R;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
 import javax.inject.Inject;
+
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_CHANGE_FOR_UPDATES;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_BW_UPDATES;
 
 public class GPSTrackerService extends Service implements LocationListener {
 
@@ -55,8 +54,6 @@ public class GPSTrackerService extends Service implements LocationListener {
         super.onCreate();
 
         mContext = getApplicationContext();
-
-       // dataRepository = new DataRepositoryImpl(mContext.getContentResolver());
 
         ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
 
@@ -83,7 +80,10 @@ public class GPSTrackerService extends Service implements LocationListener {
         if (isGPSEnabled || isNetworkEnabled) {
             getLocation();
         }else{
-            sendNotification("Ticker","GPSTracker","Date:"+LocalDate.now().toDate() +"not nave signal", true);
+            sendNotification("Ticker",mContext.getString(R.string.app_name),
+                    new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+                            .format(LocalDateTime.now(DateTimeZone.getDefault()).toDateTime().getMillis())
+                            + " " + mContext.getString(R.string.gps_is_enabled), true);
         }
 
         return START_REDELIVER_INTENT;
@@ -93,46 +93,48 @@ public class GPSTrackerService extends Service implements LocationListener {
 
         Location location = null;
         try {
-                if ( Build.VERSION.SDK_INT >= 23 &&
-                        ContextCompat.checkSelfPermission( mContext, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
-                        ContextCompat.checkSelfPermission( mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if ( Build.VERSION.SDK_INT >= 23 &&
+                    ContextCompat.checkSelfPermission( mContext, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission( mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            }
+
+            if (isGPSEnabled) {
+                locationManager.requestLocationUpdates(
+                        LocationManager.GPS_PROVIDER,
+                        1000 * MIN_TIME_BW_UPDATES,
+                        MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                Log.d("TAGLOG_GPS", "GPS Enabled");
+                if (locationManager != null) {
+                    location = locationManager
+                            .getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 }
-                if (isNetworkEnabled) {
+            }
+
+            if (isNetworkEnabled) {
+                if (location == null) {
                     locationManager.requestLocationUpdates(
                             LocationManager.NETWORK_PROVIDER,
-                            1000 * Consts.MIN_TIME_BW_UPDATES,
-                            Consts.MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                            1000 * MIN_TIME_BW_UPDATES,
+                            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
                     Log.d("TAGLOG_GPS", "Network");
                     if (locationManager != null) {
                         location = locationManager
                                 .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     }
                 }
-                if (isGPSEnabled) {
-                    if (location == null) {
-                        locationManager.requestLocationUpdates(
-                                LocationManager.GPS_PROVIDER,
-                                1000 * Consts.MIN_TIME_BW_UPDATES,
-                                Consts.MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                        Log.d("TAGLOG_GPS", "GPS Enabled");
-                        if (locationManager != null) {
-                            location = locationManager
-                                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                        }
-                    }
-                }
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         if (location != null){
-            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-            DateTime dateTime = LocalDateTime.now(DateTimeZone.getDefault()).toDateTime();
-            dataRepository.insertTrackPoint(new LocationPoint(dateTime, location.getLatitude(),
+            dataRepository.insertTrackPoint(new LocationPoint(new DateTime(location.getTime()), location.getLatitude(),
                     location.getLongitude(), true));
-            sendNotification("Ticker","Mobile manager", dateFormat.format(dateTime.getMillis()) +"\nLat: " +
-                    new DecimalFormat("#.####").format(location.getLatitude()) + "\nLong: " + new DecimalFormat("#.####").format(location.getLongitude()), false);
+            sendNotification("Ticker",mContext.getString(R.string.app_name),
+                    new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(location.getTime())
+                    +"\n " + new DecimalFormat("#.####").format(location.getLatitude())
+                    + "\n: " + new DecimalFormat("#.####").format(location.getLongitude()), false);
         }
 
     }

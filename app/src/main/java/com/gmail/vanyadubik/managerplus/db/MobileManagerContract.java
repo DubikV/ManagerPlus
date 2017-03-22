@@ -7,7 +7,7 @@ import android.provider.BaseColumns;
 public class MobileManagerContract {
 
     private static final String CONTENT = "content://";
-    public static final String AUTHORITY = "com.avatlantik.mbmanager.dbProvider";
+    public static final String AUTHORITY = "com.gmail.vanyadubik.mbmanager.dbProvider";
 
     public static final Uri CONTENT_URI
             = Uri.parse(CONTENT + AUTHORITY);

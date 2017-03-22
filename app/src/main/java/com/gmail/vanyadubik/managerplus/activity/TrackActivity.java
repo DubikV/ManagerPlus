@@ -1,5 +1,6 @@
 package com.gmail.vanyadubik.managerplus.activity;
 
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -19,18 +20,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
+import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.common.Consts;
 import com.gmail.vanyadubik.managerplus.gps.GPSTracker;
-import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.gps.GPSTrackerService;
 
-import org.joda.time.LocalDateTime;
-
-import java.util.Calendar;
-import java.util.TimeZone;
+import java.text.SimpleDateFormat;
 
 import javax.inject.Inject;
 
@@ -87,10 +84,12 @@ public class TrackActivity extends AppCompatActivity
                     LocationPoint locationPoint = gpsTracker.getLocationPoint();
 
                     // \n is for new line
-                    Toast.makeText(getApplicationContext(), LocalDateTime.now().toDate().getTime() + "Your Location is - \nLat: " + locationPoint.getLatitude() + "\nLong: " + locationPoint.getLongitude(), Toast.LENGTH_LONG).show();
-
-                    Toast.makeText(getApplicationContext(),  Calendar.getInstance(TimeZone.getDefault()) + "Your Location is - \nLat: " + locationPoint.getLatitude() + "\nLong: " + locationPoint.getLongitude(), Toast.LENGTH_LONG).show();
-
+                    Toast.makeText(getApplicationContext(),
+                            new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+                                    .format(locationPoint.getDateTime().getMillis())
+                                    + " location is - \nLat: " + locationPoint.getLatitude()
+                                    + "\nLong: " + locationPoint.getLongitude(),
+                            Toast.LENGTH_LONG).show();
                 }else{
                     // can't get location
                     // GPS or Network is not enabled
@@ -106,14 +105,18 @@ public class TrackActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        Intent ishintent = new Intent(TrackActivity.this, GPSTrackerService.class);
-        PendingIntent pintent = PendingIntent.getService(TrackActivity.this, 0, ishintent, 0);
-        AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        alarm.cancel(pintent);
-        alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),1000 * Consts.MIN_TIME_WRITE_TRACK, pintent);
 
-        if(gpsTracker.canGetLocation()){
-            gpsTracker.showSettingsAlert();
+        if (!isGPSTrackerServiceRunning(GPSTrackerService.class)) {
+
+            Intent ishintent = new Intent(TrackActivity.this, GPSTrackerService.class);
+            PendingIntent pintent = PendingIntent.getService(TrackActivity.this, 0, ishintent, 0);
+            AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            alarm.cancel(pintent);
+            alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * Consts.MIN_TIME_WRITE_TRACK, pintent);
+
+            if (gpsTracker.canGetLocation()) {
+                gpsTracker.showSettingsAlert();
+            }
         }
     }
 
@@ -172,5 +175,16 @@ public class TrackActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private boolean isGPSTrackerServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

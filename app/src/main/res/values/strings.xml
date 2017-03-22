@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Manager Plus</string>
+    <string name="app_name">Manager +</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -10,6 +10,7 @@
     <!-- GPS -->
     <string name="gps_is_setting">Налаштування місцезнаходження</string>
     <string name="gps_is_enabled_open_settings">На пристрої вимкнене визначення місцезнаходження.</string>
+    <string name="gps_is_enabled">Вимкнений GPS</string>
 
     <!-- Phone -->
     <string name="phone_sms_send">СМС відправлено!</string>

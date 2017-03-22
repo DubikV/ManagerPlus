@@ -18,12 +18,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.common.Consts;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
-import com.gmail.vanyadubik.managerplus.R;
 
 import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 public class GPSTracker extends Service implements LocationListener {
@@ -69,31 +68,32 @@ public class GPSTracker extends Service implements LocationListener {
                         ContextCompat.checkSelfPermission( mContext, android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
                         ContextCompat.checkSelfPermission( mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 }
-                if (isNetworkEnabled) {
+                if (isGPSEnabled) {
                     locationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER,
+                            LocationManager.GPS_PROVIDER,
                             1000 * Consts.MIN_TIME_BW_UPDATES,
                             Consts.MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                    Log.d("TAGLOG_GPS", "Network");
+                    Log.d("TAGLOG_GPS", "GPS Enabled");
                     if (locationManager != null) {
                         location = locationManager
-                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                                .getLastKnownLocation(LocationManager.GPS_PROVIDER);
                         if (location != null) {
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
                         }
                     }
                 }
-                if (isGPSEnabled) {
+
+                if (isNetworkEnabled) {
                     if (location == null) {
                         locationManager.requestLocationUpdates(
-                                LocationManager.GPS_PROVIDER,
+                                LocationManager.NETWORK_PROVIDER,
                                 1000 * Consts.MIN_TIME_BW_UPDATES,
                                 Consts.MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                        Log.d("TAGLOG_GPS", "GPS Enabled");
+                        Log.d("TAGLOG_GPS", "Network");
                         if (locationManager != null) {
                             location = locationManager
-                                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                             if (location != null) {
                                 latitude = location.getLatitude();
                                 longitude = location.getLongitude();

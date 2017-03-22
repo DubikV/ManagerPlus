@@ -14,7 +14,7 @@ import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.UserSett
 
 public class MobileManagerDb extends SQLiteOpenHelper {
 
-    private static final String DB_NAME = "cooperative";
+    private static final String DB_NAME = "managerplus";
     private static final int DB_VERSION = 24;
 
     public MobileManagerDb(Context context) {
