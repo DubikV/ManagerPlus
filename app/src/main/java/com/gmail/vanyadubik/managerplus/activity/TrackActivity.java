@@ -81,7 +81,7 @@ public class TrackActivity extends AppCompatActivity
                     LocationPoint locationPoint = gpsTracker.getLocationPoint();
                     Toast.makeText(getApplicationContext(),
                             new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-                                    .format(locationPoint.getDateTime().getMillis())
+                                    .format(locationPoint.getDate().getTime())
                                     + " location is - \nLat: " + locationPoint.getLatitude()
                                     + "\nLong: " + locationPoint.getLongitude(),
                             Toast.LENGTH_LONG).show();

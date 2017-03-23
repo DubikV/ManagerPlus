@@ -3,16 +3,14 @@ package com.gmail.vanyadubik.managerplus.repository;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
-import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
-import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.VisitContract;
-import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.TrackListContract;
-import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.WaybillContract;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.ClientContract;
+import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.TrackListContract;
+import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.VisitContract;
+import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.WaybillContract;
+import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
-
-import org.joda.time.DateTime;
+import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
 
 import java.util.Date;
 import java.util.TimeZone;
@@ -21,7 +19,7 @@ public class ModelConverter {
 
     static ContentValues convertLocationPoint(LocationPoint locationPoint) {
         ContentValues values = new ContentValues();
-        values.put(TrackListContract.DATE, locationPoint.getDateTime().getMillis());
+        values.put(TrackListContract.DATE, locationPoint.getDate().getTime());
         values.put(TrackListContract.LATITUDE, locationPoint.getLatitude());
         values.put(TrackListContract.LONGITUDE, locationPoint.getLongitude());
         values.put(TrackListContract.IN_CAR, locationPoint.isInCar());
@@ -72,7 +70,7 @@ public class ModelConverter {
     static LocationPoint buildLocationPoint(Cursor cursor) {
         return LocationPoint.builder()
                 .id(cursor.getInt(cursor.getColumnIndex(TrackListContract._ID)))
-                .dateTime(new DateTime(Long.valueOf(cursor.getString(cursor.getColumnIndex(TrackListContract.DATE)))))
+                .date(new Date(Long.valueOf(cursor.getString(cursor.getColumnIndex(TrackListContract.DATE)))))
                 .latitude(cursor.getDouble(cursor.getColumnIndex(TrackListContract.LATITUDE)))
                 .longitude(cursor.getDouble(cursor.getColumnIndex(TrackListContract.LONGITUDE)))
                 .inCar(cursor.getInt(cursor.getColumnIndex(TrackListContract.IN_CAR))== 1)

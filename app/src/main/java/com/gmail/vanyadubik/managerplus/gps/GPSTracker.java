@@ -23,7 +23,7 @@ import com.gmail.vanyadubik.managerplus.common.Consts;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 
 import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDateTime;
+import org.joda.time.LocalDate;
 
 public class GPSTracker extends Service implements LocationListener {
 
@@ -139,10 +139,10 @@ public class GPSTracker extends Service implements LocationListener {
     public LocationPoint getLocationPoint(){
         getLocation();
         if(location != null){
-            return new LocationPoint(LocalDateTime.now(DateTimeZone.getDefault()).toDateTime(), location.getLatitude(),
+            return new LocationPoint(LocalDate.now(DateTimeZone.getDefault()).toDate(), location.getLatitude(),
                     location.getLongitude(), true);
         }
-        return new LocationPoint(LocalDateTime.now(DateTimeZone.getDefault()).toDateTime(), latitude, longitude, true);
+        return new LocationPoint(LocalDate.now(DateTimeZone.getDefault()).toDate(), latitude, longitude, true);
     }
 
 

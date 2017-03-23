@@ -16,10 +16,10 @@ import com.gmail.vanyadubik.managerplus.activity.TrackActivity;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.model.APIError;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
-import com.gmail.vanyadubik.managerplus.model.json.DownloadTrackListResultDTO;
 import com.gmail.vanyadubik.managerplus.model.json.LocationPointDTO;
 import com.gmail.vanyadubik.managerplus.model.json.UploadTrackListRequest;
 import com.gmail.vanyadubik.managerplus.model.json.UploadTrackListResponse;
+import com.gmail.vanyadubik.managerplus.model.json.UploadTrackListResultDTO;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.SyncService;
 import com.gmail.vanyadubik.managerplus.task.SyncServiceFactory;
@@ -87,6 +87,13 @@ public class SyncIntentTrackService extends IntentService{
                 Response<UploadTrackListResponse> uploadResponse = syncService.uploadTrackListOnly(request).execute();
                 if (uploadResponse.isSuccessful()) {
                     Log.i(TAGLOG_SYNC_TRACK, getResources().getString(R.string.sync_success));
+                    UploadTrackListResponse response = uploadResponse.body();
+                    if (response.getResultDTO() != null) {
+                        updateDb(response.getResultDTO());
+                    }
+                    if (response.getInfo() != null) {
+                        Log.e(TAGLOG_SYNC_TRACK, response.getInfo());
+                    }
                 } else {
                     APIError error = errorUtils.parseErrorCode(uploadResponse.code());
                     Log.e(TAGLOG_SYNC_TRACK, error.getMessage());
@@ -141,10 +148,10 @@ public class SyncIntentTrackService extends IntentService{
         return result;
     }
 
-    private void updateDb(DownloadTrackListResultDTO response) {
+    private void updateDb(UploadTrackListResultDTO response) {
 
-        dataRepository.SetTrackListUloadedLocationTrack(response.getDateTimeStart(),
-                response.getDateTimeEnd());
+        dataRepository.SetTrackListUloadedLocationTrack(response.getDateStart(),
+                response.getDateEnd());
 
     }
 

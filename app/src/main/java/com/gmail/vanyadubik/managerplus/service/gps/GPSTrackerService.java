@@ -26,18 +26,20 @@ import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_GPS_TRACER_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_CHANGE_FOR_UPDATES;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_BW_UPDATES;
+import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
 
 public class GPSTrackerService extends Service implements LocationListener {
 
@@ -70,6 +72,9 @@ public class GPSTrackerService extends Service implements LocationListener {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        Log.d(TAGLOG_GPS, new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+                .format(LocalDateTime.now(DateTimeZone.getDefault()).toDate().getTime()) + " start GPS servise");
+
         // getting GPS status
         isGPSEnabled = locationManager
                 .isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -83,7 +88,7 @@ public class GPSTrackerService extends Service implements LocationListener {
         }else{
             sendNotification(
                     new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-                            .format(LocalDateTime.now(DateTimeZone.getDefault()).toDateTime().getMillis())
+                            .format(LocalDate.now(DateTimeZone.getDefault()).toDate().getTime())
                             + " " + mContext.getString(R.string.gps_is_enabled), true);
         }
 
@@ -129,11 +134,16 @@ public class GPSTrackerService extends Service implements LocationListener {
             e.printStackTrace();
         }
 
+        Date date = LocalDateTime.now(DateTimeZone.getDefault()).toDate();
+        Log.d(TAGLOG_GPS, new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+                .format(date.getTime()) +
+                " location is null : " + String.valueOf(location == null));
+
         if (location != null){
-            dataRepository.insertTrackPoint(new LocationPoint(new DateTime(location.getTime()), location.getLatitude(),
+            dataRepository.insertTrackPoint(new LocationPoint(date, location.getLatitude(),
                     location.getLongitude(), true));
             sendNotification(
-                    new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(location.getTime())
+                    new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(date.getTime())
                     +"\n " + new DecimalFormat("#.####").format(location.getLatitude())
                     + "\n: " + new DecimalFormat("#.####").format(location.getLongitude()), false);
         }

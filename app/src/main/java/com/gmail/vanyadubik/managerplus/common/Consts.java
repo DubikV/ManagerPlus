@@ -15,7 +15,7 @@ public class Consts {
     public final static int STATUS_FINISHED_SYNC = 1;
     public final static int STATUS_ERROR_SYNC = -1;
     public final static int CONNECT_TIMEOUT_SECONDS_RETROFIT = 180;
-    public final static int MIN_SIZE_TRACK_LIST_UPLOAD = 100;
+    public final static int MIN_SIZE_TRACK_LIST_UPLOAD = 1000;
 
     // Name parameters
     public final static String LOGIN = "mLogin";

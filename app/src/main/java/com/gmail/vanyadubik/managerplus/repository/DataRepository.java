@@ -6,8 +6,6 @@ import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
 import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
 
-import org.joda.time.DateTime;
-
 import java.util.Date;
 import java.util.List;
 
@@ -35,7 +33,7 @@ public interface DataRepository {
 
     void insertTrackPoint(LocationPoint locationPoint);
 
-    void SetTrackListUloadedLocationTrack(DateTime dateFrom, DateTime dateBy);
+    void SetTrackListUloadedLocationTrack(Date dateFrom, Date dateBy);
 
     void insertLocationPoint(LocationPoint locationPoint);
 

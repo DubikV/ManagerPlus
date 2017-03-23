@@ -1,28 +1,26 @@
 package com.gmail.vanyadubik.managerplus.model.db;
 
-import org.joda.time.DateTime;
-
 import java.io.Serializable;
 import java.util.Date;
 
 public class LocationPoint implements Serializable {
 
     private int id;
-    private DateTime dateTime;
+    private Date date;
     private double latitude;
     private double longitude;
     private boolean inCar;
 
-    public LocationPoint(DateTime dateTime, double latitude, double longitude, boolean inCar) {
-        this.dateTime = dateTime;
+    public LocationPoint(Date date, double latitude, double longitude, boolean inCar) {
+        this.date = date;
         this.latitude = latitude;
         this.longitude = longitude;
         this.inCar = inCar;
     }
 
-    public LocationPoint(int id, DateTime dateTime, double latitude, double longitude, boolean inCar) {
+    public LocationPoint(int id, Date date, double latitude, double longitude, boolean inCar) {
         this.id = id;
-        this.dateTime = dateTime;
+        this.date = date;
         this.latitude = latitude;
         this.longitude = longitude;
         this.inCar = inCar;
@@ -32,8 +30,8 @@ public class LocationPoint implements Serializable {
         return id;
     }
 
-    public DateTime getDateTime() {
-        return dateTime;
+    public Date getDate() {
+        return date;
     }
 
     public double getLatitude() {
@@ -55,7 +53,7 @@ public class LocationPoint implements Serializable {
     public static class Builder {
 
         private int id;
-        private DateTime dateTime;
+        private Date date;
         private double latitude;
         private double longitude;
         private boolean inCar;
@@ -65,8 +63,8 @@ public class LocationPoint implements Serializable {
             return this;
         }
 
-        public Builder dateTime(DateTime dateTime) {
-            this.dateTime = dateTime;
+        public Builder date(Date date) {
+            this.date = date;
             return this;
         }
 
@@ -86,7 +84,7 @@ public class LocationPoint implements Serializable {
         }
 
         public LocationPoint build() {
-            return new LocationPoint(id, dateTime, latitude, longitude, inCar);
+            return new LocationPoint(id, date, latitude, longitude, inCar);
         }
     }
 }

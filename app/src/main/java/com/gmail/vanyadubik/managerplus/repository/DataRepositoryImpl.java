@@ -10,8 +10,6 @@ import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
 import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
 
-import org.joda.time.DateTime;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -210,15 +208,15 @@ public class DataRepositoryImpl implements DataRepository{
     }
 
     @Override
-    public void SetTrackListUloadedLocationTrack(DateTime dateFrom, DateTime dateBy) {
+    public void SetTrackListUloadedLocationTrack(Date dateFrom, Date dateBy) {
         ContentValues newTrackContentValues = new ContentValues();
 
         newTrackContentValues.put(TrackListContract.UNLOADED, true);
         contentResolver.update(
                 TrackListContract.CONTENT_URI,
                 newTrackContentValues,
-                TrackListContract.DATE+ ">='" + dateFrom.getMillis() + "' AND "
-                        + TrackListContract.DATE + "<='" + dateBy.getMillis() + "'",
+                TrackListContract.DATE+ ">='" + dateFrom.getTime() + "' AND "
+                        + TrackListContract.DATE + "<='" + dateBy.getTime() + "'",
                 null);
     }
 
