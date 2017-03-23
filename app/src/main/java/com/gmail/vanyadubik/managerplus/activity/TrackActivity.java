@@ -5,6 +5,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -154,24 +155,33 @@ public class TrackActivity extends AppCompatActivity {
         return false;
     }
 
+    private void startRegisterService(Class<?> serviceClass, long delayInSeconds){
+
+        if (!isServiceRunning(serviceClass)) {
+
+            final int SDK_INT = Build.VERSION.SDK_INT;
+
+            Intent ishintent = new Intent(TrackActivity.this, serviceClass);
+            PendingIntent pintent = PendingIntent.getService(TrackActivity.this, 0, ishintent, 0);
+            AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            alarm.cancel(pintent);
+
+            if (SDK_INT < Build.VERSION_CODES.KITKAT) {
+                alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * delayInSeconds, pintent);
+            }
+            else  {
+                alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * delayInSeconds,  pintent);
+            }
+
+        }
+
+    }
+
     private void startServices(){
-        if (!isServiceRunning(GPSTrackerService.class)) {
 
-            Intent ishintent = new Intent(TrackActivity.this, GPSTrackerService.class);
-            PendingIntent pintent = PendingIntent.getService(TrackActivity.this, 0, ishintent, 0);
-            AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            alarm.cancel(pintent);
-            alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * MIN_TIME_WRITE_TRACK, pintent);
-        }
+        startRegisterService(GPSTrackerService.class, MIN_TIME_WRITE_TRACK);
 
-        if (!isServiceRunning(SyncIntentTrackService.class)) {
-
-            Intent ishintent = new Intent(TrackActivity.this, SyncIntentTrackService.class);
-            PendingIntent pintent = PendingIntent.getService(TrackActivity.this, 0, ishintent, 0);
-            AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            alarm.cancel(pintent);
-            alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * MIN_TIME_SYNK_TRACK, pintent);
-        }
+        startRegisterService(SyncIntentTrackService.class, MIN_TIME_SYNK_TRACK);
 
     }
 }

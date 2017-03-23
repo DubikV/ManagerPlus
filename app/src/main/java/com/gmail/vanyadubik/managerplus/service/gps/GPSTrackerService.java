@@ -27,7 +27,6 @@ import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 
 import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 import java.text.DecimalFormat;
@@ -88,7 +87,7 @@ public class GPSTrackerService extends Service implements LocationListener {
         }else{
             sendNotification(
                     new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-                            .format(LocalDate.now(DateTimeZone.getDefault()).toDate().getTime())
+                            .format(LocalDateTime.now(DateTimeZone.getDefault()).toDate().getTime())
                             + " " + mContext.getString(R.string.gps_is_enabled), true);
         }
 
@@ -109,7 +108,7 @@ public class GPSTrackerService extends Service implements LocationListener {
                         LocationManager.GPS_PROVIDER,
                         1000 * MIN_TIME_BW_UPDATES,
                         MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                Log.d(TAGLOG_GPS, "GPS Enabled");
+                Log.d(TAGLOG_GPS, "GPS used");
                 if (locationManager != null) {
                     location = locationManager
                             .getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -122,7 +121,7 @@ public class GPSTrackerService extends Service implements LocationListener {
                             LocationManager.NETWORK_PROVIDER,
                             1000 * MIN_TIME_BW_UPDATES,
                             MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                    Log.d(TAGLOG_GPS, "Network");
+                    Log.d(TAGLOG_GPS, "Network used");
                     if (locationManager != null) {
                         location = locationManager
                                 .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -218,5 +217,4 @@ public class GPSTrackerService extends Service implements LocationListener {
     public IBinder onBind(Intent arg0) {
         return null;
     }
-
 }
