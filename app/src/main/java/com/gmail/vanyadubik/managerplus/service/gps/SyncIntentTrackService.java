@@ -92,7 +92,7 @@ public class SyncIntentTrackService extends IntentService{
                         updateDb(response.getResultDTO());
                     }
                     if (response.getInfo() != null) {
-                        Log.e(TAGLOG_SYNC_TRACK, response.getInfo());
+                        Log.i(TAGLOG_SYNC_TRACK, response.getInfo());
                     }
                 } else {
                     APIError error = errorUtils.parseErrorCode(uploadResponse.code());
