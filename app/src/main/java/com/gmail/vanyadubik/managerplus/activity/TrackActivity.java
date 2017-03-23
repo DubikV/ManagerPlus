@@ -33,6 +33,8 @@ import java.text.SimpleDateFormat;
 
 import javax.inject.Inject;
 
+import io.hypertrack.smart_scheduler.SmartScheduler;
+
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_SYNK_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 
@@ -179,9 +181,11 @@ public class TrackActivity extends AppCompatActivity {
 
     private void startServices(){
 
-        startRegisterService(GPSTrackerService.class, MIN_TIME_WRITE_TRACK);
+//        startRegisterService(GPSTrackerService.class, MIN_TIME_WRITE_TRACK);
+//
+//        startRegisterService(SyncIntentTrackService.class, MIN_TIME_SYNK_TRACK);
 
-        startRegisterService(SyncIntentTrackService.class, MIN_TIME_SYNK_TRACK);
+        SmartScheduler jobScheduler = SmartScheduler.getInstance(this);
 
     }
 }
