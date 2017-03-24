@@ -1,11 +1,8 @@
 package com.gmail.vanyadubik.managerplus.activity;
 
 import android.app.ActivityManager;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -27,18 +24,21 @@ import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.gps.GPSTrackerService;
 import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
+import com.gmail.vanyadubik.managerplus.service.gps.TaskSchedure;
 import com.gmail.vanyadubik.managerplus.task.SyncIntentService;
 
 import java.text.SimpleDateFormat;
 
 import javax.inject.Inject;
 
-import io.hypertrack.smart_scheduler.SmartScheduler;
+import io.hypertrack.smart_scheduler.Job;
 
+import static com.gmail.vanyadubik.managerplus.common.Consts.GPS_SYNK_SERVISE_JOB_ID;
+import static com.gmail.vanyadubik.managerplus.common.Consts.GPS_TRACK_SERVISE_JOB_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_SYNK_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 
-public class TrackActivity extends AppCompatActivity {
+public class TrackActivity extends AppCompatActivity{
     @Inject
     DataRepository dataRepository;
 
@@ -157,35 +157,25 @@ public class TrackActivity extends AppCompatActivity {
         return false;
     }
 
-    private void startRegisterService(Class<?> serviceClass, long delayInSeconds){
-
-        if (!isServiceRunning(serviceClass)) {
-
-            final int SDK_INT = Build.VERSION.SDK_INT;
-
-            Intent ishintent = new Intent(TrackActivity.this, serviceClass);
-            PendingIntent pintent = PendingIntent.getService(TrackActivity.this, 0, ishintent, 0);
-            AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            alarm.cancel(pintent);
-
-            if (SDK_INT < Build.VERSION_CODES.KITKAT) {
-                alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * delayInSeconds, pintent);
-            }
-            else  {
-                alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * delayInSeconds,  pintent);
-            }
-
-        }
-
-    }
-
     private void startServices(){
 
-//        startRegisterService(GPSTrackerService.class, MIN_TIME_WRITE_TRACK);
-//
-//        startRegisterService(SyncIntentTrackService.class, MIN_TIME_SYNK_TRACK);
+        TaskSchedure taskGPSTraker = new TaskSchedure.Builder(GPSTrackerService.class, TrackActivity.this)
+                .jobID(GPS_TRACK_SERVISE_JOB_ID)
+                .jobType(Job.Type.JOB_TYPE_HANDLER)
+                .jobNetworkType(Job.NetworkType.NETWORK_TYPE_ANY)
+                .requiresCharging(false)
+                .interval(MIN_TIME_WRITE_TRACK)
+                .build();
+        taskGPSTraker.startTask();
 
-        SmartScheduler jobScheduler = SmartScheduler.getInstance(this);
-
+        TaskSchedure taskTrackerSync = new TaskSchedure.Builder(SyncIntentTrackService.class, TrackActivity.this)
+                .jobID(GPS_SYNK_SERVISE_JOB_ID)
+                .jobType(Job.Type.JOB_TYPE_HANDLER)
+                .jobNetworkType(Job.NetworkType.NETWORK_TYPE_ANY)
+                .requiresCharging(false)
+                .interval(MIN_TIME_SYNK_TRACK)
+                .build();
+        taskTrackerSync.startTask();
     }
+
 }

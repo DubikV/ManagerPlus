@@ -7,6 +7,7 @@ public class Consts {
     public final static String TAGLOG_GPS = "ManagerPlus_GPS";
     public final static String TAGLOG_SYNC = "ManagerPlus_Sync";
     public final static String TAGLOG_SYNC_TRACK = "ManagerPlus_Sync_Track";
+    public final static String TAGLOG_TASK = "ManagerPlus_Task_schedure";
 
     public static final String APPLICATION_PROPERTIES = "application.properties";
 
@@ -31,5 +32,9 @@ public class Consts {
     // notifications
     public static final int DEFAULT_NOTIFICATION_GPS_TRACER_ID = 101;
     public static final int DEFAULT_NOTIFICATION_SYNC_TRACER_ID = 102;
+
+    //Tasks
+    public final static int GPS_TRACK_SERVISE_JOB_ID = 1;
+    public final static int GPS_SYNK_SERVISE_JOB_ID = 2;
 
 }
