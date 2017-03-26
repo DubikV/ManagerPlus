@@ -6,6 +6,20 @@
 
     <string name="action_settings">Налаштування</string>
 
+    <string name="item_waybill">Дорожній лист</string>
+    <string name="nav_service">Сервіс</string>
+    <string name="item_settings">Налаштування</string>
+    <string name="item_exit">Вихід</string>
+
+    <!-- Settings -->
+    <string name="prompt_login">Логін</string>
+    <string name="prompt_password">Пароль</string>
+    <string name="prompt_server_adress">Адреса серверу</string>
+    <string name="action_save">Зберегти</string>
+    <string name="action_sign_in_short">Увійти</string>
+    <string name="using_track_sync_service">Використ. автоматичну вигрузку треку</string>
+    <string name="min_timetrack_sync_service">Період повтору :</string>
+    <string name="error_field_required">Це поле є обов\'язковим</string>
 
     <!-- GPS -->
     <string name="gps_is_setting">Налаштування місцезнаходження</string>
@@ -46,6 +60,8 @@
     <string name="sync_tracklist_downloar_error">Помилка в завантаженні даних</string>
 
     <!--AlertDialog-->
+    <string name="questions_exit_clear">При виході будуть очищені всі дані!
+        Ви впевнені що хочете вийти ?</string>
     <string name="questions_title_info">Інфо</string>
     <string name="questions_answer_yes">Так</string>
     <string name="questions_answer_no">Ні</string>

@@ -5,6 +5,11 @@
     <item name="ic_menu_manage" type="drawable">@android:drawable/ic_menu_manage</item>
     <item name="ic_menu_share" type="drawable">@android:drawable/ic_menu_share</item>
     <item name="ic_menu_send" type="drawable">@android:drawable/ic_menu_send</item>
+    <item name="ic_exit" type="drawable">@mipmap/ic_exit</item>
+    <item name="ic_settings" type="drawable">@mipmap/ic_settings</item>
+    <item name="ic_map" type="drawable">@mipmap/ic_map</item>
+    <item name="ic_tracking" type="drawable">@mipmap/ic_tracking</item>
+    <item name="ic_waybill" type="drawable">@mipmap/ic_waybill</item>
     <item name="ic_gps_track_connect" type="drawable">@mipmap/ic_gps_track_connect</item>
     <item name="ic_gps_track_not_connect" type="drawable">@mipmap/ic_gps_track_not_connect</item>
 </resources>

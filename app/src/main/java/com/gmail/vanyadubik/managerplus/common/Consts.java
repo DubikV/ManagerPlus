@@ -22,12 +22,13 @@ public class Consts {
     public final static String LOGIN = "mLogin";
     public final static String PASSWORD = "mPassword";
     public final static String SERVER = "mServer";
+    public final static String MIN_TIME_SYNK_TRACK_NAME = "minTimeSyncTrack";
 
     // GPS
-    public static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // meters
-    public static final long MIN_TIME_BW_UPDATES = 60; // seconds
+    public static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0; // meters
+    public static final long MIN_TIME_BW_UPDATES = 0; // seconds
     public static final long MIN_TIME_WRITE_TRACK = 5; // seconds
-    public static final long MIN_TIME_SYNK_TRACK = 60; // seconds
+    public static final long MIN_TIME_SYNK_TRACK = 15*60; // seconds
 
     // notifications
     public static final int DEFAULT_NOTIFICATION_GPS_TRACER_ID = 101;

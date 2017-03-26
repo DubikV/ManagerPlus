@@ -1,5 +1,6 @@
 package com.gmail.vanyadubik.managerplus.app;
 
+import com.gmail.vanyadubik.managerplus.activity.SettingsActivity;
 import com.gmail.vanyadubik.managerplus.activity.TrackActivity;
 import com.gmail.vanyadubik.managerplus.modules.ActivityUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.DataApiModule;
@@ -21,6 +22,8 @@ import dagger.Component;
 public interface DIComponent {
 
     void inject(TrackActivity trackActivity);
+
+    void inject(SettingsActivity settingsActivity);
 
     void inject(GPSTrackerService gpsTrackerService);
 

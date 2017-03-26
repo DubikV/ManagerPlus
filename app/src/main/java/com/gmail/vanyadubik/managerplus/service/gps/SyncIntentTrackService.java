@@ -64,6 +64,8 @@ public class SyncIntentTrackService extends IntentService{
         mContext = getApplicationContext();
 
         mNotificationManager = (NotificationManager) this.getSystemService(this.NOTIFICATION_SERVICE);
+
+        startNotification();
     }
 
     @Override
@@ -76,8 +78,6 @@ public class SyncIntentTrackService extends IntentService{
         syncService = SyncServiceFactory.createService(
                 SyncService.class,
                 this.getBaseContext());
-
-        startNotification();
 
         List<LocationPoint> trackList = dataRepository.getUloadedLocationTrack();
         if (trackList != null) {
@@ -215,6 +215,7 @@ public class SyncIntentTrackService extends IntentService{
                 }
             }).start();
             mNotificationManager.cancel(DEFAULT_NOTIFICATION_GPS_TRACER_ID);
+            stopForeground(true);
         }else {
             startForeground(DEFAULT_NOTIFICATION_SYNC_TRACER_ID, notification);
         }

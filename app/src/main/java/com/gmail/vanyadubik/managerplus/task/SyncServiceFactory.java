@@ -28,6 +28,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.gmail.vanyadubik.managerplus.common.Consts.CONNECT_TIMEOUT_SECONDS_RETROFIT;
+import static com.gmail.vanyadubik.managerplus.common.Consts.LOGIN;
+import static com.gmail.vanyadubik.managerplus.common.Consts.PASSWORD;
 import static com.gmail.vanyadubik.managerplus.common.Consts.SERVER;
 
 public class SyncServiceFactory {
@@ -71,8 +73,7 @@ public class SyncServiceFactory {
     private static String getBaseURL(){
         String mServer = dataRepository.getUserSetting(SERVER);
 
-        //return "http://" + (mServer == null ? "" : mServer) + "/";
-        return "http://10.0.90.10:1235/";
+        return "http://" + (mServer == null ? "" : mServer) + "/";
     }
 
     public static <S> S createService(Class<S> serviceClass, Context context) {
@@ -87,10 +88,8 @@ public class SyncServiceFactory {
             public Response intercept(Chain chain) throws IOException {
                 Request original = chain.request();
 
-//                String username = dataRepository.getUserSetting(LOGIN);
-//                String password = dataRepository.getUserSetting(PASSWORD);
-                String username = "robotmanager";
-                String password = "1111";
+                String username = dataRepository.getUserSetting(LOGIN);
+                String password = dataRepository.getUserSetting(PASSWORD);
 
                 String credentials = (username == null ? "" : username) + ":"
                         + (password == null ? "" : password);
