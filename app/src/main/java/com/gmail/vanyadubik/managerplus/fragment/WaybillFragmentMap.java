@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import com.gmail.vanyadubik.managerplus.R;
 
 public class WaybillFragmentMap extends Fragment {
-    private static  final int LAYOUT = R.layout.fragment_waybill;
+    private static  final int LAYOUT = R.layout.fragment_map;
     private View view;
 
     public static WaybillFragmentMap getInstance() {

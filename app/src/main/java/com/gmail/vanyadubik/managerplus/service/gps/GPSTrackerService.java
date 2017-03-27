@@ -37,8 +37,8 @@ import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_GPS_TRACER_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_SYNC_TRACER_ID;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_CHANGE_FOR_UPDATES;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_BW_UPDATES;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
 
 public class GPSTrackerService extends Service implements LocationListener {
@@ -110,8 +110,8 @@ public class GPSTrackerService extends Service implements LocationListener {
             if (isGPSEnabled) {
                 locationManager.requestLocationUpdates(
                         LocationManager.GPS_PROVIDER,
-                        1000 * MIN_TIME_BW_UPDATES,
-                        MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                        1000 * MIN_TIME_WRITE_TRACK,
+                        MIN_DISTANCE_WRITE_TRACK, this);
                 Log.d(TAGLOG_GPS, "GPS used");
                 if (locationManager != null) {
                     location = locationManager
@@ -123,8 +123,8 @@ public class GPSTrackerService extends Service implements LocationListener {
                 if (location == null) {
                     locationManager.requestLocationUpdates(
                             LocationManager.NETWORK_PROVIDER,
-                            1000 * MIN_TIME_BW_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                            1000 * MIN_TIME_WRITE_TRACK,
+                            MIN_DISTANCE_WRITE_TRACK, this);
                     Log.d(TAGLOG_GPS, "Network used");
                     if (locationManager != null) {
                         location = locationManager

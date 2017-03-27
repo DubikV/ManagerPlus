@@ -8,10 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
+import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.gps.GPSTracker;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.task.SyncIntentService;
@@ -40,6 +40,7 @@ public class WaybillFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(LAYOUT, container, false);
+        ((ManagerPlusAplication) getActivity().getApplication()).getComponent().inject(this);
 
         Button btnShowLocation = (Button) view.findViewById(R.id.btnShowLocation);
         btnShowLocation.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +68,7 @@ public class WaybillFragment extends Fragment {
             @Override
             public void onClick(View arg0) {
                 Intent intent = new Intent(getActivity(), SyncIntentService.class);
-                getActivity().getApplicationContext().startService(intent);
+                getActivity().startService(intent);
             }
         });
 

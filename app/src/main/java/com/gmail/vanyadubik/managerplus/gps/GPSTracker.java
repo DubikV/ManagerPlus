@@ -69,8 +69,8 @@ public class GPSTracker extends Service implements LocationListener {
                 if (isGPSEnabled) {
                     locationManager.requestLocationUpdates(
                             LocationManager.GPS_PROVIDER,
-                            1000 * Consts.MIN_TIME_BW_UPDATES,
-                            Consts.MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                            1000 * Consts.MIN_TIME_WRITE_TRACK,
+                            Consts.MIN_DISTANCE_WRITE_TRACK, this);
                     Log.d("TAGLOG_GPS", "GPS Enabled");
                     if (locationManager != null) {
                         location = locationManager
@@ -86,8 +86,8 @@ public class GPSTracker extends Service implements LocationListener {
                     if (location == null) {
                         locationManager.requestLocationUpdates(
                                 LocationManager.NETWORK_PROVIDER,
-                                1000 * Consts.MIN_TIME_BW_UPDATES,
-                                Consts.MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                                1000 * Consts.MIN_TIME_WRITE_TRACK,
+                                Consts.MIN_DISTANCE_WRITE_TRACK, this);
                         Log.d("TAGLOG_GPS", "Network");
                         if (locationManager != null) {
                             location = locationManager
