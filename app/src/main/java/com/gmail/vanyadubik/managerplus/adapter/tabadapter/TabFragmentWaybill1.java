@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.fragment.WaybillFragment;
@@ -18,8 +19,10 @@ import com.gmail.vanyadubik.managerplus.fragment.WaybillFragmentMap;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TabFragmentWaybill extends Fragment {
+public class TabFragmentWaybill1 extends Fragment {
 
+    private static TabLayout tabLayout;
+    private static ViewPager viewPager;
     private int[] tabIcons = {
             R.drawable.ic_waybill,
             R.drawable.ic_map,
@@ -30,40 +33,43 @@ public class TabFragmentWaybill extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View x =  inflater.inflate(R.layout.activity_main,null);
+        View x =  inflater.inflate(R.layout.app_bar_main,null);
 
-        int[] icons = {R.drawable.tab_home,
-                R.drawable.tab_search,
-                R.drawable.tab_home,
-                R.drawable.tab_search
-        };
-        TabLayout tabLayout = (TabLayout) x.findViewById(R.id.tab_layout);
-        ViewPager viewPager = (ViewPager) x.findViewById(R.id.main_tab_content);
-
-        setupViewPager(viewPager);
-
-
+//        viewPager = (ViewPager) x.findViewById(R.id.vievPager);
+//        setupViewPager(viewPager);
+//
+//        tabLayout = (TabLayout) x.findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
-
-        for (int i = 0; i < icons.length; i++) {
-            tabLayout.getTabAt(i).setIcon(icons[i]);
-        }
-        tabLayout.getTabAt(0).select();
+        setupTabIcons();
 
         return x;
 
     }
 
+    private void setupTabIcons() {
+
+        TextView tabOne = (TextView) LayoutInflater.from(getActivity()).inflate(R.layout.custom_tab, null);
+        tabOne.setText("Waybill");
+        tabOne.setCompoundDrawablesWithIntrinsicBounds(0, tabIcons[0], 0, 0);
+        tabLayout.getTabAt(0).setCustomView(tabOne);
+
+        TextView tabTwo = (TextView) LayoutInflater.from(getActivity()).inflate(R.layout.custom_tab, null);
+        tabTwo.setText("Map");
+        tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, tabIcons[1], 0, 0);
+        tabLayout.getTabAt(1).setCustomView(tabTwo);
+    }
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
-        adapter.insertNewFragment(new WaybillFragment());
-        adapter.insertNewFragment(new WaybillFragmentMap());
+        adapter.addFrag(new WaybillFragment().getInstance(), "Waybill");
+        adapter.addFrag(new WaybillFragmentMap().getInstance(), "Map");
         viewPager.setAdapter(adapter);
     }
 
-    class ViewPagerAdapter extends FragmentPagerAdapter {
+    public class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
         public ViewPagerAdapter(FragmentManager manager) {
             super(manager);
         }
@@ -78,11 +84,15 @@ public class TabFragmentWaybill extends Fragment {
             return mFragmentList.size();
         }
 
-        public void insertNewFragment(Fragment fragment) {
+        public void addFrag(Fragment fragment, String title) {
             mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
         }
     }
-
-
 
 }

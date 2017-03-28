@@ -3,25 +3,39 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
-
-    <Button
-        android:text="Location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnShowLocation"
+        android:ems="10"
+        android:id="@+id/dateStart"
+        android:layout_below="@+id/btnShowLocation"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="43dp"/>
+        android:layout_marginTop="57dp"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:id="@+id/dateEnd"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true"/>
 
     <Button
         android:text="Sync"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/btnSync"
-        android:layout_alignBaseline="@+id/btnShowLocation"
-        android:layout_alignBottom="@+id/btnShowLocation"
-        android:layout_centerHorizontal="true"/>
+        android:layout_below="@+id/dateEnd"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="63dp"
+        android:layout_marginTop="59dp"/>
+
+    <Button
+        android:text="Location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnShowLocation"
+        android:layout_marginTop="28dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/btnSync"/>
 </RelativeLayout>

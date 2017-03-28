@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -27,6 +28,7 @@ import com.gmail.vanyadubik.managerplus.utils.ErrorUtils;
 import com.gmail.vanyadubik.managerplus.utils.NetworkUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -39,6 +41,8 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_SYNC_TRACK;
 import static com.gmail.vanyadubik.managerplus.utils.Db2JsonModelConverter.convertLocationPoint;
 
 public class SyncIntentTrackService extends IntentService{
+    public static final String DATE_TRACK_START = "date_start";
+    public static final String DATE_TRACK_END = "date_end";
 
     @Inject
     DataRepository dataRepository;
@@ -70,6 +74,12 @@ public class SyncIntentTrackService extends IntentService{
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Date dateStart = null, dateEnd = null;
+        Bundle extras = intent.getExtras();
+        if (extras != null && !extras.isEmpty()) {
+            dateStart = new Date(extras.getLong(DATE_TRACK_START));
+            dateEnd = new Date(extras.getLong(DATE_TRACK_END));
+        }
 
         if (!networkUtils.checkEthernet()) {
             return;
@@ -79,16 +89,24 @@ public class SyncIntentTrackService extends IntentService{
                 SyncService.class,
                 this.getBaseContext());
 
-        List<LocationPoint> trackList = dataRepository.getUloadedLocationTrack();
+        List<LocationPoint> trackList = null;
+        if(dateStart!=null&&dateEnd!=null){
+            trackList = dataRepository.getTrack(dateStart, dateEnd);
+        }else {
+            trackList = dataRepository.getUloadedLocationTrack();
+        }
+
         if (trackList != null) {
             final UploadTrackListRequest request = new UploadTrackListRequest(getUploadData(trackList));
-            sendNotification(mContext.getString(R.string.sync_upload), 25, false, false);
+            sendNotification(mContext.getString(R.string.sync_upload), 50, false, false);
             try {
                 Response<UploadTrackListResponse> uploadResponse = syncService.uploadTrackListOnly(request).execute();
                 if (uploadResponse.isSuccessful()) {
                     Log.i(TAGLOG_SYNC_TRACK, getResources().getString(R.string.sync_success));
                     UploadTrackListResponse response = uploadResponse.body();
                     if (response.getResultDTO() != null) {
+                        sendNotification(mContext
+                                .getString(R.string.sync_processing), 75, false, true);
                         updateDb(response.getResultDTO());
                     }
                     if (response.getInfo() != null) {
@@ -98,38 +116,17 @@ public class SyncIntentTrackService extends IntentService{
                     APIError error = errorUtils.parseErrorCode(uploadResponse.code());
                     Log.e(TAGLOG_SYNC_TRACK, error.getMessage());
                     sendNotification(mContext
-                            .getString(R.string.sync_tracklist_upload_error), 25, true, true);
+                            .getString(R.string.sync_tracklist_upload_error), 50, true, true);
                     return;
                 }
             } catch (Exception exception) {
                 APIError error = errorUtils.parseErrorMessage(exception);
                 sendNotification(mContext
-                        .getString(R.string.sync_tracklist_upload_error), 25, true, true);
+                        .getString(R.string.sync_tracklist_upload_error), 50, true, true);
                 Log.e(TAGLOG_SYNC_TRACK, error.getMessage());
                 return;
             }
         }
-//        try {
-//            sendNotification(mContext
-//                    .getString(R.string.sync_download), 50, false, false);
-//            Response<DownloadTrackListResultDTO> downloadResponse = syncService.downloadTrackListOnlyResult().execute();
-//            if (downloadResponse.isSuccessful()) {
-//                sendNotification(mContext
-//                        .getString(R.string.sync_processing), 75, false, false);
-//                updateDb(downloadResponse.body());
-//                Log.i(TAGLOG_SYNC_TRACK, getResources().getString(R.string.sync_success));
-//            } else {
-//                APIError error = errorUtils.parseErrorCode(downloadResponse.code());
-//                Log.e(TAGLOG_SYNC_TRACK, error.getMessage());
-//                sendNotification(mContext
-//                        .getString(R.string.sync_tracklist_downloar_error), 50, true, true);
-//            }
-//        } catch (Exception exception) {
-//            APIError error = errorUtils.parseErrorMessage(exception);
-//            Log.e(TAGLOG_SYNC_TRACK, error.getMessage());
-//            sendNotification(mContext
-//                    .getString(R.string.sync_tracklist_downloar_error), 50, true, true);
-//        }
 
         sendNotification(mContext
                 .getString(R.string.sync_success), 100, false, true);
