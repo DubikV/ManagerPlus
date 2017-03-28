@@ -18,7 +18,7 @@
         app:tabIndicatorHeight="0dp"
         app:tabTextColor="@color/colorPrimary"
         app:tabBackground="@drawable/tab_color_selector"
-        />
+        android:layout_alignParentBottom="true" />
 
 
     <android.support.v4.view.ViewPager
