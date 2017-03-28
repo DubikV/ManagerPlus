@@ -19,6 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TabFragmentWaybill extends Fragment {
+    private static TabLayout tabLayout;
+    private static ViewPager viewPager;
+    private int[] icons = {R.drawable.tab_waybill,
+                           R.drawable.tab_map
+                          };
 
     @Nullable
     @Override
@@ -26,12 +31,8 @@ public class TabFragmentWaybill extends Fragment {
 
         View x =  inflater.inflate(R.layout.app_bar_main,null);
 
-        int[] icons = {R.drawable.tab_waybill,
-                R.drawable.tab_map
-        };
-
-        TabLayout tabLayout = (TabLayout) x.findViewById(R.id.tab_layout);
-        ViewPager viewPager = (ViewPager) x.findViewById(R.id.main_tab_content);
+        tabLayout = (TabLayout) x.findViewById(R.id.tab_layout);
+        viewPager = (ViewPager) x.findViewById(R.id.main_tab_content);
 
         setupViewPager(viewPager);
 
@@ -49,7 +50,7 @@ public class TabFragmentWaybill extends Fragment {
 
 
     private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager());
         adapter.addFrag(new WaybillFragment().getInstance(),
                 getActivity().getResources().getString(R.string.waybill_name));
         adapter.addFrag(new WaybillFragmentMap().getInstance(),
