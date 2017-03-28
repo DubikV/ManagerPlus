@@ -37,7 +37,6 @@ public class WaybillFragment extends Fragment {
 
     private View view;
 
-    private Date dateStart, dateEnd;
     private EditText dateStartEdinText, dateEndEdinText;
     private SimpleDateFormat dateFormatter;
 
@@ -127,4 +126,13 @@ public class WaybillFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 }

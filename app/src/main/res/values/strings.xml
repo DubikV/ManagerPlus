@@ -68,4 +68,8 @@
     <string name="questions_answer_ok">Ок</string>
     <string name="questions_title_cancel">Скасувати</string>
 
+    <!--Name objects-->
+    <string name="waybill_name">Дорожній лист</string>
+    <string name="map_name">Карта</string>
+
 </resources>

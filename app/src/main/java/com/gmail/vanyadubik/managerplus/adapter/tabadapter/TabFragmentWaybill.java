@@ -20,23 +20,16 @@ import java.util.List;
 
 public class TabFragmentWaybill extends Fragment {
 
-    private int[] tabIcons = {
-            R.drawable.ic_waybill,
-            R.drawable.ic_map,
-    };
-
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View x =  inflater.inflate(R.layout.activity_main,null);
+        View x =  inflater.inflate(R.layout.app_bar_main,null);
 
-        int[] icons = {R.drawable.tab_home,
-                R.drawable.tab_search,
-                R.drawable.tab_home,
-                R.drawable.tab_search
+        int[] icons = {R.drawable.tab_waybill,
+                R.drawable.tab_map
         };
+
         TabLayout tabLayout = (TabLayout) x.findViewById(R.id.tab_layout);
         ViewPager viewPager = (ViewPager) x.findViewById(R.id.main_tab_content);
 
@@ -57,13 +50,17 @@ public class TabFragmentWaybill extends Fragment {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
-        adapter.insertNewFragment(new WaybillFragment());
-        adapter.insertNewFragment(new WaybillFragmentMap());
+        adapter.addFrag(new WaybillFragment().getInstance(),
+                getActivity().getResources().getString(R.string.waybill_name));
+        adapter.addFrag(new WaybillFragmentMap().getInstance(),
+                getActivity().getResources().getString(R.string.map_name));
         viewPager.setAdapter(adapter);
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
         public ViewPagerAdapter(FragmentManager manager) {
             super(manager);
         }
@@ -78,8 +75,14 @@ public class TabFragmentWaybill extends Fragment {
             return mFragmentList.size();
         }
 
-        public void insertNewFragment(Fragment fragment) {
+        public void addFrag(Fragment fragment, String title) {
             mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
         }
     }
 
