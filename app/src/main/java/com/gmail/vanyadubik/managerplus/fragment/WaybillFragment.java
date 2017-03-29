@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
+import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.gps.GPSTracker;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
@@ -22,14 +23,13 @@ import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService.DATE_TRACK_END;
 import static com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService.DATE_TRACK_START;
 
-public class WaybillFragment extends Fragment {
+public class WaybillFragment extends Fragment implements FragmentBecameVisibleInterface {
     private static  final int LAYOUT = R.layout.fragment_waybill;
 
     @Inject
@@ -134,5 +134,9 @@ public class WaybillFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void onBecameVisible() {
     }
 }

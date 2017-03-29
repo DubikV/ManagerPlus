@@ -21,6 +21,7 @@ import java.util.List;
 public class TabFragmentWaybill extends Fragment {
     private static TabLayout tabLayout;
     private static ViewPager viewPager;
+    private static ViewPagerAdapter viewPagerAdapter;
     private int[] icons = {R.drawable.tab_waybill,
                            R.drawable.tab_map
                           };
@@ -42,7 +43,30 @@ public class TabFragmentWaybill extends Fragment {
         for (int i = 0; i < icons.length; i++) {
             tabLayout.getTabAt(i).setIcon(icons[i]);
         }
+
         tabLayout.getTabAt(0).select();
+
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(final int position) {
+                FragmentBecameVisibleInterface fragment =
+                        (FragmentBecameVisibleInterface) viewPagerAdapter.instantiateItem(viewPager, position);
+                if (fragment != null) {
+                    fragment.onBecameVisible();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
         return x;
 
@@ -50,12 +74,12 @@ public class TabFragmentWaybill extends Fragment {
 
 
     private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager());
-        adapter.addFrag(new WaybillFragment().getInstance(),
+        viewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager());
+        viewPagerAdapter.addFrag(new WaybillFragment().getInstance(),
                 getActivity().getResources().getString(R.string.waybill_name));
-        adapter.addFrag(new WaybillFragmentMap().getInstance(),
+        viewPagerAdapter.addFrag(new WaybillFragmentMap().getInstance(),
                 getActivity().getResources().getString(R.string.map_name));
-        viewPager.setAdapter(adapter);
+        viewPager.setAdapter(viewPagerAdapter);
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {

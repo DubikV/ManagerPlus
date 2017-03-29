@@ -14,4 +14,9 @@
     <item name="ic_waybill_grey" type="drawable">@mipmap/ic_waybill_grey</item>
     <item name="ic_gps_track_connect" type="drawable">@mipmap/ic_gps_track_connect</item>
     <item name="ic_gps_track_not_connect" type="drawable">@mipmap/ic_gps_track_not_connect</item>
+    <item name="ic_location" type="drawable">@mipmap/ic_location</item>
+    <item name="ic_satelite" type="drawable">@mipmap/ic_satelite</item>
+    <item name="ic_traffic" type="drawable">@mipmap/ic_traffic</item>
+    <item name="ic_zoom_up" type="drawable">@mipmap/ic_zoom_up</item>
+    <item name="ic_zoom_down" type="drawable">@mipmap/ic_zoom_down</item>
 </resources>

@@ -38,7 +38,7 @@
     </style>
 
     <style name="MineTabText" parent="TextAppearance.Design.Tab">
-        <item name="android:textSize">10dp</item>
+        <item name="android:textSize">15dp</item>
     </style>
 
 </resources>
