@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/marging_waybill_cap">
+
+    <LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginRight="@dimen/marging_waybill_cap"
+            android:layout_marginBottom="@dimen/marging_waybill_cap"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:id="@+id/wb_startday_rl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvSelectTheme"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_marginTop="@dimen/marging_waybill_cap"
+                android:layout_marginLeft="@dimen/marging_waybill_cap"
+                android:layout_marginRight="@dimen/marging_waybill_cap">
+
+                <TextView
+                    android:id="@+id/wb_startday_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/waybill_start_odometer_name"
+                    android:background="@drawable/shape_window_cap"
+                    android:textColor="@color/tab_background"
+                    android:gravity="center_horizontal"
+                    android:textSize="@dimen/textsize_cap" />
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/shape_window_body">
+
+                    <EditText
+                        android:id="@+id/wb_startday_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_below="@+id/tvCredentials"
+                        android:hint="00.00.0000  00:00"
+                        android:inputType="text"
+                        android:lines="1"
+                        android:layout_margin="@dimen/marging_waybill_cap"
+                        android:textSize="@dimen/textsize_cap"
+                        android:gravity="right|center_vertical"
+                        android:enabled="false" />
+
+                    <EditText
+                        android:id="@+id/wb_startday_odometer"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_below="@+id/tvUsername"
+                        android:hint="0"
+                        android:inputType="textPassword"
+                        android:lines="1"
+                        android:layout_margin="@dimen/marging_waybill_cap"
+                        android:textSize="@dimen/textsize_cap"
+                        android:gravity="right|center_vertical"
+                        android:enabled="false" />
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/wb_startday_bt"
+                        android:layout_margin="@dimen/marging_waybill_cap"
+                        android:textSize="@dimen/textsize_cap"
+                        android:hint="@string/waybill_start_button"
+                        android:background="@drawable/background_button"
+                        android:textColor="@color/tab_background"/>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/wb_endday_rl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvSelectTheme"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_marginTop="@dimen/marging_waybill_cap"
+                android:layout_marginLeft="@dimen/marging_waybill_cap"
+                android:layout_marginRight="@dimen/marging_waybill_cap">
+
+                <TextView
+                    android:id="@+id/wb_endday_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/waybill_end_odometer_name"
+                    android:background="@drawable/shape_window_cap"
+                    android:textColor="@color/tab_background"
+                    android:gravity="center_horizontal"
+                    android:textSize="@dimen/textsize_cap" />
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/shape_window_body">
+
+                    <EditText
+                        android:id="@+id/wb_endday_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_below="@+id/tvCredentials"
+                        android:hint="00.00.0000  00:00"
+                        android:inputType="text"
+                        android:lines="1"
+                        android:layout_margin="@dimen/marging_waybill_cap"
+                        android:textSize="@dimen/textsize_cap"
+                        android:gravity="right|center_vertical"
+                        android:enabled="false" />
+
+                    <EditText
+                        android:id="@+id/wb_endday_odometer"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_below="@+id/tvUsername"
+                        android:hint="0"
+                        android:inputType="textPassword"
+                        android:lines="1"
+                        android:layout_margin="@dimen/marging_waybill_cap"
+                        android:textSize="@dimen/textsize_cap"
+                        android:gravity="right|center_vertical"
+                        android:enabled="false" />
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/wb_endday_bt"
+                        android:layout_margin="@dimen/marging_waybill_cap"
+                        android:textSize="@dimen/textsize_cap"
+                        android:hint="@string/waybill_end_button"
+                        android:background="@drawable/background_button"
+                        android:textColor="@color/tab_background"/>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/waybill_visits_today_name"
+                android:background="@drawable/shape_window_cap"
+                android:textColor="@color/tab_background"
+                android:gravity="left|center_horizontal"
+                android:textSize="@dimen/textsize_cap"
+                android:layout_marginTop="@dimen/marging_waybill_cap"
+                android:layout_marginRight="@dimen/marging_waybill_cap"
+                android:layout_marginLeft="@dimen/marging_waybill_cap" />
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/shape_window_body" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_alignParentStart="true"
+        android:layout_weight="1.5">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/waybill_visits_today_name"
+        android:background="@drawable/shape_window_cap"
+        android:textColor="@color/tab_background"
+        android:gravity="left|center_horizontal"
+        android:textSize="@dimen/textsize_cap"
+        android:layout_marginTop="@dimen/marging_waybill_cap"
+        android:layout_marginRight="@dimen/marging_waybill_cap"
+        android:layout_marginLeft="@dimen/marging_waybill_cap" />
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/shape_window_body"
+        android:layout_marginRight="@dimen/marging_waybill_cap"
+        android:layout_marginLeft="@dimen/marging_waybill_cap"
+        android:layout_marginBottom="@dimen/marging_waybill_cap" />
+</LinearLayout>
+
+</LinearLayout>
