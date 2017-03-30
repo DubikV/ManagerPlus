@@ -25,6 +25,10 @@ import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
+import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
+
 public class GPSTracker extends Service implements LocationListener {
 
     private final Context mContext;
@@ -59,7 +63,14 @@ public class GPSTracker extends Service implements LocationListener {
         try {
 
             if (!isGPSEnabled && !isNetworkEnabled) {
-            } else {
+
+                locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER,
+                        MIN_TIME_WRITE_TRACK, MIN_DISTANCE_WRITE_TRACK, this);
+                Log.d(TAGLOG_GPS, "pasive provider");
+                location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+
+            }else  {
+
                 this.canGetLocation = true;
 
                 if ( Build.VERSION.SDK_INT >= 23 &&
@@ -71,7 +82,7 @@ public class GPSTracker extends Service implements LocationListener {
                             LocationManager.GPS_PROVIDER,
                             1000 * Consts.MIN_TIME_WRITE_TRACK,
                             Consts.MIN_DISTANCE_WRITE_TRACK, this);
-                    Log.d("TAGLOG_GPS", "GPS Enabled");
+                    Log.d(TAGLOG_GPS, "GPS Enabled");
                     if (locationManager != null) {
                         location = locationManager
                                 .getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -88,7 +99,7 @@ public class GPSTracker extends Service implements LocationListener {
                                 LocationManager.NETWORK_PROVIDER,
                                 1000 * Consts.MIN_TIME_WRITE_TRACK,
                                 Consts.MIN_DISTANCE_WRITE_TRACK, this);
-                        Log.d("TAGLOG_GPS", "Network");
+                        Log.d(TAGLOG_GPS, "Network");
                         if (locationManager != null) {
                             location = locationManager
                                     .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);

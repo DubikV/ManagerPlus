@@ -14,7 +14,7 @@ public interface SyncService {
 //
 //    @Multipart
 //    @POST("mobilemanager/hs/exchange/dataDTO")
-//    Call<UploadResponse> uploadWithDocuments(@Part("track") UploadRequest request,
+//    Call<UploadResponse> uploadWithDocuments(@Part("data") UploadRequest request,
 //                                             @Part List<MultipartBody.Part> documents);
 
 //    @GET("cooperativetest/hs/managerplus.exchange/trackDTO")

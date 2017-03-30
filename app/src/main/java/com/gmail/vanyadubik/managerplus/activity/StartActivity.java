@@ -21,14 +21,19 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.TabFragmentWaybill;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.gps.GPSTracker;
+import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
 import com.gmail.vanyadubik.managerplus.service.gps.TaskSchedure;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -36,8 +41,10 @@ import io.hypertrack.smart_scheduler.Job;
 
 import static com.gmail.vanyadubik.managerplus.common.Consts.GPS_SYNK_SERVISE_JOB_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_SYNK_TRACK;
+import static com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService.DATE_TRACK_END;
+import static com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService.DATE_TRACK_START;
 
-public class TrackActivity extends AppCompatActivity{
+public class StartActivity extends AppCompatActivity{
     @Inject
     DataRepository dataRepository;
 
@@ -89,7 +96,7 @@ public class TrackActivity extends AppCompatActivity{
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.track, menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
@@ -98,9 +105,38 @@ public class TrackActivity extends AppCompatActivity{
         int id = item.getItemId();
 
 
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_show_location) {
+
+            if(gpsTracker.canGetLocation()){
+                LocationPoint locationPoint = gpsTracker.getLocationPoint();
+
+//                Snackbar.make(findViewById(R.id.containerView),
+//                                new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(locationPoint.getDate().getTime())
+//                                + " location is - \nLat: " + locationPoint.getLatitude()
+//                                + "\nLong: " + locationPoint.getLongitude()
+//                                , Snackbar.LENGTH_LONG)
+//                        .show();
+
+                Toast.makeText(getApplicationContext(),
+                        new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+                                .format(locationPoint.getDate().getTime())
+                                + " location is - \nLat: " + locationPoint.getLatitude()
+                                + "\nLong: " + locationPoint.getLongitude(),
+                        Toast.LENGTH_LONG).show();
+            }else{
+                gpsTracker.showSettingsAlert();
+            }
             return true;
         }
+
+        if (id == R.id.action_sync) {
+                Intent intent = new Intent(this, SyncIntentTrackService.class);
+                intent.putExtra(DATE_TRACK_START, new Date());
+                intent.putExtra(DATE_TRACK_END, new Date());
+                startService(intent);
+            return true;
+        }
+
 
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
@@ -122,7 +158,7 @@ public class TrackActivity extends AppCompatActivity{
 
     private void startServices(){
 
-        TaskSchedure taskTrackerSync = new TaskSchedure.Builder(SyncIntentTrackService.class, TrackActivity.this)
+        TaskSchedure taskTrackerSync = new TaskSchedure.Builder(SyncIntentTrackService.class, StartActivity.this)
                 .jobID(GPS_SYNK_SERVISE_JOB_ID)
                 .jobType(Job.Type.JOB_TYPE_HANDLER)
                 .jobNetworkType(Job.NetworkType.NETWORK_TYPE_ANY)

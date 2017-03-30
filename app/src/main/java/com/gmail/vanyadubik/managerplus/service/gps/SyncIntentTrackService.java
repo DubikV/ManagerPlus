@@ -13,7 +13,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.activity.TrackActivity;
+import com.gmail.vanyadubik.managerplus.activity.StartActivity;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.model.APIError;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
@@ -155,7 +155,7 @@ public class SyncIntentTrackService extends IntentService{
     //Send custom notification
     public void startNotification() {
 
-        Intent notificationIntent = new Intent(this, TrackActivity.class);
+        Intent notificationIntent = new Intent(this, StartActivity.class);
         notificationIntent.setAction(Intent.ACTION_MAIN);
         notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 

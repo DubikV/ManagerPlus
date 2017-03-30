@@ -21,7 +21,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.activity.TrackActivity;
+import com.gmail.vanyadubik.managerplus.activity.StartActivity;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
@@ -52,6 +52,7 @@ public class GPSTrackerService extends Service implements LocationListener {
     private Context mContext;
     private boolean isGPSEnabled, isNetworkEnabled;
     protected LocationManager locationManager;
+    private Location currentBestLocation;
 
     @Override
     public void onCreate() {
@@ -103,32 +104,44 @@ public class GPSTrackerService extends Service implements LocationListener {
         Location location = null;
         try {
             if ( Build.VERSION.SDK_INT >= 23 &&
+
                     ContextCompat.checkSelfPermission( mContext, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
                     ContextCompat.checkSelfPermission( mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
             }
 
-            if (isGPSEnabled) {
-                locationManager.requestLocationUpdates(
-                        LocationManager.GPS_PROVIDER,
-                        1000 * MIN_TIME_WRITE_TRACK,
-                        MIN_DISTANCE_WRITE_TRACK, this);
-                Log.d(TAGLOG_GPS, "GPS used");
-                if (locationManager != null) {
-                    location = locationManager
-                            .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                }
-            }
+            if (!isGPSEnabled && !isNetworkEnabled) {
 
-            if (isNetworkEnabled) {
-                if (location == null) {
+                locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER,
+                        MIN_TIME_WRITE_TRACK, MIN_DISTANCE_WRITE_TRACK, this);
+                Log.d(TAGLOG_GPS, "pasive provider");
+                location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+
+            }else {
+
+                if (isGPSEnabled) {
                     locationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER,
+                            LocationManager.GPS_PROVIDER,
                             1000 * MIN_TIME_WRITE_TRACK,
                             MIN_DISTANCE_WRITE_TRACK, this);
-                    Log.d(TAGLOG_GPS, "Network used");
+                    Log.d(TAGLOG_GPS, "GPS used");
                     if (locationManager != null) {
                         location = locationManager
-                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                                .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    }
+                }
+
+                if (isNetworkEnabled) {
+                    if (location == null) {
+                        locationManager.requestLocationUpdates(
+                                LocationManager.NETWORK_PROVIDER,
+                                1000 * MIN_TIME_WRITE_TRACK,
+                                MIN_DISTANCE_WRITE_TRACK, this);
+                        Log.d(TAGLOG_GPS, "Network used");
+                        if (locationManager != null) {
+                            location = locationManager
+                                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        }
                     }
                 }
             }
@@ -142,13 +155,17 @@ public class GPSTrackerService extends Service implements LocationListener {
                 .format(date.getTime()) +
                 " location is null : " + String.valueOf(location == null));
 
-        if (location != null){
-            dataRepository.insertTrackPoint(new LocationPoint(date, location.getLatitude(),
-                    location.getLongitude(), true));
+        if ( isBetterLocation(location, currentBestLocation) ) {
+            currentBestLocation = location;
+        }
+
+        if (currentBestLocation != null){
+            dataRepository.insertTrackPoint(new LocationPoint(date, currentBestLocation.getLatitude(),
+                    currentBestLocation.getLongitude(), true));
             sendNotification(
                     new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(date.getTime())
-                    +"\n " + new DecimalFormat("#.####").format(location.getLatitude())
-                    + "\n: " + new DecimalFormat("#.####").format(location.getLongitude()), false);
+                    +"\n " + new DecimalFormat("#.####").format(currentBestLocation.getLatitude())
+                    + "\n: " + new DecimalFormat("#.####").format(currentBestLocation.getLongitude()), false);
         }
 
     }
@@ -172,7 +189,7 @@ public class GPSTrackerService extends Service implements LocationListener {
     //Send custom notification
     public void startNotification() {
 
-        Intent notificationIntent = new Intent(this, TrackActivity.class);
+        Intent notificationIntent = new Intent(this, StartActivity.class);
         notificationIntent.setAction(Intent.ACTION_MAIN);
         notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
@@ -219,18 +236,22 @@ public class GPSTrackerService extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
+        if ( isBetterLocation(location, currentBestLocation) ) {
+            currentBestLocation = location;
+        }
+
         Date date = LocalDateTime.now(DateTimeZone.getDefault()).toDate();
         Log.d(TAGLOG_GPS, new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
                 .format(date.getTime()) +
                 " location is null : " + String.valueOf(location == null));
 
-        if (location != null){
-            dataRepository.insertTrackPoint(new LocationPoint(date, location.getLatitude(),
-                    location.getLongitude(), true));
+        if (currentBestLocation != null){
+            dataRepository.insertTrackPoint(new LocationPoint(date, currentBestLocation.getLatitude(),
+                    currentBestLocation.getLongitude(), true));
             sendNotification(
                     new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(date.getTime())
-                            +"\n " + new DecimalFormat("#.####").format(location.getLatitude())
-                            + "\n: " + new DecimalFormat("#.####").format(location.getLongitude()), false);
+                            +"\n " + new DecimalFormat("#.####").format(currentBestLocation.getLatitude())
+                            + "\n: " + new DecimalFormat("#.####").format(currentBestLocation.getLongitude()), false);
         }
     }
 
@@ -269,5 +290,55 @@ public class GPSTrackerService extends Service implements LocationListener {
     @Override
     public IBinder onBind(Intent arg0) {
         return null;
+    }
+
+    protected boolean isBetterLocation(Location location, Location currentBestLocation) {
+        if (currentBestLocation == null) {
+            // A new location is always better than no location
+            return true;
+        }
+
+        // Check whether the new location fix is newer or older
+        long timeDelta = location.getTime() - currentBestLocation.getTime();
+        boolean isSignificantlyNewer = timeDelta > MIN_TIME_WRITE_TRACK * 2;
+        boolean isSignificantlyOlder = timeDelta < -MIN_TIME_WRITE_TRACK * 2;
+        boolean isNewer = timeDelta > 0;
+
+        // If it's been more than two minutes since the current location, use the new location,
+        // because the user has likely moved.
+        if (isSignificantlyNewer) {
+            return true;
+            // If the new location is more than two minutes older, it must be worse.
+        } else if (isSignificantlyOlder) {
+            return false;
+        }
+
+        // Check whether the new location fix is more or less accurate
+        int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+        boolean isLessAccurate = accuracyDelta > 0;
+        boolean isMoreAccurate = accuracyDelta < 0;
+        boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+
+        // Check if the old and new location are from the same provider
+        boolean isFromSameProvider = isSameProvider(location.getProvider(),
+                currentBestLocation.getProvider());
+
+        // Determine location quality using a combination of timeliness and accuracy
+        if (isMoreAccurate) {
+            return true;
+        } else if (isNewer && !isLessAccurate) {
+            return true;
+        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
+            return true;
+        }
+        return false;
+    }
+
+    /** Checks whether two providers are the same */
+    private boolean isSameProvider(String provider1, String provider2) {
+        if (provider1 == null) {
+            return provider2 == null;
+        }
+        return provider1.equals(provider2);
     }
 }

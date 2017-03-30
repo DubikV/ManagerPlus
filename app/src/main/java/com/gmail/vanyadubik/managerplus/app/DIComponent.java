@@ -1,7 +1,7 @@
 package com.gmail.vanyadubik.managerplus.app;
 
 import com.gmail.vanyadubik.managerplus.activity.SettingsActivity;
-import com.gmail.vanyadubik.managerplus.activity.TrackActivity;
+import com.gmail.vanyadubik.managerplus.activity.StartActivity;
 import com.gmail.vanyadubik.managerplus.fragment.WaybillFragment;
 import com.gmail.vanyadubik.managerplus.fragment.WaybillFragmentMap;
 import com.gmail.vanyadubik.managerplus.modules.ActivityUtilsApiModule;
@@ -23,7 +23,7 @@ import dagger.Component;
         NetworkUtilsApiModule.class, ActivityUtilsApiModule.class, ErrorUtilsApiModule.class, PhoneUtilsApiModule.class})
 public interface DIComponent {
 
-    void inject(TrackActivity trackActivity);
+    void inject(StartActivity startActivity);
 
     void inject(SettingsActivity settingsActivity);
 

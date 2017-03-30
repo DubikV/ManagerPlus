@@ -28,12 +28,17 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import static android.content.Context.LOCATION_SERVICE;
 import static com.gmail.vanyadubik.managerplus.R.id.map;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
+import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
 
 public class WaybillFragmentMap extends Fragment implements LocationListener,
         OnMapReadyCallback, FragmentBecameVisibleInterface {
@@ -42,6 +47,7 @@ public class WaybillFragmentMap extends Fragment implements LocationListener,
     private SupportMapFragment locationMapFragment;
     private LocationManager locationManager;
     private Location lastCurrentLocation;
+    private Marker mCurrLocationMarker;
 
     public static WaybillFragmentMap getInstance() {
 
@@ -150,8 +156,10 @@ public class WaybillFragmentMap extends Fragment implements LocationListener,
     }
 
     @Override
-    public void onLocationChanged(Location mLocation) {
-        lastCurrentLocation = mLocation;
+    public void onLocationChanged(Location location) {
+        if ( isBetterLocation(location, lastCurrentLocation) ) {
+            lastCurrentLocation = location;
+        }
         insertMarker();
     }
 
@@ -222,13 +230,39 @@ public class WaybillFragmentMap extends Fragment implements LocationListener,
 
         if(lastCurrentLocation!=null&&mMap!=null) {
 
-            mMap.clear();
-            LatLng position = new LatLng(Math.round(lastCurrentLocation.getLatitude() * 10000d)/ 10000d,
-                    Math.round(lastCurrentLocation.getLongitude() * 10000d)/ 10000d);
-            mMap.addMarker(new MarkerOptions().position(position).title("Marker in Sydney"));
-            mMap.moveCamera(CameraUpdateFactory
-                    .newLatLngZoom(position,
-                            17));
+            if (mCurrLocationMarker != null) {
+                mCurrLocationMarker.remove();
+            }
+
+//            LatLng position = new LatLng(Math.round(lastCurrentLocation.getLatitude() * 10000d)/ 10000d,
+//                    Math.round(lastCurrentLocation.getLongitude() * 10000d)/ 10000d);
+//            mMap.addMarker(new MarkerOptions().position(position).title("Marker in Sydney"));
+//            mMap.moveCamera(CameraUpdateFactory
+//                    .newLatLngZoom(position,
+//                            17));
+
+            //Place current location marker
+            LatLng latLng = new LatLng(lastCurrentLocation.getLatitude(), lastCurrentLocation.getLongitude());
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
+            //markerOptions.title("Current Position");
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+            mCurrLocationMarker = mMap.addMarker(markerOptions);
+
+            //move map camera
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+
+//            PolylineOptions pOptions = new PolylineOptions()
+//                    .width(5)
+//                    .color(Color.GREEN)
+//                    .geodesic(true);
+//            for (int z = 0; z < routePoints.size(); z++) {
+//                LatLng point = routePoints.get(z);
+//                pOptions.add(point);
+//            }
+//            line = mMap.addPolyline(pOptions);
+//            routePoints.add(latLng);
 
         }
         if(lastCurrentLocation == null){
@@ -250,8 +284,13 @@ public class WaybillFragmentMap extends Fragment implements LocationListener,
         try {
 
             if (!isGPSEnabled && !isNetworkEnabled) {
-                showSettingsAlert();
-            } else {
+
+                locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER,
+                        MIN_TIME_WRITE_TRACK, MIN_DISTANCE_WRITE_TRACK, this);
+                Log.d(TAGLOG_GPS, "pasive provider");
+                lastCurrentLocation = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+
+            }else{
 
                 if ( Build.VERSION.SDK_INT >= 23 &&
                         ContextCompat.checkSelfPermission( getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
@@ -287,6 +326,56 @@ public class WaybillFragmentMap extends Fragment implements LocationListener,
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    protected boolean isBetterLocation(Location location, Location currentBestLocation) {
+        if (currentBestLocation == null) {
+            // A new location is always better than no location
+            return true;
+        }
+
+        // Check whether the new location fix is newer or older
+        long timeDelta = location.getTime() - currentBestLocation.getTime();
+        boolean isSignificantlyNewer = timeDelta > MIN_TIME_WRITE_TRACK * 2;
+        boolean isSignificantlyOlder = timeDelta < -MIN_TIME_WRITE_TRACK * 2;
+        boolean isNewer = timeDelta > 0;
+
+        // If it's been more than two minutes since the current location, use the new location,
+        // because the user has likely moved.
+        if (isSignificantlyNewer) {
+            return true;
+            // If the new location is more than two minutes older, it must be worse.
+        } else if (isSignificantlyOlder) {
+            return false;
+        }
+
+        // Check whether the new location fix is more or less accurate
+        int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+        boolean isLessAccurate = accuracyDelta > 0;
+        boolean isMoreAccurate = accuracyDelta < 0;
+        boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+
+        // Check if the old and new location are from the same provider
+        boolean isFromSameProvider = isSameProvider(location.getProvider(),
+                currentBestLocation.getProvider());
+
+        // Determine location quality using a combination of timeliness and accuracy
+        if (isMoreAccurate) {
+            return true;
+        } else if (isNewer && !isLessAccurate) {
+            return true;
+        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
+            return true;
+        }
+        return false;
+    }
+
+    /** Checks whether two providers are the same */
+    private boolean isSameProvider(String provider1, String provider2) {
+        if (provider1 == null) {
+            return provider2 == null;
+        }
+        return provider1.equals(provider2);
     }
 
     public void showSettingsAlert(){

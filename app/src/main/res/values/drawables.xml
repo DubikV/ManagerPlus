@@ -19,4 +19,5 @@
     <item name="ic_traffic" type="drawable">@mipmap/ic_traffic</item>
     <item name="ic_zoom_up" type="drawable">@mipmap/ic_zoom_up</item>
     <item name="ic_zoom_down" type="drawable">@mipmap/ic_zoom_down</item>
+    <item name="ic_sync" type="drawable">@mipmap/ic_sync</item>
 </resources>
