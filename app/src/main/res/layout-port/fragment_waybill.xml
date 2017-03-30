@@ -49,7 +49,9 @@
                     android:layout_margin="@dimen/marging_waybill_cap"
                     android:textSize="@dimen/textsize_cap"
                     android:gravity="right|center_vertical"
-                    android:enabled="false" />
+                    android:enabled="false"
+                    android:background="@drawable/edittext_waybill"
+                    android:padding="@dimen/pading_edittext_waybill_cap" />
 
                 <EditText
                     android:id="@+id/wb_startday_odometer"
@@ -62,7 +64,9 @@
                     android:layout_margin="@dimen/marging_waybill_cap"
                     android:textSize="@dimen/textsize_cap"
                     android:gravity="right|center_vertical"
-                    android:enabled="false" />
+                    android:enabled="false"
+                    android:background="@drawable/edittext_waybill"
+                    android:padding="@dimen/pading_edittext_waybill_cap" />
 
                 <Button
                     android:layout_width="match_parent"
@@ -117,7 +121,9 @@
                     android:layout_margin="@dimen/marging_waybill_cap"
                     android:textSize="@dimen/textsize_cap"
                     android:gravity="right|center_vertical"
-                    android:enabled="false" />
+                    android:enabled="false"
+                    android:background="@drawable/edittext_waybill"
+                    android:padding="@dimen/pading_edittext_waybill_cap" />
 
                 <EditText
                     android:id="@+id/wb_endday_odometer"
@@ -130,7 +136,9 @@
                     android:layout_margin="@dimen/marging_waybill_cap"
                     android:textSize="@dimen/textsize_cap"
                     android:gravity="right|center_vertical"
-                    android:enabled="false" />
+                    android:enabled="false"
+                    android:background="@drawable/edittext_waybill"
+                    android:padding="@dimen/pading_edittext_waybill_cap" />
 
                 <Button
                     android:layout_width="match_parent"

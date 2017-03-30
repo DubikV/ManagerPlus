@@ -11,6 +11,11 @@
     <dimen name="tab_layout_height">50dp</dimen>
     <dimen name="marging_button_map">10dp</dimen>
 
+    <!--Waybill-->
+    <dimen name="marging_waybill_cap">5dp</dimen>
+    <dimen name="pading_edittext_waybill_cap">10dp</dimen>
+    <dimen name="textsize_cap">25dp</dimen>
+
     <!--Floating action button-->
     <dimen name="design_fab_image_size" tools:override="true">40dp</dimen>
 
