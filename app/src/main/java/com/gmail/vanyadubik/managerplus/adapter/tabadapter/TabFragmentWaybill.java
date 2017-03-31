@@ -12,8 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.gmail.vanyadubik.managerplus.R;
+import com.gmail.vanyadubik.managerplus.fragment.FuelListFragment;
 import com.gmail.vanyadubik.managerplus.fragment.WaybillFragment;
 import com.gmail.vanyadubik.managerplus.fragment.WaybillFragmentMap;
+import com.gmail.vanyadubik.managerplus.fragment.WaybillListFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +24,11 @@ public class TabFragmentWaybill extends Fragment {
     private static TabLayout tabLayout;
     private static ViewPager viewPager;
     private static ViewPagerAdapter viewPagerAdapter;
-    private int[] icons = {R.drawable.tab_waybill,
-                           R.drawable.tab_map
-                          };
+    private int[] icons = {R.drawable.tab_workplase,
+            R.drawable.tab_map,
+            R.drawable.tab_waybill,
+            R.drawable.tab_fuel
+    };
 
     @Nullable
     @Override
@@ -76,9 +80,13 @@ public class TabFragmentWaybill extends Fragment {
     private void setupViewPager(ViewPager viewPager) {
         viewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager());
         viewPagerAdapter.addFrag(new WaybillFragment().getInstance(),
-                getActivity().getResources().getString(R.string.waybill_name));
+                getActivity().getResources().getString(R.string.work_plase_name));
         viewPagerAdapter.addFrag(new WaybillFragmentMap().getInstance(),
                 getActivity().getResources().getString(R.string.map_name));
+        viewPagerAdapter.addFrag(new WaybillListFragment().getInstance(),
+                getActivity().getResources().getString(R.string.waybill_list_name));
+        viewPagerAdapter.addFrag(new FuelListFragment().getInstance(),
+                getActivity().getResources().getString(R.string.fuel_name));
         viewPager.setAdapter(viewPagerAdapter);
     }
 

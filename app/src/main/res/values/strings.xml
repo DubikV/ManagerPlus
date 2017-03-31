@@ -72,13 +72,18 @@
 
     <!--Name objects-->
     <string name="map_name">Карта</string>
+    <string name="work_plase_name">Робочий стіл</string>
 
     <!--Waybill-->
     <string name="waybill_name">Дорожній лист</string>
+    <string name="waybill_list_name">Дорожні листи</string>
     <string name="waybill_start_odometer_name">Показники на початок</string>
     <string name="waybill_end_odometer_name">Показники на кінець</string>
     <string name="waybill_start_button">Почати роботу</string>
     <string name="waybill_end_button">Закінчити роботу</string>
     <string name="waybill_visits_today_name">Події на сьогодні:</string>
+
+    <!--Fuel-->
+    <string name="fuel_name">Заправки</string>
 
 </resources>

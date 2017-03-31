@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/background_activity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@drawable/background_activity"
+              android:orientation="vertical"
+    >
 
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/marging_waybill_cap">
+        android:layout_margin="@dimen/marging_waybill_cap"
+        android:layout_weight="1.55">
 
         <LinearLayout
             android:id="@+id/wb_startday_rl"
@@ -76,7 +79,9 @@
                     android:textSize="@dimen/textsize_cap"
                     android:hint="@string/waybill_start_button"
                     android:background="@drawable/background_button"
-                    android:textColor="@color/tab_background"/>
+                    android:textColor="@color/tab_background"
+                    android:paddingTop="@dimen/marging_waybill_cap"
+                    android:paddingBottom="@dimen/marging_waybill_cap"/>
 
         </LinearLayout>
 
@@ -148,7 +153,9 @@
                     android:textSize="@dimen/textsize_cap"
                     android:hint="@string/waybill_end_button"
                     android:background="@drawable/background_button"
-                    android:textColor="@color/tab_background"/>
+                    android:textColor="@color/tab_background"
+                    android:paddingTop="@dimen/marging_waybill_cap"
+                    android:paddingBottom="@dimen/marging_waybill_cap"/>
 
             </LinearLayout>
 
@@ -158,21 +165,59 @@
     </LinearLayout>
 
     <LinearLayout
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="230dp"
-        android:layout_marginBottom="530dp"></LinearLayout>
+        android:layout_marginLeft="@dimen/marging_button_map"
+        android:layout_marginRight="@dimen/marging_button_map"
+        android:background="@drawable/shape_panel_horiz"
+        android:layout_weight="2.05">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/waybill_incar_button"
+            android:letterSpacing="1"
+            android:layout_weight="1"
+            android:background="@drawable/button_left"
+            android:layout_margin="@dimen/marging_waybill_cap"
+            android:drawableTop="@drawable/ic_noincar"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/waybill_addfoto_button"
+                android:layout_weight="1"
+                android:background="@drawable/button_center"
+                android:layout_margin="@dimen/marging_waybill_cap"
+                android:drawableTop="@drawable/ic_camera"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/waybill_seefoto_button"
+                android:layout_weight="1"
+                android:background="@drawable/button_right"
+                android:layout_margin="@dimen/marging_waybill_cap"
+                android:drawableTop="@drawable/ic_image"/>
+        </LinearLayout>
+
+    </LinearLayout>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="300dp"
-        android:layout_marginBottom="@dimen/marging_waybill_cap"
         android:layout_marginLeft="@dimen/marging_waybill_cap"
-        android:layout_marginRight="@dimen/marging_waybill_cap">
+        android:layout_marginRight="@dimen/marging_waybill_cap"
+        android:layout_weight="1">
 
         <TextView
             android:layout_width="match_parent"
@@ -195,4 +240,21 @@
             android:layout_marginBottom="@dimen/marging_waybill_cap" />
     </LinearLayout>
 
-</RelativeLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary"
+        android:layout_weight="2.05">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/waybill_panel_textwiev"
+            android:layout_weight="1"
+            android:textSize="@dimen/textsize_cap"
+            android:textColor="@color/tab_background"
+            android:layout_margin="@dimen/marging_waybill_cap"/>
+    </LinearLayout>
+
+</LinearLayout>
