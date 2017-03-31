@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TabHost;
+import android.widget.TabWidget;
+import android.widget.TextView;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
@@ -16,6 +19,8 @@ import com.gmail.vanyadubik.managerplus.gps.GPSTracker;
 import java.text.SimpleDateFormat;
 
 import javax.inject.Inject;
+
+import static android.R.id.tabhost;
 
 public class WaybillFragment extends Fragment implements FragmentBecameVisibleInterface {
     private static  final int LAYOUT = R.layout.fragment_waybill;
@@ -42,57 +47,53 @@ public class WaybillFragment extends Fragment implements FragmentBecameVisibleIn
         view = inflater.inflate(LAYOUT, container, false);
         ((ManagerPlusAplication) getActivity().getApplication()).getComponent().inject(this);
 
-//
-//        Button btnSync = (Button) view.findViewById(R.id.btnSync);
-//        btnSync.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View arg0) {
-//                Intent intent = new Intent(getActivity(), SyncIntentTrackService.class);
-//                intent.putExtra(DATE_TRACK_START, dateFormatter.parse(dateStartEdinText.getText().toString(), new ParsePosition(0)).getTime());
-//                intent.putExtra(DATE_TRACK_END, dateFormatter.parse(dateEndEdinText.getText().toString(), new ParsePosition(0)).getTime());
-//                getActivity().startService(intent);
-//            }
-//        });
-//        dateFormatter = new SimpleDateFormat("dd-MM-yyyy");
-//
-//        dateStartEdinText = (EditText) view.findViewById(R.id.dateStart);
-//        dateStartEdinText.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Calendar newCalendar = Calendar.getInstance();
-//                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-//
-//                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-//                        Calendar newDate = Calendar.getInstance();
-//                        newDate.set(year, monthOfYear, dayOfMonth);
-//                        dateStartEdinText.setText(dateFormatter.format(newDate.getTime()));
-//                    }
-//
-//                },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
-//                datePickerDialog.show();
-//            }
-//        });
-//
-//        dateEndEdinText = (EditText) view.findViewById(R.id.dateEnd);
-//        dateEndEdinText.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Calendar newCalendar = Calendar.getInstance();
-//                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-//
-//                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-//                        Calendar newDate = Calendar.getInstance();
-//                        newDate.set(year, monthOfYear, dayOfMonth);
-//                        dateEndEdinText.setText(dateFormatter.format(newDate.getTime()));
-//                    }
-//
-//                },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
-//                datePickerDialog.show();
-//            }
-//        });
+        final TabHost tabHost = (TabHost) view.findViewById(tabhost);
+        tabHost.setup();
+        TabHost.TabSpec tabSpec;
+        tabSpec = tabHost.newTabSpec("VisitsToday");
+        tabSpec.setIndicator(getResources().getString(R.string.waybill_visits_today_name));
+        tabSpec.setContent(R.id.workplace_tab1);
+        tabHost.addTab(tabSpec);
+
+        tabSpec = tabHost.newTabSpec("FuelToday");
+        tabSpec.setIndicator(getResources().getString(R.string.fuel_today_name));
+        tabSpec.setContent(R.id.workplace_tab2);
+        tabHost.addTab(tabSpec);
+
+        final TabWidget tw = (TabWidget)tabHost.findViewById(android.R.id.tabs);
+        for (int i = 0; i < tw.getChildCount(); ++i)
+        {
+            final View tabView = tw.getChildTabViewAt(i);
+            final TextView tv = (TextView)tabView.findViewById(android.R.id.title);
+            tv.setTextSize(getResources().getDimensionPixelSize(R.dimen.textsize_cap_visitstoday));
+            tv.setTextColor(getResources()
+                    .getColor(R.color.tab_background));
+        }
+
+        setTabColor(tabHost);
+
+        tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+
+            public void onTabChanged(String arg0) {
+
+                setTabColor(tabHost);
+
+            }
+        });
 
         return view;
+    }
+
+    public void setTabColor(TabHost tabhost) {
+
+        for (int i = 0; i < tabhost.getTabWidget().getChildCount(); i++) {
+            tabhost.getTabWidget().getChildAt(i)
+                    .setBackgroundColor(getResources()
+                            .getColor(R.color.tab_border));
+        }
+        tabhost.getTabWidget().getChildAt(tabhost.getCurrentTab())
+                .setBackgroundColor(getResources()
+                        .getColor(R.color.colorPrimary));
     }
 
     @Override

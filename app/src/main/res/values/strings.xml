@@ -85,5 +85,6 @@
 
     <!--Fuel-->
     <string name="fuel_name">Заправки</string>
+    <string name="fuel_today_name">Заправки на сьогодні:</string>
 
 </resources>

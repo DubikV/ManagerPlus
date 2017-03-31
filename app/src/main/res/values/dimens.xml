@@ -15,6 +15,7 @@
     <dimen name="marging_waybill_cap">5dp</dimen>
     <dimen name="pading_edittext_waybill_cap">10dp</dimen>
     <dimen name="textsize_cap">25dp</dimen>
+    <dimen name="textsize_cap_visitstoday">15dp</dimen>
 
     <!--Floating action button-->
     <dimen name="design_fab_image_size" tools:override="true">40dp</dimen>

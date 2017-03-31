@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@drawable/background_activity"
+              android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="111111"
+        android:background="@drawable/shape_window_cap"
+        android:textColor="@color/tab_background"
+        android:gravity="left|center_horizontal"
+        android:textSize="@dimen/textsize_cap"
+        android:layout_marginTop="@dimen/marging_waybill_cap"
+        android:layout_marginRight="@dimen/marging_waybill_cap"
+        android:layout_marginLeft="@dimen/marging_waybill_cap" />
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/shape_window_body"
+        android:layout_marginRight="@dimen/marging_waybill_cap"
+        android:layout_marginLeft="@dimen/marging_waybill_cap"
+        android:layout_marginBottom="@dimen/marging_waybill_cap" />
+
+</LinearLayout>
