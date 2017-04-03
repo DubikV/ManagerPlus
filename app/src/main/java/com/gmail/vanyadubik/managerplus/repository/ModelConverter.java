@@ -13,7 +13,6 @@ import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
 import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
 
 import java.util.Date;
-import java.util.TimeZone;
 
 public class ModelConverter {
 
@@ -44,11 +43,14 @@ public class ModelConverter {
         values.put(WaybillContract.WAYBILL_ID, waybill.getExternalId());
         values.put(WaybillContract.WAYBILL_DELETED, waybill.isDeleted());
         values.put(WaybillContract.WAYBILL_INDB, waybill.isInDB());
-        values.put(WaybillContract.WAYBILL_DATE, waybill.getDate().getTime() + TimeZone.getDefault().getRawOffset());
-        values.put(WaybillContract.WAYBILL_DATE_START, waybill.getDateStart().getTime() + TimeZone.getDefault().getRawOffset());
-        values.put(WaybillContract.WAYBILL_DATE_END, waybill.getDateEnd().getTime() + TimeZone.getDefault().getRawOffset());
+        values.put(WaybillContract.WAYBILL_DATE_START, waybill.getDateStart()== null?
+                null: waybill.getDateStart().getTime());
+        values.put(WaybillContract.WAYBILL_DATE_END, waybill.getDateEnd()== null?
+                null: waybill.getDateEnd().getTime());
         values.put(WaybillContract.WAYBILL_POINT_START, waybill.getStartLP());
         values.put(WaybillContract.WAYBILL_POINT_END, waybill.getEndLP());
+        values.put(WaybillContract.WAYBILL_ODOMETER_START, waybill.getStartOdometer());
+        values.put(WaybillContract.WAYBILL_ODOMETER_END, waybill.getEndOdometer());
         return values;
     }
 
@@ -57,8 +59,8 @@ public class ModelConverter {
         values.put(VisitContract.VISIT_ID, visit.getExternalId());
         values.put(VisitContract.VISIT_DELETED, visit.isDeleted());
         values.put(VisitContract.VISIT_INDB, visit.isInDB());
-        values.put(VisitContract.VISIT_DATE, visit.getDate().getTime() + TimeZone.getDefault().getRawOffset());
-        values.put(VisitContract.VISIT_DATE_VISIT, visit.getDateVisit().getTime() + TimeZone.getDefault().getRawOffset());
+        values.put(VisitContract.VISIT_DATE, visit.getDate().getTime());
+        values.put(VisitContract.VISIT_DATE_VISIT, visit.getDateVisit().getTime());
         values.put(VisitContract.VISIT_CLIENT, visit.getClientExternalId());
         values.put(VisitContract.VISIT_POINT_CREATE, visit.getCreateLP());
         values.put(VisitContract.VISIT_POINT_VISIT, visit.getVisitLP());
@@ -83,11 +85,12 @@ public class ModelConverter {
                 .externalId(cursor.getString(cursor.getColumnIndex(WaybillContract.WAYBILL_ID)))
                 .deleted(cursor.getInt(cursor.getColumnIndex(WaybillContract.WAYBILL_DELETED))== 1)
                 .inDB(cursor.getInt(cursor.getColumnIndex(WaybillContract.WAYBILL_INDB))== 1)
-                .date(new Date(Long.valueOf(cursor.getString(cursor.getColumnIndex(WaybillContract.WAYBILL_DATE)))))
-                .dateStart(new Date(Long.valueOf(cursor.getString(cursor.getColumnIndex(WaybillContract.WAYBILL_DATE_START)))))
-                .dateEnd(new Date(Long.valueOf(cursor.getString(cursor.getColumnIndex(WaybillContract.WAYBILL_DATE_END)))))
+                .dateStart(convertDate(cursor, WaybillContract.WAYBILL_DATE_START))
+                .dateEnd(convertDate(cursor, WaybillContract.WAYBILL_DATE_END))
                 .startLP(cursor.getString(cursor.getColumnIndex(WaybillContract.WAYBILL_POINT_START)))
                 .endLP(cursor.getString(cursor.getColumnIndex(WaybillContract.WAYBILL_POINT_START)))
+                .startOdometer(cursor.getInt(cursor.getColumnIndex(WaybillContract.WAYBILL_ODOMETER_START)))
+                .endOdometer(cursor.getInt(cursor.getColumnIndex(WaybillContract.WAYBILL_ODOMETER_END)))
                 .build();
     }
 
@@ -117,5 +120,16 @@ public class ModelConverter {
                 .phone(cursor.getString(cursor.getColumnIndex(ClientContract.CLIENT_PHONE)))
                 .positionLP(cursor.getString(cursor.getColumnIndex(ClientContract.CLIENT_POSITION)))
                 .build();
+    }
+
+    private static Date convertDate(Cursor cursor, String nameColum){
+
+        String value = cursor.getString(cursor.getColumnIndex(nameColum));
+
+        if(value==null|| value.isEmpty()){
+            return new Date(Long.valueOf("0"));
+        }else {
+            return new Date(Long.valueOf(cursor.getString(cursor.getColumnIndex(nameColum))));
+        }
     }
 }

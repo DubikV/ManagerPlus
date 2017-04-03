@@ -15,7 +15,7 @@ import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.UserSett
 public class MobileManagerDb extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "managerplus";
-    private static final int DB_VERSION = 24;
+    private static final int DB_VERSION = 25;
 
     public MobileManagerDb(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -47,11 +47,12 @@ public class MobileManagerDb extends SQLiteOpenHelper {
                 + WaybillContract.WAYBILL_ID + " text,"
                 + WaybillContract.WAYBILL_DELETED + " numeric,"
                 + WaybillContract.WAYBILL_INDB + " numeric,"
-                + WaybillContract.WAYBILL_DATE + " integer,"
                 + WaybillContract.WAYBILL_DATE_START + " integer,"
                 + WaybillContract.WAYBILL_DATE_END + " integer,"
                 + WaybillContract.WAYBILL_POINT_START + " text,"
                 + WaybillContract.WAYBILL_POINT_END + " text,"
+                + WaybillContract.WAYBILL_ODOMETER_START + " integer,"
+                + WaybillContract.WAYBILL_ODOMETER_END + " integer,"
                 + "UNIQUE (" + TextUtils.join(", ", WaybillContract.UNIQUE_COLUMNS) + ")"
                 + ");");
 

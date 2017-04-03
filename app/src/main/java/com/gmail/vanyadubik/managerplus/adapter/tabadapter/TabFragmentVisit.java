@@ -12,22 +12,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.fragment.FuelListFragment;
-import com.gmail.vanyadubik.managerplus.fragment.WaybillListFragment;
-import com.gmail.vanyadubik.managerplus.fragment.WorkPlaceFragmentMap;
-import com.gmail.vanyadubik.managerplus.fragment.WorkPlaseFragment;
+import com.gmail.vanyadubik.managerplus.fragment.VisitListFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TabFragmentWaybill extends Fragment {
+public class TabFragmentVisit extends Fragment {
     private static TabLayout tabLayout;
     private static ViewPager viewPager;
     private static ViewPagerAdapter viewPagerAdapter;
     private int[] icons = {R.drawable.tab_workplase,
-            R.drawable.tab_map,
-            R.drawable.tab_waybill,
-            R.drawable.tab_fuel
+            R.drawable.ic_calendar
     };
 
     @Nullable
@@ -79,14 +74,10 @@ public class TabFragmentWaybill extends Fragment {
 
     private void setupViewPager(ViewPager viewPager) {
         viewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager());
-        viewPagerAdapter.addFrag(new WorkPlaseFragment().getInstance(),
-                getActivity().getResources().getString(R.string.work_plase_name));
-        viewPagerAdapter.addFrag(new WorkPlaceFragmentMap().getInstance(),
-                getActivity().getResources().getString(R.string.map_name));
-        viewPagerAdapter.addFrag(new WaybillListFragment().getInstance(),
-                getActivity().getResources().getString(R.string.waybill_list_name));
-        viewPagerAdapter.addFrag(new FuelListFragment().getInstance(),
-                getActivity().getResources().getString(R.string.fuel_name));
+        viewPagerAdapter.addFrag(new VisitListFragment().getInstance(),
+                getActivity().getResources().getString(R.string.visit_name));
+        viewPagerAdapter.addFrag(new VisitListFragment().getInstance(),
+                getActivity().getResources().getString(R.string.visit_name));
         viewPager.setAdapter(viewPagerAdapter);
     }
 

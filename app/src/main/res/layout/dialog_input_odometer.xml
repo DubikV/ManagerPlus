@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/pading_edittext_waybill_cap"
+            android:textSize="@dimen/textsize_cap">
+
+        <AutoCompleteTextView
+            android:id="@+id/input_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/date_picker_title"
+            android:imeOptions="actionNext"
+            android:layout_gravity="right|center_vertical"
+            android:gravity="right|center_vertical"
+            app:hintTextAppearance="@style/TextLabel"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="right|center_vertical"
+            android:textSize="@dimen/textsize_cap">
+
+            <AutoCompleteTextView
+                android:id="@+id/input_odometer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/input_odometer"
+                android:imeOptions="actionDone"
+                android:gravity="right|center_vertical"
+                android:layout_margin="@dimen/pading_edittext_waybill_cap"
+                android:textSize="@dimen/textsize_cap"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

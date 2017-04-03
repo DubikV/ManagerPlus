@@ -40,7 +40,7 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRAC
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
 
-public class WaybillFragmentMap extends Fragment implements LocationListener,
+public class WorkPlaceFragmentMap extends Fragment implements LocationListener,
         OnMapReadyCallback, FragmentBecameVisibleInterface {
     private static final int LAYOUT = R.layout.fragment_map;
     private GoogleMap mMap;
@@ -48,11 +48,12 @@ public class WaybillFragmentMap extends Fragment implements LocationListener,
     private LocationManager locationManager;
     private Location lastCurrentLocation;
     private Marker mCurrLocationMarker;
+    private View view;
 
-    public static WaybillFragmentMap getInstance() {
+    public static WorkPlaceFragmentMap getInstance() {
 
         Bundle args = new Bundle();
-        WaybillFragmentMap fragment = new WaybillFragmentMap();
+        WorkPlaceFragmentMap fragment = new WorkPlaceFragmentMap();
         fragment.setArguments(args);
         return fragment;
     }
@@ -60,7 +61,9 @@ public class WaybillFragmentMap extends Fragment implements LocationListener,
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(LAYOUT, null, false);
+        if (view == null) {
+            view = inflater.inflate(LAYOUT, null, false);
+        }
 
         setUpMap();
 
@@ -210,6 +213,9 @@ public class WaybillFragmentMap extends Fragment implements LocationListener,
 
     @Override
     public void onBecameVisible() {
+//        if(locationMapFragment==null) {
+//            setUpMap();
+//        }
         insertMarker();
     }
 
@@ -404,5 +410,12 @@ public class WaybillFragmentMap extends Fragment implements LocationListener,
 
         // Showing Alert Message
         alertDialog.show();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+//        if (locationMapFragment != null)
+//            getFragmentManager().beginTransaction().remove(locationMapFragment).commit();
     }
 }

@@ -28,7 +28,7 @@
                 android:layout_marginLeft="@dimen/marging_waybill_cap"
                 android:padding="@dimen/pading_edittext_waybill_cap"
                 android:layout_weight="1"
-                android:id="@+id/waybill_cap" />
+                android:id="@+id/fuellist_cap" />
         </LinearLayout>
 
         <ListView
@@ -38,7 +38,7 @@
             android:layout_marginRight="@dimen/marging_waybill_cap"
             android:layout_marginLeft="@dimen/marging_waybill_cap"
             android:layout_marginBottom="@dimen/marging_waybill_cap"
-            android:id="@+id/waybill_listview">
+            android:id="@+id/fuellist_listview">
         </ListView>
 
     </LinearLayout>

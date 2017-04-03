@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/waybilllist_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.5"
+        android:textSize="@dimen/text_size_medium"
+        android:gravity="center_vertical"
+        android:layout_alignParentTop="true"
+        android:padding="@dimen/marging_waybill_cap"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_weight="1"
+        android:layout_alignBottom="@+id/member_name"
+        android:layout_alignParentTop="true">
+
+        <TextView
+            android:id="@+id/waybilllist_odometer_start"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_weight="1"
+            android:textSize="@dimen/text_size_medium"
+            android:gravity="center"
+            android:padding="@dimen/marging_waybill_cap"/>
+
+        <TextView
+            android:id="@+id/waybilllist_odometer_end"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textSize="@dimen/text_size_medium"
+            android:gravity="center"
+            android:padding="@dimen/marging_waybill_cap"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/waybilllist_km"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.8"
+        android:textSize="@dimen/text_size_medium"
+        android:gravity="center"
+        android:padding="@dimen/marging_waybill_cap"/>
+
+</LinearLayout>

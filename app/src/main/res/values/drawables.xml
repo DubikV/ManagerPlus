@@ -31,5 +31,6 @@
     <item name="ic_plus" type="drawable">@mipmap/ic_plus</item>
     <item name="ic_delete" type="drawable">@mipmap/ic_delete</item>
     <item name="ic_open" type="drawable">@mipmap/ic_open</item>
+    <item name="ic_calendar" type="drawable">@mipmap/ic_calendar</item>
 
 </resources>

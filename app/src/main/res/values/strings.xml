@@ -69,6 +69,8 @@
     <string name="questions_answer_no">Ні</string>
     <string name="questions_answer_ok">Ок</string>
     <string name="questions_title_cancel">Скасувати</string>
+    <string name="date_picker_title">Виберіть дату</string>
+    <string name="time_picker_title">Виберіть час</string>
 
     <!--Name objects-->
     <string name="map_name">Карта</string>
@@ -82,9 +84,17 @@
     <string name="waybill_start_button">Почати роботу</string>
     <string name="waybill_end_button">Закінчити роботу</string>
     <string name="waybill_visits_today_name">Події на сьогодні:</string>
+    <string name="input_odometer">Показники одометра</string>
+    <string name="input_start_odometer">Показники на початок дня</string>
+    <string name="input_end_odometer">Показники на кінець дня</string>
+    <string name="input_вфеу_odometer">Дата</string>
 
     <!--Fuel-->
     <string name="fuel_name">Заправки</string>
     <string name="fuel_today_name">Заправки на сьогодні:</string>
+
+    <!--Visits-->
+    <string name="visit_name">Події</string>
+    <string name="visit_plane_name">Планування подій</string>
 
 </resources>

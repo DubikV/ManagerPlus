@@ -37,4 +37,6 @@ public class Consts {
     public final static int GPS_TRACK_SERVISE_JOB_ID = 1;
     public final static int GPS_SYNK_SERVISE_JOB_ID = 2;
 
+    public final static String CLEAR_DATE = "00.00.0000 00:00";
+
 }

@@ -6,37 +6,33 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.TabHost;
-import android.widget.TabWidget;
-import android.widget.TextView;
+import android.widget.ListView;
 
 import com.gmail.vanyadubik.managerplus.R;
+import com.gmail.vanyadubik.managerplus.adapter.VisitListAdapter;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
-import com.gmail.vanyadubik.managerplus.gps.GPSTracker;
+import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
+import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 
-import java.text.SimpleDateFormat;
+import java.util.List;
 
 import javax.inject.Inject;
 
-import static android.R.id.tabhost;
-
-public class WaybillFragment extends Fragment implements FragmentBecameVisibleInterface {
-    private static  final int LAYOUT = R.layout.fragment_waybill;
+public class VisitListFragment extends Fragment implements FragmentBecameVisibleInterface {
+    private static  final int LAYOUT = R.layout.fragment_waybill_list;
 
     @Inject
-    GPSTracker gpsTracker;
+    DataRepository dataRepository;
 
     private View view;
+    private List<Visit_Element> list;
+    private ListView listView;
 
-    private EditText dateStartEdinText, dateEndEdinText;
-    private SimpleDateFormat dateFormatter;
-
-    public static WaybillFragment getInstance() {
+    public static VisitListFragment getInstance() {
 
         Bundle args = new Bundle();
-        WaybillFragment fragment = new WaybillFragment();
+        VisitListFragment fragment = new VisitListFragment();
         fragment.setArguments(args);
         return  fragment;
     }
@@ -46,6 +42,8 @@ public class WaybillFragment extends Fragment implements FragmentBecameVisibleIn
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(LAYOUT, container, false);
         ((ManagerPlusAplication) getActivity().getApplication()).getComponent().inject(this);
+
+        listView = (ListView) view.findViewById(R.id.waybill_listview);
 
         return view;
     }
@@ -62,5 +60,10 @@ public class WaybillFragment extends Fragment implements FragmentBecameVisibleIn
 
     @Override
     public void onBecameVisible() {
+        list = dataRepository.getAllVisit();
+
+        VisitListAdapter adapter = new VisitListAdapter(getActivity(), list);
+        listView.setAdapter(adapter);
+
     }
 }

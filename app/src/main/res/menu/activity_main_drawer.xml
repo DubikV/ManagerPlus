@@ -6,6 +6,10 @@
             android:id="@+id/nav_waybill"
             android:icon="@drawable/ic_tracking"
             android:title="@string/item_waybill" />
+        <item
+            android:id="@+id/nav_visit"
+            android:icon="@drawable/ic_calendar"
+            android:title="@string/visit_name" />
     </group>
 
     <item android:title="@string/nav_service">

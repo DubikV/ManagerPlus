@@ -41,4 +41,8 @@
         <item name="android:textSize">15dp</item>
     </style>
 
+    <style name="TextLabel" parent="TextAppearance.Design.Hint">
+        <item name="android:textSize">26dp</item>
+    </style>
+
 </resources>

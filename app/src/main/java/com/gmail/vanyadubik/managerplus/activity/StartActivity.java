@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
+import com.gmail.vanyadubik.managerplus.adapter.tabadapter.TabFragmentVisit;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.TabFragmentWaybill;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.gps.GPSTracker;
@@ -33,7 +34,6 @@ import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
 import com.gmail.vanyadubik.managerplus.service.gps.TaskSchedure;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -41,8 +41,6 @@ import io.hypertrack.smart_scheduler.Job;
 
 import static com.gmail.vanyadubik.managerplus.common.Consts.GPS_SYNK_SERVISE_JOB_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_SYNK_TRACK;
-import static com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService.DATE_TRACK_END;
-import static com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService.DATE_TRACK_START;
 
 public class StartActivity extends AppCompatActivity{
     @Inject
@@ -131,8 +129,8 @@ public class StartActivity extends AppCompatActivity{
 
         if (id == R.id.action_sync) {
                 Intent intent = new Intent(this, SyncIntentTrackService.class);
-                intent.putExtra(DATE_TRACK_START, new Date());
-                intent.putExtra(DATE_TRACK_END, new Date());
+//                intent.putExtra(DATE_TRACK_START, new Date());
+//                intent.putExtra(DATE_TRACK_END, new Date());
                 startService(intent);
             return true;
         }
@@ -226,10 +224,13 @@ public class StartActivity extends AppCompatActivity{
 
                 item.setChecked(true);
 
+                FragmentTransaction xfragmentTransaction = mFragmentManager.beginTransaction();
                 switch (item.getItemId()) {
                     case R.id.nav_waybill:
-                        FragmentTransaction xfragmentTransaction = mFragmentManager.beginTransaction();
                         xfragmentTransaction.replace(R.id.containerView, new TabFragmentWaybill()).commit();
+                        break;
+                    case R.id.nav_visit:
+                        xfragmentTransaction.replace(R.id.containerView, new TabFragmentVisit()).commit();
                         break;
                     case R.id.nav_settings:
                         startActivity(new Intent(getBaseContext(), SettingsActivity.class));

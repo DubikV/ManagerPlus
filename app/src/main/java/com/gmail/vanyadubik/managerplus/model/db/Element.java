@@ -32,6 +32,14 @@ public class Element implements Serializable {
         return inDB;
     }
 
+    public void setInDB(boolean inDB) {
+        this.inDB = inDB;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
     public static Builder builder() {
         return new Builder();
     }

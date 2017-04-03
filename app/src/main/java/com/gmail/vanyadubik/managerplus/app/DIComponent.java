@@ -3,9 +3,10 @@ package com.gmail.vanyadubik.managerplus.app;
 import com.gmail.vanyadubik.managerplus.activity.SettingsActivity;
 import com.gmail.vanyadubik.managerplus.activity.StartActivity;
 import com.gmail.vanyadubik.managerplus.fragment.FuelListFragment;
-import com.gmail.vanyadubik.managerplus.fragment.WaybillFragment;
-import com.gmail.vanyadubik.managerplus.fragment.WaybillFragmentMap;
+import com.gmail.vanyadubik.managerplus.fragment.VisitListFragment;
 import com.gmail.vanyadubik.managerplus.fragment.WaybillListFragment;
+import com.gmail.vanyadubik.managerplus.fragment.WorkPlaceFragmentMap;
+import com.gmail.vanyadubik.managerplus.fragment.WorkPlaseFragment;
 import com.gmail.vanyadubik.managerplus.modules.ActivityUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.DataApiModule;
 import com.gmail.vanyadubik.managerplus.modules.ErrorUtilsApiModule;
@@ -29,13 +30,15 @@ public interface DIComponent {
 
     void inject(SettingsActivity settingsActivity);
 
-    void inject(WaybillFragment waybillFragment);
+    void inject(WorkPlaseFragment workPlaseFragment);
 
     void inject(WaybillListFragment waybillListFragment);
 
     void inject(FuelListFragment fuelListFragment);
 
-    void inject(WaybillFragmentMap waybillFragmentMap);
+    void inject(VisitListFragment visitListFragment);
+
+    void inject(WorkPlaceFragmentMap workPlaceFragmentMap);
 
     void inject(GPSTrackerService gpsTrackerService);
 

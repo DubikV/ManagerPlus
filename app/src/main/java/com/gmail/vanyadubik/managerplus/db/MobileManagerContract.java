@@ -57,11 +57,12 @@ public class MobileManagerContract {
         public static final String WAYBILL_ID = "waybill_id";
         public static final String WAYBILL_DELETED = "deleted";
         public static final String WAYBILL_INDB = "incdb";
-        public static final String WAYBILL_DATE = "date";
         public static final String WAYBILL_DATE_START = "date_start";
         public static final String WAYBILL_DATE_END = "date_end";
         public static final String WAYBILL_POINT_START = "point_start";
         public static final String WAYBILL_POINT_END = "point_end";
+        public static final String WAYBILL_ODOMETER_START = "odometer_start";
+        public static final String WAYBILL_ODOMETER_END = "odometer_end";
 
         public static final Uri CONTENT_URI =
                 Uri.withAppendedPath(
@@ -81,13 +82,14 @@ public class MobileManagerContract {
                         + TABLE_NAME;
 
         public static final String[] PROJECTION_ALL =
-                {_ID, WAYBILL_ID, WAYBILL_DELETED, WAYBILL_INDB, WAYBILL_DATE, WAYBILL_DATE_START,
-                        WAYBILL_DATE_END, WAYBILL_POINT_START, WAYBILL_POINT_END};
+                {_ID, WAYBILL_ID, WAYBILL_DELETED, WAYBILL_INDB, WAYBILL_DATE_START,
+                        WAYBILL_DATE_END, WAYBILL_POINT_START, WAYBILL_POINT_END,
+                        WAYBILL_ODOMETER_START, WAYBILL_ODOMETER_END};
 
         public static final String[] UNIQUE_COLUMNS =
                 {WAYBILL_ID};
 
-        public static final String DEFAULT_SORT_ORDER = WAYBILL_DATE + " ASC";
+        public static final String DEFAULT_SORT_ORDER = WAYBILL_DATE_START + " ASC";
 
 
     }

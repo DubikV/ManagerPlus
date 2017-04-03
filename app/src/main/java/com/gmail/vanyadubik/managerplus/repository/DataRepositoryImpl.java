@@ -130,8 +130,8 @@ public class DataRepositoryImpl implements DataRepository{
         }
 
         try (Cursor cursor = contentResolver.query(WaybillContract.CONTENT_URI,
-                WaybillContract.PROJECTION_ALL, WaybillContract.WAYBILL_DATE
-                        + " = (select MAX(" + WaybillContract.WAYBILL_DATE + ") from " + WaybillContract.TABLE_NAME + ")",
+                WaybillContract.PROJECTION_ALL, WaybillContract.WAYBILL_DATE_START
+                        + " = (select MAX(" + WaybillContract.WAYBILL_DATE_START + ") from " + WaybillContract.TABLE_NAME + ")",
                 null, WaybillContract.DEFAULT_SORT_ORDER)) {
 
             if (cursor == null || !cursor.moveToFirst()) return null;
@@ -236,6 +236,10 @@ public class DataRepositoryImpl implements DataRepository{
     public void insertWaybill(Waybill_Element waybill) {
         ContentValues values = ModelConverter.convertWaybill(waybill);
         contentResolver.insert(WaybillContract.CONTENT_URI, values);
+//        contentResolver.update(WaybillContract.CONTENT_URI,
+//                values,
+//                WaybillContract.WAYBILL_ID + "='" + waybill.getExternalId()+"'",
+//                null);
     }
 
     @Override
