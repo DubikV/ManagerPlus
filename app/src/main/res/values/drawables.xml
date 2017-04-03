@@ -28,5 +28,8 @@
     <item name="ic_list" type="drawable">@mipmap/ic_list</item>
     <item name="ic_list_grey" type="drawable">@mipmap/ic_list_grey</item>
     <item name="ic_noincar" type="drawable">@mipmap/ic_noincar</item>
+    <item name="ic_plus" type="drawable">@mipmap/ic_plus</item>
+    <item name="ic_delete" type="drawable">@mipmap/ic_delete</item>
+    <item name="ic_open" type="drawable">@mipmap/ic_open</item>
 
 </resources>

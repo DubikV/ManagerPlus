@@ -47,53 +47,7 @@ public class WaybillFragment extends Fragment implements FragmentBecameVisibleIn
         view = inflater.inflate(LAYOUT, container, false);
         ((ManagerPlusAplication) getActivity().getApplication()).getComponent().inject(this);
 
-        final TabHost tabHost = (TabHost) view.findViewById(tabhost);
-        tabHost.setup();
-        TabHost.TabSpec tabSpec;
-        tabSpec = tabHost.newTabSpec("VisitsToday");
-        tabSpec.setIndicator(getResources().getString(R.string.waybill_visits_today_name));
-        tabSpec.setContent(R.id.workplace_tab1);
-        tabHost.addTab(tabSpec);
-
-        tabSpec = tabHost.newTabSpec("FuelToday");
-        tabSpec.setIndicator(getResources().getString(R.string.fuel_today_name));
-        tabSpec.setContent(R.id.workplace_tab2);
-        tabHost.addTab(tabSpec);
-
-        final TabWidget tw = (TabWidget)tabHost.findViewById(android.R.id.tabs);
-        for (int i = 0; i < tw.getChildCount(); ++i)
-        {
-            final View tabView = tw.getChildTabViewAt(i);
-            final TextView tv = (TextView)tabView.findViewById(android.R.id.title);
-            tv.setTextSize(getResources().getDimensionPixelSize(R.dimen.textsize_cap_visitstoday));
-            tv.setTextColor(getResources()
-                    .getColor(R.color.tab_background));
-        }
-
-        setTabColor(tabHost);
-
-        tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-
-            public void onTabChanged(String arg0) {
-
-                setTabColor(tabHost);
-
-            }
-        });
-
         return view;
-    }
-
-    public void setTabColor(TabHost tabhost) {
-
-        for (int i = 0; i < tabhost.getTabWidget().getChildCount(); i++) {
-            tabhost.getTabWidget().getChildAt(i)
-                    .setBackgroundColor(getResources()
-                            .getColor(R.color.tab_border));
-        }
-        tabhost.getTabWidget().getChildAt(tabhost.getCurrentTab())
-                .setBackgroundColor(getResources()
-                        .getColor(R.color.colorPrimary));
     }
 
     @Override

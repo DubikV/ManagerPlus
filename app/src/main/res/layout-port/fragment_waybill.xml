@@ -11,6 +11,23 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/colorPrimary"
+        android:layout_weight="2.05">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/waybill_panel_textwiev"
+            android:layout_weight="1"
+            android:textSize="@dimen/textsize_cap"
+            android:textColor="@color/tab_background"
+            android:layout_margin="@dimen/marging_waybill_cap"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_margin="@dimen/marging_waybill_cap"
         android:layout_weight="1.55">
 
@@ -219,95 +236,33 @@
         android:layout_weight="1"
         android:layout_marginTop="@dimen/marging_waybill_cap">
 
-        <TabHost
-            android:id="@android:id/tabhost"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-                <TabWidget
-                    android:id="@android:id/tabs"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/marging_waybill_cap"
-                    android:layout_marginRight="@dimen/marging_waybill_cap"
-                    android:textSize="@dimen/textsize_cap">
-                </TabWidget>
-                <FrameLayout
-                    android:id="@android:id/tabcontent"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-                    <LinearLayout
-                        android:id="@+id/workplace_tab1"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:hint="vertical">
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/waybill_visits_today_name"
-                            android:background="@drawable/shape_window_cap"
-                            android:textColor="@color/tab_background"
-                            android:gravity="left|center_horizontal"
-                            android:textSize="@dimen/textsize_cap"
-                            android:layout_marginRight="@dimen/marging_waybill_cap"
-                            android:layout_marginLeft="@dimen/marging_waybill_cap" />
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_window_cap"
+            android:layout_marginRight="@dimen/marging_waybill_cap"
+            android:layout_marginLeft="@dimen/marging_waybill_cap">
 
-                        <ListView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/shape_window_body"
-                            android:layout_marginRight="@dimen/marging_waybill_cap"
-                            android:layout_marginLeft="@dimen/marging_waybill_cap"
-                            android:layout_marginBottom="@dimen/marging_waybill_cap" />
-                    </LinearLayout>
-                    <LinearLayout
-                        android:id="@+id/workplace_tab2"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="111111"
-                            android:background="@drawable/shape_window_cap"
-                            android:textColor="@color/tab_background"
-                            android:gravity="left|center_horizontal"
-                            android:textSize="@dimen/textsize_cap"
-                            android:layout_marginTop="@dimen/marging_waybill_cap"
-                            android:layout_marginRight="@dimen/marging_waybill_cap"
-                            android:layout_marginLeft="@dimen/marging_waybill_cap" />
-                        <ListView
-                           android:layout_width="match_parent"
-                           android:layout_height="match_parent"
-                           android:background="@drawable/shape_window_body"
-                           android:layout_marginRight="@dimen/marging_waybill_cap"
-                           android:layout_marginLeft="@dimen/marging_waybill_cap"
-                           android:layout_marginBottom="@dimen/marging_waybill_cap" />
-                    </LinearLayout>
-                </FrameLayout>
-            </LinearLayout>
-        </TabHost>
-    </LinearLayout>
+            <TextView
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:text="@string/waybill_visits_today_name"
+               android:textColor="@color/tab_background"
+               android:gravity="left|center_horizontal"
+               android:textSize="@dimen/textsize_cap"
+               android:layout_marginRight="@dimen/marging_button_map"
+               android:layout_marginLeft="@dimen/marging_button_map" />
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorPrimary"
-        android:layout_weight="2.05">
+        </LinearLayout>
 
-        <TextView
+        <ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/waybill_panel_textwiev"
-            android:layout_weight="1"
-            android:textSize="@dimen/textsize_cap"
-            android:textColor="@color/tab_background"
-            android:layout_margin="@dimen/marging_waybill_cap"/>
+            android:background="@drawable/shape_window_body"
+            android:layout_marginRight="@dimen/marging_waybill_cap"
+            android:layout_marginLeft="@dimen/marging_waybill_cap"
+            android:layout_marginBottom="@dimen/marging_waybill_cap" />
     </LinearLayout>
 
 </LinearLayout>
