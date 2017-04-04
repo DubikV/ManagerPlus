@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
@@ -45,6 +46,7 @@ import org.joda.time.LocalDateTime;
 import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.R.id.map;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
@@ -330,6 +332,14 @@ public class WorkPlaceFragmentMap extends Fragment
 
 
     protected boolean isBetterLocation(Location location, Location currentBestLocation) {
+
+        Toast.makeText(getContext(), " Accuracy: " + location.getAccuracy() +
+                "  \nSpeed: " + location.getSpeed(), Toast.LENGTH_LONG).show();
+
+        if (location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION) {
+            return false;
+        }
+
         if (currentBestLocation == null) {
             // A new location is always better than no location
             return true;
@@ -414,17 +424,17 @@ public class WorkPlaceFragmentMap extends Fragment
         }
     }
 
-    //    @Override
-//    public void onStart() {
-//        super.onStart();
-//        mGoogleApiClient.connect();
-//    }
-//    @Override
-//    public void onStop() {
-//        super.onStop();
-//        if (mGoogleApiClient.isConnected()) {
-//            mGoogleApiClient.disconnect();
-//        }
+//    public static float distFrom(float lat1, float lng1, float lat2, float lng2) {
+//        double earthRadius = 6371; //kilometers
+//        double dLat = Math.toRadians(lat2-lat1);
+//        double dLng = Math.toRadians(lng2-lng1);
+//        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+//                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+//                        Math.sin(dLng/2) * Math.sin(dLng/2);
+//        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+//        float dist = (float) (earthRadius * c);
+//
+//        return dist;
 //    }
 
 }

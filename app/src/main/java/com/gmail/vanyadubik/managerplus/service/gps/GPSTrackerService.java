@@ -40,6 +40,7 @@ import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_GPS_TRACER_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_SYNC_TRACER_ID;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
@@ -248,6 +249,11 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
     }
 
     protected boolean isBetterLocation(Location location, Location currentBestLocation) {
+
+        if (location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION) {
+            return false;
+        }
+
         if (currentBestLocation == null) {
             // A new location is always better than no location
             return true;
