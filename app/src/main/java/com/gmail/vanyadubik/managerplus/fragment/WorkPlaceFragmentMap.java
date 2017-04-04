@@ -257,8 +257,8 @@ public class WorkPlaceFragmentMap extends Fragment
         pOptions = dataRepository.getBuildTrackLatLng(pOptions, waybill.getDateStart(),
                 waybill.getDateEnd().getTime() <1000 ? LocalDateTime.now().toDate() : waybill.getDateEnd());
 
-
         insertMarker();
+
     }
 
     private void setUpMap() {
@@ -434,7 +434,7 @@ public class WorkPlaceFragmentMap extends Fragment
         }
     }
 
-//    public static float distFrom(float lat1, float lng1, float lat2, float lng2) {
+    //    public static float distFrom(float lat1, float lng1, float lat2, float lng2) {
 //        double earthRadius = 6371; //kilometers
 //        double dLat = Math.toRadians(lat2-lat1);
 //        double dLng = Math.toRadians(lng2-lng1);
