@@ -93,86 +93,15 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
         return START_REDELIVER_INTENT;
     }
 
-//    public void getLocation() {
-//
-//        Location location = null;
-//        try {
-//            if ( Build.VERSION.SDK_INT >= 23 &&
-//
-//                    ContextCompat.checkSelfPermission( mContext, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
-//                    ContextCompat.checkSelfPermission( mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//
-//            }
-//
-//            if (!isGPSEnabled && !isNetworkEnabled) {
-//
-//                locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER,
-//                        MIN_TIME_WRITE_TRACK, MIN_DISTANCE_WRITE_TRACK, this);
-//                Log.d(TAGLOG_GPS, "pasive provider");
-//                location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-//
-//            }else {
-//
-//                if (isGPSEnabled) {
-//                    locationManager.requestLocationUpdates(
-//                            LocationManager.GPS_PROVIDER,
-//                            1000 * MIN_TIME_WRITE_TRACK,
-//                            MIN_DISTANCE_WRITE_TRACK, this);
-//                    Log.d(TAGLOG_GPS, "GPS used");
-//                    if (locationManager != null) {
-//                        location = locationManager
-//                                .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//                    }
-//                }
-//
-//                if (isNetworkEnabled) {
-//                    if (location == null) {
-//                        locationManager.requestLocationUpdates(
-//                                LocationManager.NETWORK_PROVIDER,
-//                                1000 * MIN_TIME_WRITE_TRACK,
-//                                MIN_DISTANCE_WRITE_TRACK, this);
-//                        Log.d(TAGLOG_GPS, "Network used");
-//                        if (locationManager != null) {
-//                            location = locationManager
-//                                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-//                        }
-//                    }
-//                }
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        Date date = LocalDateTime.now(DateTimeZone.getDefault()).toDate();
-//        Log.d(TAGLOG_GPS, new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-//                .format(date.getTime()) +
-//                " location is null : " + String.valueOf(location == null));
-//
-//        if ( isBetterLocation(location, currentBestLocation) ) {
-//            currentBestLocation = location;
-//        }
-//
-//        if (currentBestLocation != null){
-//            dataRepository.insertTrackPoint(new LocationPoint(date, currentBestLocation.getLatitude(),
-//                    currentBestLocation.getLongitude(), true));
-//            sendNotification(
-//                    new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(date.getTime())
-//                    +"\n " + new DecimalFormat("#.####").format(currentBestLocation.getLatitude())
-//                    + "\n: " + new DecimalFormat("#.####").format(currentBestLocation.getLongitude()), false);
-//        }
-//
-//    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
 
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
-            mNotificationManager.cancel(DEFAULT_NOTIFICATION_GPS_TRACER_ID);
-            stopForeground(true);
         }
+        mNotificationManager.cancel(DEFAULT_NOTIFICATION_GPS_TRACER_ID);
+        stopForeground(true);
     }
 
     //Send custom notification
@@ -251,18 +180,14 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
 
     protected boolean isBetterLocation(Location location, Location currentBestLocation) {
 
-        if ((isLocationAccurate(location) &&
-                location.getAccuracy() < MAX_COEFFICIENT_CURRENCY_LOCATION &&
-                location.getSpeed() < MIN_SPEED_WRITE_LOCATION)==false) {
-            return false;
-        }
-//        if (location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION) {
-//            return false;
-//        }
-
         if (currentBestLocation == null) {
-            // A new location is always better than no location
             return true;
+        }
+
+        if (!isLocationAccurate(location) ||
+                location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION ||
+                location.getSpeed() < MIN_SPEED_WRITE_LOCATION) {
+            return false;
         }
 
         // Check whether the new location fix is newer or older

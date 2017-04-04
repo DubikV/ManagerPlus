@@ -337,18 +337,14 @@ public class WorkPlaceFragmentMap extends Fragment
         Toast.makeText(getContext(), " Accuracy: " + location.getAccuracy() +
                 "  \nSpeed: " + location.getSpeed(), Toast.LENGTH_LONG).show();
 
-        if ((isLocationAccurate(location) &&
-                location.getAccuracy() < MAX_COEFFICIENT_CURRENCY_LOCATION &&
-                location.getSpeed() < MIN_SPEED_WRITE_LOCATION)==false) {
-            return false;
-        }
-//        if (location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION) {
-//            return false;
-//        }
-
         if (currentBestLocation == null) {
-            // A new location is always better than no location
             return true;
+        }
+
+        if (!isLocationAccurate(location) ||
+                location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION ||
+                location.getSpeed() < MIN_SPEED_WRITE_LOCATION) {
+            return false;
         }
 
         // Check whether the new location fix is newer or older
