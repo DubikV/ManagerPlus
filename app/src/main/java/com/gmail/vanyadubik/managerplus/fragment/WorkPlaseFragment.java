@@ -15,7 +15,6 @@ import android.widget.EditText;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
-import com.gmail.vanyadubik.managerplus.gps.GPSTracker;
 import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 
@@ -32,8 +31,6 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.CLEAR_DATE;
 public class WorkPlaseFragment extends Fragment implements FragmentBecameVisibleInterface{
     private static  final int LAYOUT = R.layout.fragment_workspace;
 
-    @Inject
-    GPSTracker gpsTracker;
     @Inject
     DataRepository dataRepository;
 

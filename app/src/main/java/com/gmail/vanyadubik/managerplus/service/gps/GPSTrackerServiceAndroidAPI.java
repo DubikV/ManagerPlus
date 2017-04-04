@@ -10,12 +10,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.gmail.vanyadubik.managerplus.R;
@@ -23,11 +25,6 @@ import com.gmail.vanyadubik.managerplus.activity.StartActivity;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationListener;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -44,7 +41,7 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
 
-public class GPSTrackerService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class GPSTrackerServiceAndroidAPI extends Service implements LocationListener {
 
     @Inject
     DataRepository dataRepository;
@@ -53,10 +50,9 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
     private NotificationCompat.Builder mBuilder;
 
     private Context mContext;
-    private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
+    private boolean isGPSEnabled, isNetworkEnabled;
+    protected LocationManager locationManager;
     private Location currentBestLocation;
-    private SimpleDateFormat dateFormat;
 
     @Override
     public void onCreate() {
@@ -68,13 +64,10 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
 
         mNotificationManager = (NotificationManager) this.getSystemService(this.NOTIFICATION_SERVICE);
 
-        dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        isGPSEnabled = isNetworkEnabled  = false;
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
+        locationManager = (LocationManager) mContext
+                .getSystemService(LOCATION_SERVICE);
 
         startNotification();
 
@@ -86,88 +79,108 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
         Log.d(TAGLOG_GPS, new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
                 .format(LocalDateTime.now(DateTimeZone.getDefault()).toDate().getTime()) + " start GPS servise");
 
-        mGoogleApiClient.connect();
+        // getting GPS status
+        isGPSEnabled = locationManager
+                .isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        // getting network status
+        isNetworkEnabled = locationManager
+                .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        if (isGPSEnabled || isNetworkEnabled) {
+            getLocation();
+        }else{
+            sendNotification(
+                    new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+                            .format(LocalDateTime.now(DateTimeZone.getDefault()).toDate().getTime())
+                            + " " + mContext.getString(R.string.gps_is_enabled), true);
+        }
 
         return START_REDELIVER_INTENT;
     }
 
-//    public void getLocation() {
-//
-//        Location location = null;
-//        try {
-//            if ( Build.VERSION.SDK_INT >= 23 &&
-//
-//                    ContextCompat.checkSelfPermission( mContext, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
-//                    ContextCompat.checkSelfPermission( mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//
-//            }
-//
-//            if (!isGPSEnabled && !isNetworkEnabled) {
-//
-//                locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER,
-//                        MIN_TIME_WRITE_TRACK, MIN_DISTANCE_WRITE_TRACK, this);
-//                Log.d(TAGLOG_GPS, "pasive provider");
-//                location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-//
-//            }else {
-//
-//                if (isGPSEnabled) {
-//                    locationManager.requestLocationUpdates(
-//                            LocationManager.GPS_PROVIDER,
-//                            1000 * MIN_TIME_WRITE_TRACK,
-//                            MIN_DISTANCE_WRITE_TRACK, this);
-//                    Log.d(TAGLOG_GPS, "GPS used");
-//                    if (locationManager != null) {
-//                        location = locationManager
-//                                .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//                    }
-//                }
-//
-//                if (isNetworkEnabled) {
-//                    if (location == null) {
-//                        locationManager.requestLocationUpdates(
-//                                LocationManager.NETWORK_PROVIDER,
-//                                1000 * MIN_TIME_WRITE_TRACK,
-//                                MIN_DISTANCE_WRITE_TRACK, this);
-//                        Log.d(TAGLOG_GPS, "Network used");
-//                        if (locationManager != null) {
-//                            location = locationManager
-//                                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-//                        }
-//                    }
-//                }
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        Date date = LocalDateTime.now(DateTimeZone.getDefault()).toDate();
-//        Log.d(TAGLOG_GPS, new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-//                .format(date.getTime()) +
-//                " location is null : " + String.valueOf(location == null));
-//
-//        if ( isBetterLocation(location, currentBestLocation) ) {
-//            currentBestLocation = location;
-//        }
-//
-//        if (currentBestLocation != null){
-//            dataRepository.insertTrackPoint(new LocationPoint(date, currentBestLocation.getLatitude(),
-//                    currentBestLocation.getLongitude(), true));
-//            sendNotification(
-//                    new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(date.getTime())
-//                    +"\n " + new DecimalFormat("#.####").format(currentBestLocation.getLatitude())
-//                    + "\n: " + new DecimalFormat("#.####").format(currentBestLocation.getLongitude()), false);
-//        }
-//
-//    }
+    public void getLocation() {
+
+        Location location = null;
+        try {
+            if ( Build.VERSION.SDK_INT >= 23 &&
+
+                    ContextCompat.checkSelfPermission( mContext, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission( mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            }
+
+            if (!isGPSEnabled && !isNetworkEnabled) {
+
+                locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER,
+                        MIN_TIME_WRITE_TRACK, MIN_DISTANCE_WRITE_TRACK, this);
+                Log.d(TAGLOG_GPS, "pasive provider");
+                location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+
+            }else {
+
+                if (isGPSEnabled) {
+                    locationManager.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER,
+                            1000 * MIN_TIME_WRITE_TRACK,
+                            MIN_DISTANCE_WRITE_TRACK, this);
+                    Log.d(TAGLOG_GPS, "GPS used");
+                    if (locationManager != null) {
+                        location = locationManager
+                                .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    }
+                }
+
+                if (isNetworkEnabled) {
+                    if (location == null) {
+                        locationManager.requestLocationUpdates(
+                                LocationManager.NETWORK_PROVIDER,
+                                1000 * MIN_TIME_WRITE_TRACK,
+                                MIN_DISTANCE_WRITE_TRACK, this);
+                        Log.d(TAGLOG_GPS, "Network used");
+                        if (locationManager != null) {
+                            location = locationManager
+                                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        }
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Date date = LocalDateTime.now(DateTimeZone.getDefault()).toDate();
+        Log.d(TAGLOG_GPS, new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+                .format(date.getTime()) +
+                " location is null : " + String.valueOf(location == null));
+
+        if ( isBetterLocation(location, currentBestLocation) ) {
+            currentBestLocation = location;
+        }
+
+        if (currentBestLocation != null){
+            dataRepository.insertTrackPoint(new LocationPoint(date, currentBestLocation.getLatitude(),
+                    currentBestLocation.getLongitude(), true));
+            sendNotification(
+                    new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(date.getTime())
+                    +"\n " + new DecimalFormat("#.####").format(currentBestLocation.getLatitude())
+                    + "\n: " + new DecimalFormat("#.####").format(currentBestLocation.getLongitude()), false);
+        }
+
+    }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
+        if (locationManager != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                    PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                            PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            locationManager.removeUpdates(GPSTrackerServiceAndroidAPI.this);
             mNotificationManager.cancel(DEFAULT_NOTIFICATION_GPS_TRACER_ID);
             stopForeground(true);
         }
@@ -188,15 +201,15 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
                 .setOngoing(true)
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
                 .setSmallIcon(R.mipmap.ic_gps_track_connect)
-                .setContentTitle(mContext.getString(R.string.app_name) + " |" +
+                .setContentTitle(mContext.getString(R.string.app_name) +" |"+
                         mContext.getString(R.string.gps_tracer_name))
                 .setContentText(mContext.getString(R.string.sync_processing))
                 .setWhen(System.currentTimeMillis());
 
         Notification notification;
-        if (Build.VERSION.SDK_INT <= 15) {
+        if (Build.VERSION.SDK_INT<=15) {
             notification = mBuilder.getNotification(); // API-15 and lower
-        } else {
+        }else{
             notification = mBuilder.build();
         }
 
@@ -223,23 +236,55 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
 
     @Override
     public void onLocationChanged(Location location) {
-        if (isBetterLocation(location, currentBestLocation)) {
+        if ( isBetterLocation(location, currentBestLocation) ) {
             currentBestLocation = location;
         }
 
         Date date = LocalDateTime.now(DateTimeZone.getDefault()).toDate();
-        Log.d(TAGLOG_GPS, dateFormat
+        Log.d(TAGLOG_GPS, new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
                 .format(date.getTime()) +
                 " location is null : " + String.valueOf(location == null));
 
-        if (currentBestLocation != null) {
+        if (currentBestLocation != null){
             dataRepository.insertTrackPoint(new LocationPoint(date, currentBestLocation.getLatitude(),
                     currentBestLocation.getLongitude(), true));
             sendNotification(
-                    dateFormat.format(date.getTime())
-                            + "\n " + new DecimalFormat("#.####").format(currentBestLocation.getLatitude())
+                    new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(date.getTime())
+                            +"\n " + new DecimalFormat("#.####").format(currentBestLocation.getLatitude())
                             + "\n: " + new DecimalFormat("#.####").format(currentBestLocation.getLongitude()), false);
         }
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        // getting GPS status
+        isGPSEnabled = locationManager
+                .isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        // getting network status
+        isNetworkEnabled = locationManager
+                .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        if (isGPSEnabled || isNetworkEnabled) {
+            getLocation();
+        }else{
+            sendNotification(
+                    new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+                            .format(LocalDateTime.now(DateTimeZone.getDefault()).toDate().getTime())
+                            + " " + mContext.getString(R.string.gps_is_enabled), true);
+        }
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        sendNotification(
+                new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+                        .format(LocalDateTime.now(DateTimeZone.getDefault()).toDate().getTime())
+                        + " " + mContext.getString(R.string.gps_is_enabled), true);
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
     }
 
     @Override
@@ -289,41 +334,11 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
         return false;
     }
 
+    /** Checks whether two providers are the same */
     private boolean isSameProvider(String provider1, String provider2) {
         if (provider1 == null) {
             return provider2 == null;
         }
         return provider1.equals(provider2);
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        mLocationRequest = LocationRequest.create();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(MIN_TIME_WRITE_TRACK);
-        mLocationRequest.setFastestInterval(MIN_TIME_WRITE_TRACK);
-        mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_WRITE_TRACK);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.i(TAGLOG_GPS, "Connection Suspended");
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.i(TAGLOG_GPS, "Connection failed. Error: " + connectionResult.getErrorCode());
-        sendNotification(
-                    dateFormat
-                            .format(LocalDateTime.now(DateTimeZone.getDefault()).toDate().getTime())
-                            + " " + mContext.getString(R.string.gps_is_enabled), true);
     }
 }

@@ -9,6 +9,8 @@ import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
 import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,6 +54,29 @@ public class DataRepositoryImpl implements DataRepository{
     }
 
     @Override
+    public PolylineOptions getBuildTrackLatLng(PolylineOptions pOptions, Date dateFrom, Date dateBy) {
+        try (Cursor cursor = contentResolver.query(
+                TrackListContract.CONTENT_URI,
+                TrackListContract.PROJECTION_ALL,
+                TrackListContract.DATE + ">=" + dateFrom.getTime() + " AND "
+                        + TrackListContract.DATE + "<=" + dateBy.getTime(),
+                new String[]{},
+                TrackListContract.DEFAULT_SORT_ORDER)) {
+
+            if (cursor == null || !cursor.moveToFirst()) {
+                return null;
+            }
+
+            while (cursor.moveToNext())
+                pOptions.add(
+                        new LatLng(
+                                cursor.getDouble(cursor.getColumnIndex(TrackListContract.LATITUDE)),
+                                cursor.getDouble(cursor.getColumnIndex(TrackListContract.LONGITUDE))));
+            return pOptions;
+        }
+    }
+
+    @Override
     public List<LocationPoint> getUloadedLocationTrack() {
         try (Cursor cursor = contentResolver.query(
                 TrackListContract.CONTENT_URI,
@@ -59,6 +84,26 @@ public class DataRepositoryImpl implements DataRepository{
                 TrackListContract.UNLOADED + "=0",
                 null, String.format("%s limit "+String.valueOf(MIN_SIZE_TRACK_LIST_UPLOAD),
                 TrackListContract.DEFAULT_SORT_ORDER))) {
+
+            if (cursor == null || !cursor.moveToFirst()) {
+                return null;
+            }
+
+            List<LocationPoint> result = new ArrayList<>();
+            while (cursor.moveToNext())
+                result.add(ModelConverter.buildLocationPoint(cursor));
+            return result;
+        }
+    }
+
+    @Override
+    public List<LocationPoint> getUloadedLocationTrack(int minCount) {
+        try (Cursor cursor = contentResolver.query(
+                TrackListContract.CONTENT_URI,
+                TrackListContract.PROJECTION_ALL,
+                TrackListContract.UNLOADED + "=0",
+                null, String.format("%s limit "+String.valueOf(minCount),
+                        TrackListContract.DEFAULT_SORT_ORDER))) {
 
             if (cursor == null || !cursor.moveToFirst()) {
                 return null;

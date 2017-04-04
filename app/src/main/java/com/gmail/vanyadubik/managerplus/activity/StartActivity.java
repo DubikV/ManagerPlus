@@ -27,7 +27,6 @@ import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.TabFragmentVisit;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.TabFragmentWaybill;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
-import com.gmail.vanyadubik.managerplus.gps.GPSTracker;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
@@ -41,13 +40,11 @@ import io.hypertrack.smart_scheduler.Job;
 
 import static com.gmail.vanyadubik.managerplus.common.Consts.GPS_SYNK_SERVISE_JOB_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_SYNK_TRACK;
+import static com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService.MIN_COUNT;
 
 public class StartActivity extends AppCompatActivity{
     @Inject
     DataRepository dataRepository;
-
-    @Inject
-    GPSTracker gpsTracker;
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -77,9 +74,9 @@ public class StartActivity extends AppCompatActivity{
 
         startServices();
 
-        if (!gpsTracker.canGetLocation()) {
-            gpsTracker.showSettingsAlert();
-        }
+//        if (!gpsTracker.canGetLocation()) {
+//            gpsTracker.showSettingsAlert();
+//        }
 
     }
 
@@ -105,32 +102,38 @@ public class StartActivity extends AppCompatActivity{
 
         if (id == R.id.action_show_location) {
 
-            if(gpsTracker.canGetLocation()){
-                LocationPoint locationPoint = gpsTracker.getLocationPoint();
-
-//                Snackbar.make(findViewById(R.id.containerView),
-//                                new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(locationPoint.getDate().getTime())
-//                                + " location is - \nLat: " + locationPoint.getLatitude()
-//                                + "\nLong: " + locationPoint.getLongitude()
-//                                , Snackbar.LENGTH_LONG)
-//                        .show();
-
-                Toast.makeText(getApplicationContext(),
+            LocationPoint locationPoint = dataRepository.getLastTrackPoint();
+            Toast.makeText(getApplicationContext(),
                         new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
                                 .format(locationPoint.getDate().getTime())
                                 + " location is - \nLat: " + locationPoint.getLatitude()
                                 + "\nLong: " + locationPoint.getLongitude(),
                         Toast.LENGTH_LONG).show();
-            }else{
-                gpsTracker.showSettingsAlert();
-            }
+//            if(gpsTracker.canGetLocation()){
+//                LocationPoint locationPoint = gpsTracker.getLocationPoint();
+//
+////                Snackbar.make(findViewById(R.id.containerView),
+////                                new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(locationPoint.getDate().getTime())
+////                                + " location is - \nLat: " + locationPoint.getLatitude()
+////                                + "\nLong: " + locationPoint.getLongitude()
+////                                , Snackbar.LENGTH_LONG)
+////                        .show();
+//
+//                Toast.makeText(getApplicationContext(),
+//                        new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+//                                .format(locationPoint.getDate().getTime())
+//                                + " location is - \nLat: " + locationPoint.getLatitude()
+//                                + "\nLong: " + locationPoint.getLongitude(),
+//                        Toast.LENGTH_LONG).show();
+//            }else{
+//                gpsTracker.showSettingsAlert();
+//            }
             return true;
         }
 
         if (id == R.id.action_sync) {
                 Intent intent = new Intent(this, SyncIntentTrackService.class);
-//                intent.putExtra(DATE_TRACK_START, new Date());
-//                intent.putExtra(DATE_TRACK_END, new Date());
+                intent.putExtra(MIN_COUNT, 5000);
                 startService(intent);
             return true;
         }

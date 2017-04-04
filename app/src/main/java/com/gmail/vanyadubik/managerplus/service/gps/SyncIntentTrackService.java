@@ -28,7 +28,6 @@ import com.gmail.vanyadubik.managerplus.utils.ErrorUtils;
 import com.gmail.vanyadubik.managerplus.utils.NetworkUtils;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -41,8 +40,7 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_SYNC_TRACK;
 import static com.gmail.vanyadubik.managerplus.utils.Db2JsonModelConverter.convertLocationPoint;
 
 public class SyncIntentTrackService extends IntentService{
-    public static final String DATE_TRACK_START = "date_start";
-    public static final String DATE_TRACK_END = "date_end";
+    public static final String MIN_COUNT = "minCount";
 
     @Inject
     DataRepository dataRepository;
@@ -74,11 +72,10 @@ public class SyncIntentTrackService extends IntentService{
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Date dateStart = null, dateEnd = null;
+        int minCount = 0;
         Bundle extras = intent.getExtras();
         if (extras != null && !extras.isEmpty()) {
-            dateStart = new Date(extras.getLong(DATE_TRACK_START));
-            dateEnd = new Date(extras.getLong(DATE_TRACK_END));
+            minCount = (int) extras.getLong(MIN_COUNT);
         }
 
         if (!networkUtils.checkEthernet()) {
@@ -90,8 +87,8 @@ public class SyncIntentTrackService extends IntentService{
                 this.getBaseContext());
 
         List<LocationPoint> trackList = null;
-        if(dateStart!=null&&dateEnd!=null){
-            trackList = dataRepository.getTrack(dateStart, dateEnd);
+        if(minCount > 0){
+            trackList = dataRepository.getUloadedLocationTrack(minCount);
         }else {
             trackList = dataRepository.getUloadedLocationTrack();
         }

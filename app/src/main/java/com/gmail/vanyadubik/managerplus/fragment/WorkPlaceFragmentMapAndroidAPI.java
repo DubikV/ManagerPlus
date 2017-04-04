@@ -6,14 +6,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,13 +24,9 @@ import android.view.ViewGroup;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
+import com.gmail.vanyadubik.managerplus.common.Consts;
 import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -42,16 +40,20 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.joda.time.LocalDateTime;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.inject.Inject;
 
+import static android.content.Context.LOCATION_SERVICE;
 import static com.gmail.vanyadubik.managerplus.R.id.map;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
+import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
 
-public class WorkPlaceFragmentMap extends Fragment
-        implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener,
+public class WorkPlaceFragmentMapAndroidAPI extends Fragment
+        implements LocationListener,
         OnMapReadyCallback, FragmentBecameVisibleInterface {
     private static final int LAYOUT = R.layout.fragment_map;
 
@@ -60,18 +62,18 @@ public class WorkPlaceFragmentMap extends Fragment
 
     private GoogleMap mMap;
     private SupportMapFragment locationMapFragment;
-    private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
+    private LocationManager locationManager;
     private Location lastCurrentLocation;
     private Marker mCurrLocationMarker;
     private View view;
+    private List<LatLng> trackList;
+    private Date dateStart, dateEnd;
     private Polyline polylineTrack;
-    private PolylineOptions pOptions;
 
-    public static WorkPlaceFragmentMap getInstance() {
+    public static WorkPlaceFragmentMapAndroidAPI getInstance() {
 
         Bundle args = new Bundle();
-        WorkPlaceFragmentMap fragment = new WorkPlaceFragmentMap();
+        WorkPlaceFragmentMapAndroidAPI fragment = new WorkPlaceFragmentMapAndroidAPI();
         fragment.setArguments(args);
         return fragment;
     }
@@ -83,17 +85,17 @@ public class WorkPlaceFragmentMap extends Fragment
             view = inflater.inflate(LAYOUT, null, false);
         }
 
+//        Bundle extras = getActivity().getIntent().getExtras();
+//        if (extras != null && !extras.isEmpty()) {
+//            dateStart = new Date(extras.getLong(DATE_START_WAYBILL));
+//            dateEnd = new Date(extras.getLong(DATE_END_WAYBILL));
+//        }
+
         ((ManagerPlusAplication) getActivity().getApplication()).getComponent().inject(this);
 
-        mGoogleApiClient = new GoogleApiClient.Builder(getContext())
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-
-        setPolylineOptions();
-
         setUpMap();
+
+        locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
 
         FloatingActionButton zoomUpButton = (FloatingActionButton)
                 view.findViewById(R.id.zoom_up);
@@ -175,8 +177,11 @@ public class WorkPlaceFragmentMap extends Fragment
             public void onClick(View v) {
                 Log.d(TAGLOG, "Press button 'current_position'");
                 insertMarker();
+
             }
         });
+
+        startLocation();
 
         return view;
     }
@@ -190,28 +195,17 @@ public class WorkPlaceFragmentMap extends Fragment
     }
 
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        mLocationRequest = LocationRequest.create();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(MIN_TIME_WRITE_TRACK);
-        mLocationRequest.setFastestInterval(MIN_TIME_WRITE_TRACK);
-        mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_WRITE_TRACK);
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
     }
 
     @Override
-    public void onConnectionSuspended(int i) {
-        mGoogleApiClient.connect();
+    public void onProviderEnabled(String provider) {
+
     }
 
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+    public void onProviderDisabled(String provider) {
 
     }
 
@@ -240,21 +234,30 @@ public class WorkPlaceFragmentMap extends Fragment
 
     @Override
     public void onBecameVisible() {
-
-        mGoogleApiClient.connect();
+//        if(locationMapFragment==null) {
+//            setUpMap();
+//        }
+        if (polylineTrack!=null){
+            polylineTrack.remove();
+        }
 
         Waybill_Element waybill = dataRepository.getLastWaybill();
 
-        if(waybill==null){
-            return;
-        }
-
-        setPolylineOptions();
+        PolylineOptions pOptions = new PolylineOptions()
+                .width(5)
+                .color(getActivity().getResources().getColor(R.color.colorPrimary))
+                .geodesic(true);
 
         pOptions = dataRepository.getBuildTrackLatLng(pOptions, waybill.getDateStart(),
                 waybill.getDateEnd().getTime() <1000 ? LocalDateTime.now().toDate() : waybill.getDateEnd());
 
+        if(pOptions!=null) {
 
+            pOptions.add(new LatLng(lastCurrentLocation.getLatitude(), lastCurrentLocation.getLongitude()));
+
+            polylineTrack = mMap.addPolyline(pOptions);
+
+        }
         insertMarker();
     }
 
@@ -271,40 +274,7 @@ public class WorkPlaceFragmentMap extends Fragment
 
     }
 
-    private void setPolylineOptions(){
-
-        if(pOptions != null){
-            return;
-        }
-
-        pOptions = new PolylineOptions()
-                .width(5)
-                .color(getActivity().getResources().getColor(R.color.colorPrimary))
-                .geodesic(true);
-    }
-
-    private void setPolylineTrack() {
-
-        if (polylineTrack!=null){
-            polylineTrack.remove();
-        }
-
-
-        if(pOptions!=null) {
-
-            if(lastCurrentLocation!=null) {
-                pOptions.add(new LatLng(lastCurrentLocation.getLatitude(), lastCurrentLocation.getLongitude()));
-            }
-            polylineTrack = mMap.addPolyline(pOptions);
-
-        }
-
-
-    }
-
     private void insertMarker() {
-
-        setPolylineTrack();
 
         if(lastCurrentLocation!=null&&mMap!=null) {
 
@@ -325,9 +295,68 @@ public class WorkPlaceFragmentMap extends Fragment
             mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
 
         }
+        if(lastCurrentLocation == null){
+           startLocation();
+        }
 
     }
 
+    private void startLocation() {
+
+        // getting GPS status
+        boolean isGPSEnabled = locationManager
+                .isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        // getting network status
+        boolean isNetworkEnabled = locationManager
+                .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        try {
+
+            if (!isGPSEnabled && !isNetworkEnabled) {
+
+                locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER,
+                        MIN_TIME_WRITE_TRACK, MIN_DISTANCE_WRITE_TRACK, this);
+                Log.d(TAGLOG_GPS, "pasive provider");
+                lastCurrentLocation = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+
+            }else{
+
+                if ( Build.VERSION.SDK_INT >= 23 &&
+                        ContextCompat.checkSelfPermission( getActivity(), Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
+                        ContextCompat.checkSelfPermission( getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                }
+                if (isGPSEnabled) {
+                    locationManager.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER,
+                            1000 * Consts.MIN_TIME_WRITE_TRACK,
+                            Consts.MIN_DISTANCE_WRITE_TRACK, this);
+                    Log.d("TAGLOG_GPS", "GPS Enabled");
+                    if (locationManager != null) {
+                        lastCurrentLocation = locationManager
+                                .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    }
+                }
+
+                if (isNetworkEnabled) {
+                    if (lastCurrentLocation == null) {
+                        locationManager.requestLocationUpdates(
+                                LocationManager.NETWORK_PROVIDER,
+                                1000 * Consts.MIN_TIME_WRITE_TRACK,
+                                Consts.MIN_DISTANCE_WRITE_TRACK, this);
+                        Log.d("TAGLOG_GPS", "Network");
+                        if (locationManager != null) {
+                            lastCurrentLocation = locationManager
+                                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        }
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     protected boolean isBetterLocation(Location location, Location currentBestLocation) {
         if (currentBestLocation == null) {
@@ -371,6 +400,7 @@ public class WorkPlaceFragmentMap extends Fragment
         return false;
     }
 
+    /** Checks whether two providers are the same */
     private boolean isSameProvider(String provider1, String provider2) {
         if (provider1 == null) {
             return provider2 == null;
@@ -409,22 +439,7 @@ public class WorkPlaceFragmentMap extends Fragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
+//        if (locationMapFragment != null)
+//            getFragmentManager().beginTransaction().remove(locationMapFragment).commit();
     }
-
-    //    @Override
-//    public void onStart() {
-//        super.onStart();
-//        mGoogleApiClient.connect();
-//    }
-//    @Override
-//    public void onStop() {
-//        super.onStop();
-//        if (mGoogleApiClient.isConnected()) {
-//            mGoogleApiClient.disconnect();
-//        }
-//    }
-
 }

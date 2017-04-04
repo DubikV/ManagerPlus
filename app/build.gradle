@@ -44,7 +44,10 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'net.danlew:android.joda:2.9.4.3'
     compile 'io.hypertrack:smart-scheduler:0.0.3'
+//    compile 'com.google.android.gms:play-services-maps:9.6.1'
+//    compile 'com.google.android.gms:play-services:8.1.0'
     compile 'com.google.android.gms:play-services-maps:9.6.1'
+    compile 'com.google.android.gms:play-services:9.6.1'
 
     // Version 23+ is required
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {

@@ -25,7 +25,7 @@ public class Consts {
     public final static String MIN_TIME_SYNK_TRACK_NAME = "minTimeSyncTrack";
 
     // GPS
-    public static final long MIN_DISTANCE_WRITE_TRACK = 0; // meters
+    public static final long MIN_DISTANCE_WRITE_TRACK = 2; // meters
     public static final long MIN_TIME_WRITE_TRACK = 5; // seconds
     public static final long MIN_TIME_SYNK_TRACK = 15*60; // seconds
 

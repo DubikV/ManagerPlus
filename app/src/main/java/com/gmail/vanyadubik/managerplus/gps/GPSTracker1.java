@@ -29,7 +29,7 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
 
-public class GPSTracker extends Service implements LocationListener {
+public class GPSTracker1 extends Service implements LocationListener {
 
     private final Context mContext;
     private boolean isGPSEnabled = false;
@@ -43,7 +43,7 @@ public class GPSTracker extends Service implements LocationListener {
     protected LocationManager locationManager;
 
 
-    public GPSTracker(Context context) {
+    public GPSTracker1(Context context) {
         this.mContext = context;
         locationManager = (LocationManager) mContext
                 .getSystemService(LOCATION_SERVICE);
@@ -127,7 +127,7 @@ public class GPSTracker extends Service implements LocationListener {
                             PackageManager.PERMISSION_GRANTED) {
                return;
             }
-            locationManager.removeUpdates(GPSTracker.this);
+            locationManager.removeUpdates(GPSTracker1.this);
         }
     }
 
