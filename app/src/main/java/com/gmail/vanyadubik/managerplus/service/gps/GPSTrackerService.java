@@ -25,9 +25,9 @@ import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationListener;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -42,6 +42,7 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATIO
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_SYNC_TRACER_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SPEED_WRITE_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
 
@@ -250,9 +251,14 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
 
     protected boolean isBetterLocation(Location location, Location currentBestLocation) {
 
-        if (location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION) {
+        if ((isLocationAccurate(location) &&
+                location.getAccuracy() < MAX_COEFFICIENT_CURRENCY_LOCATION &&
+                location.getSpeed() < MIN_SPEED_WRITE_LOCATION)==false) {
             return false;
         }
+//        if (location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION) {
+//            return false;
+//        }
 
         if (currentBestLocation == null) {
             // A new location is always better than no location
@@ -300,6 +306,14 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
             return provider2 == null;
         }
         return provider1.equals(provider2);
+    }
+
+    public boolean isLocationAccurate(Location location) {
+        if (location.hasAccuracy()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

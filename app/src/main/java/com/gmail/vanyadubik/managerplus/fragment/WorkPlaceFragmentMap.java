@@ -48,6 +48,7 @@ import javax.inject.Inject;
 import static com.gmail.vanyadubik.managerplus.R.id.map;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SPEED_WRITE_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 
@@ -336,9 +337,14 @@ public class WorkPlaceFragmentMap extends Fragment
         Toast.makeText(getContext(), " Accuracy: " + location.getAccuracy() +
                 "  \nSpeed: " + location.getSpeed(), Toast.LENGTH_LONG).show();
 
-        if (location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION) {
+        if ((isLocationAccurate(location) &&
+                location.getAccuracy() < MAX_COEFFICIENT_CURRENCY_LOCATION &&
+                location.getSpeed() < MIN_SPEED_WRITE_LOCATION)==false) {
             return false;
         }
+//        if (location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION) {
+//            return false;
+//        }
 
         if (currentBestLocation == null) {
             // A new location is always better than no location
@@ -386,6 +392,14 @@ public class WorkPlaceFragmentMap extends Fragment
             return provider2 == null;
         }
         return provider1.equals(provider2);
+    }
+
+    public boolean isLocationAccurate(Location location) {
+        if (location.hasAccuracy()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void showSettingsAlert(){
