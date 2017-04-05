@@ -52,10 +52,6 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
     public void onResume() {
         super.onResume();
 
-        list = dataRepository.getAllWaybill();
-
-        WaybillListAdapter adapter = new WaybillListAdapter(getActivity(), list);
-        listView.setAdapter(adapter);
     }
 
     @Override
@@ -65,7 +61,10 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
 
     @Override
     public void onBecameVisible() {
+        list = dataRepository.getAllWaybill();
 
+        WaybillListAdapter adapter = new WaybillListAdapter(getActivity(), list);
+        listView.setAdapter(adapter);
     }
 
     @Override

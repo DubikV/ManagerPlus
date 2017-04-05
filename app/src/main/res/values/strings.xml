@@ -87,7 +87,15 @@
     <string name="input_odometer">Показники одометра</string>
     <string name="input_start_odometer">Показники на початок дня</string>
     <string name="input_end_odometer">Показники на кінець дня</string>
-    <string name="input_вфеу_odometer">Дата</string>
+    <string name="input_date_odometer">Дата</string>
+    <string name="waybill_map">Карта</string>
+    <string name="waybill_foto">Фото</string>
+    <string name="waybill_incar">В авто</string>
+    <string name="waybill_no_incar">Не в авто</string>
+    <string name="waybill_date">Дата</string>
+    <string name="waybill_start_odometer">Одом. почат.</string>
+    <string name="waybill_end_odometer">Одом. кінець</string>
+    <string name="waybill_km">км</string>
 
     <!--Fuel-->
     <string name="fuel_name">Заправки</string>

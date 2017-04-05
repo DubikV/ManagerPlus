@@ -1,5 +1,6 @@
 package com.gmail.vanyadubik.managerplus.app;
 
+import com.gmail.vanyadubik.managerplus.activity.MapActivity;
 import com.gmail.vanyadubik.managerplus.activity.SettingsActivity;
 import com.gmail.vanyadubik.managerplus.activity.StartActivity;
 import com.gmail.vanyadubik.managerplus.fragment.FuelListFragment;
@@ -30,6 +31,8 @@ public interface DIComponent {
     void inject(StartActivity startActivity);
 
     void inject(SettingsActivity settingsActivity);
+
+    void inject(MapActivity mapActivity);
 
     void inject(WorkPlaseFragment workPlaseFragment);
 

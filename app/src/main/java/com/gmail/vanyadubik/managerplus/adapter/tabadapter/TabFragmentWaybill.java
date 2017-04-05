@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.fragment.FuelListFragment;
 import com.gmail.vanyadubik.managerplus.fragment.WaybillListFragment;
-import com.gmail.vanyadubik.managerplus.fragment.WorkPlaceFragmentMap;
 import com.gmail.vanyadubik.managerplus.fragment.WorkPlaseFragment;
 
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ public class TabFragmentWaybill extends Fragment {
     private static ViewPager viewPager;
     private static ViewPagerAdapter viewPagerAdapter;
     private int[] icons = {R.drawable.tab_workplase,
-            R.drawable.tab_map,
+//            R.drawable.tab_map,
             R.drawable.tab_waybill,
             R.drawable.tab_fuel
     };
@@ -59,17 +58,17 @@ public class TabFragmentWaybill extends Fragment {
 
             @Override
             public void onPageSelected(final int position) {
-                FragmentBecameVisibleInterface fragmentMap =
-                        (FragmentBecameVisibleInterface) viewPagerAdapter.instantiateItem(viewPager, 1);
+//                FragmentBecameVisibleInterface fragmentMap =
+//                        (FragmentBecameVisibleInterface) viewPagerAdapter.instantiateItem(viewPager, 1);
 
                 FragmentBecameVisibleInterface fragment =
                         (FragmentBecameVisibleInterface) viewPagerAdapter.instantiateItem(viewPager, position);
                 if (fragment != null) {
                     fragment.onBecameVisible();
                 }
-                if(fragmentMap!= null && fragmentMap!= fragment){
-                    fragmentMap.onBecameUnVisible();
-                }
+//                if(fragmentMap!= null && fragmentMap!= fragment){
+//                    fragmentMap.onBecameUnVisible();
+//                }
             }
 
             @Override
@@ -87,8 +86,8 @@ public class TabFragmentWaybill extends Fragment {
         viewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager());
         viewPagerAdapter.addFrag(new WorkPlaseFragment().getInstance(),
                 getActivity().getResources().getString(R.string.work_plase_name));
-        viewPagerAdapter.addFrag(new WorkPlaceFragmentMap().getInstance(),
-                getActivity().getResources().getString(R.string.map_name));
+//        viewPagerAdapter.addFrag(new WorkPlaceFragmentMap().getInstance(),
+//                getActivity().getResources().getString(R.string.map_name));
         viewPagerAdapter.addFrag(new WaybillListFragment().getInstance(),
                 getActivity().getResources().getString(R.string.waybill_list_name));
         viewPagerAdapter.addFrag(new FuelListFragment().getInstance(),

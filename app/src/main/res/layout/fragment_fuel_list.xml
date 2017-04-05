@@ -23,10 +23,10 @@
                 android:textColor="@color/tab_background"
                 android:gravity="left|center_horizontal"
                 android:textSize="@dimen/textsize_cap"
+                android:padding="@dimen/pading_edittext_waybill_cap"
                 android:layout_marginTop="@dimen/marging_waybill_cap"
                 android:layout_marginRight="@dimen/marging_waybill_cap"
                 android:layout_marginLeft="@dimen/marging_waybill_cap"
-                android:padding="@dimen/pading_edittext_waybill_cap"
                 android:layout_weight="1"
                 android:id="@+id/fuellist_cap" />
         </LinearLayout>

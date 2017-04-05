@@ -26,13 +26,13 @@
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
             android:background="@drawable/tab_background"
             app:tabSelectedTextColor="@color/colorPrimary"
             app:tabIndicatorColor="@color/colorPrimary"
             app:tabIndicatorHeight="3dp"
             app:tabTextAppearance="@style/MineTabText"
-            android:layout_weight="8"/>
+            android:layout_weight="11"
+            android:layout_alignParentBottom="true"/>
 
     </LinearLayout>
 

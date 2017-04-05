@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.fragment.VisitListFragment;
+import com.gmail.vanyadubik.managerplus.fragment.VisitPlanFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +22,8 @@ public class TabFragmentVisit extends Fragment {
     private static TabLayout tabLayout;
     private static ViewPager viewPager;
     private static ViewPagerAdapter viewPagerAdapter;
-    private int[] icons = {R.drawable.tab_workplase,
-            R.drawable.ic_calendar
+    private int[] icons = {R.drawable.tab_visit,
+            R.drawable.tab_visit_plan
     };
 
     @Nullable
@@ -76,8 +77,8 @@ public class TabFragmentVisit extends Fragment {
         viewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager());
         viewPagerAdapter.addFrag(new VisitListFragment().getInstance(),
                 getActivity().getResources().getString(R.string.visit_name));
-        viewPagerAdapter.addFrag(new VisitListFragment().getInstance(),
-                getActivity().getResources().getString(R.string.visit_name));
+        viewPagerAdapter.addFrag(new VisitPlanFragment().getInstance(),
+                getActivity().getResources().getString(R.string.visit_plane_name));
         viewPager.setAdapter(viewPagerAdapter);
     }
 

@@ -1,6 +1,7 @@
 package com.gmail.vanyadubik.managerplus.fragment;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.gmail.vanyadubik.managerplus.R;
+import com.gmail.vanyadubik.managerplus.activity.MapActivity;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
@@ -78,6 +80,14 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
         endDateEditText = (EditText) view.findViewById(R.id.wb_endday_date);
         startOdometerEditText = (EditText) view.findViewById(R.id.wb_startday_odometer);
         endOdometerEditText = (EditText) view.findViewById(R.id.wb_endday_odometer);
+
+        Button showMap = (Button) view.findViewById(R.id.waybill_show_map);
+        showMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(), MapActivity.class));
+            }
+        });
 
         return view;
     }

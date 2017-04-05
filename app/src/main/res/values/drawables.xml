@@ -8,7 +8,6 @@
     <item name="ic_exit" type="drawable">@mipmap/ic_exit</item>
     <item name="ic_settings" type="drawable">@mipmap/ic_settings</item>
     <item name="ic_map" type="drawable">@mipmap/ic_map</item>
-    <item name="ic_map_grey" type="drawable">@mipmap/ic_map_grey</item>
     <item name="ic_tracking" type="drawable">@mipmap/ic_tracking</item>
     <item name="ic_worckplase" type="drawable">@mipmap/ic_worckplase</item>
     <item name="ic_worckplase_grey" type="drawable">@mipmap/ic_worckplase_grey</item>
@@ -33,5 +32,7 @@
     <item name="ic_delete" type="drawable">@mipmap/ic_delete</item>
     <item name="ic_open" type="drawable">@mipmap/ic_open</item>
     <item name="ic_calendar" type="drawable">@mipmap/ic_calendar</item>
-
+    <item name="ic_calendar_grey" type="drawable">@mipmap/ic_calendar_grey</item>
+    <item name="ic_visit" type="drawable">@mipmap/ic_visit</item>
+    <item name="ic_visit_grey" type="drawable">@mipmap/ic_visit_grey</item>
 </resources>

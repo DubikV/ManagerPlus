@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:srcCompat="@drawable/cast_ic_notification_stop_live_stream"
+        android:id="@+id/imageView2"
+        android:layout_weight="2"
+        android:background="@drawable/shape_body_left"/>
 
     <TextView
         android:id="@+id/waybilllist_date"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1.5"
-        android:textSize="@dimen/text_size_medium"
+        android:layout_height="match_parent"
+        android:layout_weight="1.6"
+        android:textSize="@dimen/textsize_table_item"
         android:gravity="center_vertical"
         android:layout_alignParentTop="true"
-        android:padding="@dimen/marging_waybill_cap"/>
+        android:padding="@dimen/marging_waybill_cap"
+        android:background="@drawable/shape_body_left"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,28 +38,31 @@
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
             android:layout_weight="1"
-            android:textSize="@dimen/text_size_medium"
+            android:textSize="@dimen/textsize_table_item"
             android:gravity="center"
-            android:padding="@dimen/marging_waybill_cap"/>
+            android:padding="@dimen/marging_waybill_cap"
+            android:background="@drawable/shape_body_left"/>
 
         <TextView
             android:id="@+id/waybilllist_odometer_end"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:textSize="@dimen/text_size_medium"
+            android:textSize="@dimen/textsize_table_item"
             android:gravity="center"
-            android:padding="@dimen/marging_waybill_cap"/>
+            android:padding="@dimen/marging_waybill_cap"
+            android:background="@drawable/shape_body_left"/>
 
     </LinearLayout>
 
     <TextView
         android:id="@+id/waybilllist_km"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1.8"
-        android:textSize="@dimen/text_size_medium"
+        android:textSize="@dimen/textsize_table_item"
         android:gravity="center"
-        android:padding="@dimen/marging_waybill_cap"/>
+        android:padding="@dimen/marging_waybill_cap"
+        android:background="@drawable/shape_body_right"/>
 
 </LinearLayout>
