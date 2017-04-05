@@ -100,9 +100,16 @@
     <!--Fuel-->
     <string name="fuel_name">Заправки</string>
     <string name="fuel_today_name">Заправки на сьогодні:</string>
+    <string name="fuel_date">Дата</string>
+    <string name="fuel_type_name">Вид пального</string>
+    <string name="fuel_sum_name">Сума</string>
 
     <!--Visits-->
     <string name="visit_name">Події</string>
     <string name="visit_plane_name">Планування подій</string>
+    <string name="visit_type">Тип події</string>
+
+    <!--Clients-->
+    <string name="client_name">Клієнт</string>
 
 </resources>

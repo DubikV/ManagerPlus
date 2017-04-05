@@ -20,7 +20,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 public class VisitListFragment extends Fragment implements FragmentBecameVisibleInterface {
-    private static  final int LAYOUT = R.layout.fragment_waybill_list;
+    private static  final int LAYOUT = R.layout.fragment_visit_list;
 
     @Inject
     DataRepository dataRepository;
@@ -43,7 +43,7 @@ public class VisitListFragment extends Fragment implements FragmentBecameVisible
         view = inflater.inflate(LAYOUT, container, false);
         ((ManagerPlusAplication) getActivity().getApplication()).getComponent().inject(this);
 
-        listView = (ListView) view.findViewById(R.id.waybill_listview);
+        listView = (ListView) view.findViewById(R.id.visitlist_listview);
 
         return view;
     }

@@ -5,11 +5,13 @@
                 android:layout_height="match_parent"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 xmlns:map="http://schemas.android.com/apk/res-auto"
-                tools:context="com.gmail.vanyadubik.managerplus.fragment.WaybillFragment">
+                tools:context="com.gmail.vanyadubik.managerplus.activity.MapActivity">
+
 
     <fragment android:id="@+id/map"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:layout_below="@+id/toolbar_map"
               android:name="com.google.android.gms.maps.SupportMapFragment"
               map:uiCompass="true"/>
 
@@ -56,22 +58,28 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         app:fabSize="normal"
-        app:srcCompat="@drawable/ic_satelite"
-        android:id="@+id/satelite"
-        app:elevation="7dp"
-        android:layout_marginLeft="@dimen/marging_button_map"
-        android:layout_alignParentTop="true"
-        android:layout_alignEnd="@+id/zoom_up"
-        android:layout_marginTop="@dimen/marging_button_map"/>
+        app:srcCompat="@drawable/ic_traffic"
+        android:id="@+id/traffic"
+        android:layout_alignTop="@+id/satelite"
+        android:layout_alignStart="@+id/current_position"/>
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
         app:fabSize="normal"
-        app:srcCompat="@drawable/ic_traffic"
-        android:id="@+id/traffic"
-        android:layout_alignTop="@+id/satelite"
-        android:layout_alignStart="@+id/current_position"/>
+        app:srcCompat="@drawable/ic_satelite"
+        android:id="@+id/satelite"
+        android:layout_marginTop="@dimen/marging_button_map"
+        android:layout_marginRight="@dimen/marging_button_map"
+        android:layout_below="@+id/toolbar_map"
+        android:layout_alignStart="@+id/zoom_up"/>
+
+    <android.support.v7.widget.Toolbar android:id="@+id/toolbar_map"
+                                       android:layout_width="match_parent"
+                                       android:layout_height="wrap_content"
+                                       android:background="?attr/colorPrimary"
+                                       android:layout_alignParentTop="true"
+                                       android:layout_alignParentStart="true"/>
 
 </RelativeLayout>

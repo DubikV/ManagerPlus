@@ -49,7 +49,7 @@
                 android:gravity="left|center_horizontal"
                 android:textSize="@dimen/textsize_table_cap"
                 android:padding="@dimen/pading_edittext_waybill_cap"
-                android:text="@string/fuel_type_name"/>
+                android:text="@string/client_name"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -60,7 +60,7 @@
                 android:gravity="left|center_horizontal"
                 android:textSize="@dimen/textsize_table_cap"
                 android:padding="@dimen/pading_edittext_waybill_cap"
-                android:text="@string/fuel_sum_name"/>
+                android:text="@string/visit_type"/>
 
         </LinearLayout>
 
@@ -71,7 +71,7 @@
             android:layout_marginRight="@dimen/marging_waybill_cap"
             android:layout_marginLeft="@dimen/marging_waybill_cap"
             android:layout_marginBottom="@dimen/marging_waybill_cap"
-            android:id="@+id/fuellist_listview">
+            android:id="@+id/visitlist_listview">
         </ListView>
 
     </LinearLayout>
@@ -81,11 +81,11 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         app:fabSize="normal"
-        android:id="@+id/fuel_del_bt"
+        android:id="@+id/visitl_del_bt"
         android:layout_marginEnd="17dp"
         android:layout_marginBottom="16dp"
         android:layout_marginRight="@dimen/marging_button_map"
-        android:layout_above="@+id/fuel_search_bt"
+        android:layout_above="@+id/visit_search_bt"
         android:layout_alignParentEnd="true"
         app:srcCompat="@drawable/ic_delete" />
 
@@ -95,10 +95,10 @@
         android:clickable="true"
         app:fabSize="normal"
         app:srcCompat="@drawable/ic_plus"
-        android:id="@+id/fuel_add_bt"
+        android:id="@+id/visit_add_bt"
         android:layout_marginBottom="18dp"
-        android:layout_above="@+id/fuel_del_bt"
-        android:layout_alignStart="@+id/fuel_del_bt" />
+        android:layout_above="@+id/visitl_del_bt"
+        android:layout_alignStart="@+id/visitl_del_bt" />
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
@@ -106,10 +106,10 @@
         android:clickable="true"
         app:fabSize="normal"
         app:srcCompat="@drawable/ic_open"
-        android:id="@+id/fuel_search_bt"
+        android:id="@+id/visit_search_bt"
         android:layout_marginBottom="50dp"
         android:layout_marginRight="@dimen/marging_button_map"
         android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/fuel_del_bt" />
+        android:layout_alignStart="@+id/visitl_del_bt" />
 
 </RelativeLayout>

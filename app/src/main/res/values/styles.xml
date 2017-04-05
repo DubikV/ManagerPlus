@@ -45,11 +45,4 @@
         <item name="android:textSize">26dp</item>
     </style>
 
-    <style name="Widget.CalendarView.Custom" parent="@android:style/Widget.CalendarView">
-        <item name="android:focusedMonthDateColor">@color/colorPrimary</item>
-        <item name="android:weekDayTextAppearance">@android:style/TextAppearance.Medium</item>
-        <item name="android:dateTextAppearance">@android:style/TextAppearance.Medium</item>
-        <item name="android:selectedWeekBackgroundColor">@android:color/transparent</item>
-    </style>
-
 </resources>
