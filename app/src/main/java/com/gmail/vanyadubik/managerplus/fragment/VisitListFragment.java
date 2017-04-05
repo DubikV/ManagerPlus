@@ -51,6 +51,10 @@ public class VisitListFragment extends Fragment implements FragmentBecameVisible
     @Override
     public void onResume() {
         super.onResume();
+        list = dataRepository.getAllVisit();
+
+        VisitListAdapter adapter = new VisitListAdapter(getActivity(), list);
+        listView.setAdapter(adapter);
     }
 
     @Override
@@ -60,10 +64,11 @@ public class VisitListFragment extends Fragment implements FragmentBecameVisible
 
     @Override
     public void onBecameVisible() {
-        list = dataRepository.getAllVisit();
 
-        VisitListAdapter adapter = new VisitListAdapter(getActivity(), list);
-        listView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onBecameUnVisible() {
 
     }
 }

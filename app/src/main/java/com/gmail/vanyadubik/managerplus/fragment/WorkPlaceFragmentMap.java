@@ -48,7 +48,6 @@ import javax.inject.Inject;
 import static com.gmail.vanyadubik.managerplus.R.id.map;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SPEED_WRITE_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 
@@ -70,6 +69,8 @@ public class WorkPlaceFragmentMap extends Fragment
     private View view;
     private Polyline polylineTrack;
     private PolylineOptions pOptions;
+    private FloatingActionButton current_position;
+    private Boolean moveMarker;
 
     public static WorkPlaceFragmentMap getInstance() {
 
@@ -82,9 +83,11 @@ public class WorkPlaceFragmentMap extends Fragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (view == null) {
-            view = inflater.inflate(LAYOUT, null, false);
+        if (view != null) {
+            return view;
         }
+
+        view = inflater.inflate(LAYOUT, null, false);
 
         ((ManagerPlusAplication) getActivity().getApplication()).getComponent().inject(this);
 
@@ -93,6 +96,8 @@ public class WorkPlaceFragmentMap extends Fragment
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+
+        moveMarker = true;
 
         setPolylineOptions();
 
@@ -171,12 +176,14 @@ public class WorkPlaceFragmentMap extends Fragment
             }
         });
 
-        FloatingActionButton current_position = (FloatingActionButton)
+        current_position = (FloatingActionButton)
                 view.findViewById(R.id.current_position);
         current_position.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAGLOG, "Press button 'current_position'");
+                moveMarker = true;
+                current_position.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_location));
                 insertMarker();
             }
         });
@@ -225,6 +232,14 @@ public class WorkPlaceFragmentMap extends Fragment
         }
         mMap = googleMap;
 
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                current_position.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_location_search));
+                moveMarker = false;
+            }
+        });
+
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         if (ActivityCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -261,6 +276,18 @@ public class WorkPlaceFragmentMap extends Fragment
 
     }
 
+    @Override
+    public void onBecameUnVisible() {
+
+        if(mGoogleApiClient == null){
+           return;
+        }
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+
+    }
+
     private void setUpMap() {
 
          if (Build.VERSION.SDK_INT < 21) {
@@ -271,6 +298,10 @@ public class WorkPlaceFragmentMap extends Fragment
                     this.getChildFragmentManager().findFragmentById(map);
         }
         locationMapFragment.getMapAsync(this);
+
+        locationMapFragment.getView().setClickable(true);
+
+
 
     }
 
@@ -295,9 +326,6 @@ public class WorkPlaceFragmentMap extends Fragment
 
         if(pOptions!=null) {
 
-            if(lastCurrentLocation!=null) {
-                pOptions.add(new LatLng(lastCurrentLocation.getLatitude(), lastCurrentLocation.getLongitude()));
-            }
             polylineTrack = mMap.addPolyline(pOptions);
 
         }
@@ -323,10 +351,11 @@ public class WorkPlaceFragmentMap extends Fragment
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
             mCurrLocationMarker = mMap.addMarker(markerOptions);
 
-            //move map camera
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
-
+            if(moveMarker) {
+                //move map camera
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+            }
         }
 
     }
@@ -342,8 +371,7 @@ public class WorkPlaceFragmentMap extends Fragment
         }
 
         if (!isLocationAccurate(location) ||
-                location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION ||
-                location.getSpeed() < MIN_SPEED_WRITE_LOCATION) {
+                location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION ) {
             return false;
         }
 
@@ -424,14 +452,6 @@ public class WorkPlaceFragmentMap extends Fragment
 
         // Showing Alert Message
         alertDialog.show();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
     }
 
     //    public static float distFrom(float lat1, float lng1, float lat2, float lng2) {

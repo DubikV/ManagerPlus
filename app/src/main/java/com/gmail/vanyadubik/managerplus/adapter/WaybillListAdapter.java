@@ -56,7 +56,8 @@ public class WaybillListAdapter extends BaseAdapter {
         waybilllistOdEnd.setText(String.valueOf(waybill.getEndOdometer()));
 
         TextView waybilllistKm = (TextView) view.findViewById(R.id.waybilllist_km);
-        waybilllistKm.setText(String.valueOf(waybill.getEndOdometer()-waybill.getStartOdometer()));
+        waybilllistKm.setText(String.valueOf(waybill.getEndOdometer() == 0 ? 0 :
+                waybill.getEndOdometer()-waybill.getStartOdometer()));
 
         return view;
     }

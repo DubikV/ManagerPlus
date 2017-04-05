@@ -59,10 +59,16 @@ public class TabFragmentWaybill extends Fragment {
 
             @Override
             public void onPageSelected(final int position) {
+                FragmentBecameVisibleInterface fragmentMap =
+                        (FragmentBecameVisibleInterface) viewPagerAdapter.instantiateItem(viewPager, 1);
+
                 FragmentBecameVisibleInterface fragment =
                         (FragmentBecameVisibleInterface) viewPagerAdapter.instantiateItem(viewPager, position);
                 if (fragment != null) {
                     fragment.onBecameVisible();
+                }
+                if(fragmentMap!= null && fragmentMap!= fragment){
+                    fragmentMap.onBecameUnVisible();
                 }
             }
 

@@ -261,6 +261,11 @@ public class WorkPlaceFragmentMapAndroidAPI extends Fragment
         insertMarker();
     }
 
+    @Override
+    public void onBecameUnVisible() {
+
+    }
+
     private void setUpMap() {
 
          if (Build.VERSION.SDK_INT < 21) {

@@ -51,6 +51,10 @@ public class FuelListFragment extends Fragment implements FragmentBecameVisibleI
     @Override
     public void onResume() {
         super.onResume();
+        list = dataRepository.getAllWaybill();
+
+        WaybillListAdapter adapter = new WaybillListAdapter(getActivity(), list);
+        listView.setAdapter(adapter);
     }
 
     @Override
@@ -60,10 +64,11 @@ public class FuelListFragment extends Fragment implements FragmentBecameVisibleI
 
     @Override
     public void onBecameVisible() {
-        list = dataRepository.getAllWaybill();
 
-        WaybillListAdapter adapter = new WaybillListAdapter(getActivity(), list);
-        listView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onBecameUnVisible() {
 
     }
 }

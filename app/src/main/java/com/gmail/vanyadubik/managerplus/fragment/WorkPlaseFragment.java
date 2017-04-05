@@ -28,7 +28,7 @@ import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.common.Consts.CLEAR_DATE;
 
-public class WorkPlaseFragment extends Fragment implements FragmentBecameVisibleInterface{
+public class WorkPlaseFragment extends Fragment implements FragmentBecameVisibleInterface {
     private static  final int LAYOUT = R.layout.fragment_workspace;
 
     @Inject
@@ -215,6 +215,11 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
 
     @Override
     public void onBecameVisible() {
+
+    }
+
+    @Override
+    public void onBecameUnVisible() {
 
     }
 }
