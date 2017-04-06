@@ -1,5 +1,7 @@
 package com.gmail.vanyadubik.managerplus.common;
 
+import com.google.android.gms.location.LocationRequest;
+
 public class Consts {
 
     public final static String TAGLOG = "ManagerPlus";
@@ -29,7 +31,8 @@ public class Consts {
     public static final long MIN_TIME_WRITE_TRACK = 5; // seconds
     public static final long MIN_TIME_SYNK_TRACK = 15*60; // seconds
     public static final double  MAX_COEFFICIENT_CURRENCY_LOCATION = 100.0;
-    public static final double  MIN_SPEED_WRITE_LOCATION = 0.05; //
+    public static final double  MIN_SPEED_WRITE_LOCATION = 0.005; //
+    public static final int TYPE_PRIORITY_CONNECTION_GPS = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY; // LocationRequest.PRIORITY_HIGH_ACCURACY;
 
     // notifications
     public static final int DEFAULT_NOTIFICATION_GPS_TRACER_ID = 101;

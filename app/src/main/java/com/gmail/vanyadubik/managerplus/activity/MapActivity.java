@@ -47,6 +47,7 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CUR
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
+import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 
 public class MapActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback {
@@ -184,7 +185,7 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         mLocationRequest = LocationRequest.create();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setPriority(TYPE_PRIORITY_CONNECTION_GPS);
         mLocationRequest.setInterval(MIN_TIME_WRITE_TRACK);
         mLocationRequest.setFastestInterval(MIN_TIME_WRITE_TRACK);
         mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_WRITE_TRACK);

@@ -45,6 +45,7 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SPEED_WRITE_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
+import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 
 public class GPSTrackerService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
@@ -244,7 +245,7 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
     @Override
     public void onConnected(Bundle bundle) {
         mLocationRequest = LocationRequest.create();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setPriority(TYPE_PRIORITY_CONNECTION_GPS);
         mLocationRequest.setInterval(MIN_TIME_WRITE_TRACK);
         mLocationRequest.setFastestInterval(MIN_TIME_WRITE_TRACK);
         mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_WRITE_TRACK);
