@@ -25,11 +25,11 @@ public class Consts {
     public final static String MIN_TIME_SYNK_TRACK_NAME = "minTimeSyncTrack";
 
     // GPS
-    public static final long MIN_DISTANCE_WRITE_TRACK = 2; // meters
+    public static final long MIN_DISTANCE_WRITE_TRACK = 5; // meters
     public static final long MIN_TIME_WRITE_TRACK = 5; // seconds
     public static final long MIN_TIME_SYNK_TRACK = 15*60; // seconds
     public static final double  MAX_COEFFICIENT_CURRENCY_LOCATION = 100.0;
-    public static final double  MIN_SPEED_WRITE_LOCATION = 6.95; //
+    public static final double  MIN_SPEED_WRITE_LOCATION = 0.05; //
 
     // notifications
     public static final int DEFAULT_NOTIFICATION_GPS_TRACER_ID = 101;

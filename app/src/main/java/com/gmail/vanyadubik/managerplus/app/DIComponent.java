@@ -6,8 +6,6 @@ import com.gmail.vanyadubik.managerplus.activity.StartActivity;
 import com.gmail.vanyadubik.managerplus.fragment.FuelListFragment;
 import com.gmail.vanyadubik.managerplus.fragment.VisitListFragment;
 import com.gmail.vanyadubik.managerplus.fragment.WaybillListFragment;
-import com.gmail.vanyadubik.managerplus.fragment.WorkPlaceFragmentMap;
-import com.gmail.vanyadubik.managerplus.fragment.WorkPlaceFragmentMapAndroidAPI;
 import com.gmail.vanyadubik.managerplus.fragment.WorkPlaseFragment;
 import com.gmail.vanyadubik.managerplus.modules.ActivityUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.DataApiModule;
@@ -35,10 +33,6 @@ public interface DIComponent {
     void inject(MapActivity mapActivity);
 
     void inject(WorkPlaseFragment workPlaseFragment);
-
-    void inject(WorkPlaceFragmentMap workPlaceFragmentMap);
-
-    void inject(WorkPlaceFragmentMapAndroidAPI workPlaceFragmentMapAndroidAPI);
 
     void inject(WaybillListFragment waybillListFragment);
 
