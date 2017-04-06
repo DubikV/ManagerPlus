@@ -29,7 +29,6 @@ public class VisitPlanFragment extends Fragment implements FragmentBecameVisible
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(LAYOUT, container, false);
 
-
         return view;
     }
 
