@@ -211,6 +211,19 @@ public class DataRepositoryImpl implements DataRepository{
     }
 
     @Override
+    public List<Client_Element> getAllClients() {
+        try (Cursor cursor = contentResolver.query(VisitContract.CONTENT_URI,
+                VisitContract.PROJECTION_ALL, null, null, VisitContract.DEFAULT_SORT_ORDER)) {
+
+            if (cursor == null) return null;
+            List<Client_Element> result = new ArrayList<>();
+            while (cursor.moveToNext())
+                result.add(ModelConverter.buildClient(cursor));
+            return result;
+        }
+    }
+
+    @Override
     public List<Visit_Element> getVisitByPeriod(Date dateFrom, Date dateBy) {
         try (Cursor cursor = contentResolver.query(
                 VisitContract.CONTENT_URI,

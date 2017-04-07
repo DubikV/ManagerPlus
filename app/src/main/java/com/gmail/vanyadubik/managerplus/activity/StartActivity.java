@@ -27,6 +27,7 @@ import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.TabFragmentVisit;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.TabFragmentWaybill;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
+import com.gmail.vanyadubik.managerplus.fragment.ClientListFragment;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
@@ -234,6 +235,9 @@ public class StartActivity extends AppCompatActivity{
                         break;
                     case R.id.nav_visit:
                         xfragmentTransaction.replace(R.id.containerView, new TabFragmentVisit()).commit();
+                        break;
+                    case R.id.nav_clients:
+                        xfragmentTransaction.replace(R.id.containerView, new ClientListFragment()).commit();
                         break;
                     case R.id.nav_settings:
                         startActivity(new Intent(getBaseContext(), SettingsActivity.class));

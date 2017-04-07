@@ -32,6 +32,8 @@ public interface DataRepository {
 
     List<Visit_Element> getAllVisit();
 
+    List<Client_Element> getAllClients();
+
     List<Visit_Element> getVisitByPeriod(Date dateFrom, Date dateBy);
 
     Client_Element getClient(String externalId);
