@@ -12,18 +12,19 @@
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:gravity="right|center_vertical"
             android:layout_margin="@dimen/pading_edittext_waybill_cap"
-            android:textSize="@dimen/textsize_cap">
+            app:hintTextAppearance="@style/textinputlayout_textsize_style">
 
         <AutoCompleteTextView
             android:id="@+id/input_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/date_picker_title"
+            android:hint="@string/waybill_date"
             android:imeOptions="actionNext"
-            android:layout_gravity="right|center_vertical"
             android:gravity="right|center_vertical"
-            app:hintTextAppearance="@style/TextLabel"/>
+            android:layout_margin="@dimen/pading_edittext_waybill_cap"
+            android:textSize="@dimen/textsize_cap"/>
 
         </android.support.design.widget.TextInputLayout>
 
@@ -31,7 +32,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="right|center_vertical"
-            android:textSize="@dimen/textsize_cap">
+            android:layout_margin="@dimen/pading_edittext_waybill_cap"
+            app:hintTextAppearance="@style/textinputlayout_textsize_style">
 
             <AutoCompleteTextView
                 android:id="@+id/input_odometer"

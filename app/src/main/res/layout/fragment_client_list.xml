@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_activity"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/marging_waybill_cap"
+            android:layout_marginLeft="@dimen/marging_waybill_cap"
+            android:layout_marginTop="@dimen/marging_waybill_cap">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/shape_cap_left"
+                android:textColor="@color/tab_background"
+                android:gravity="left|center_horizontal"
+                android:textSize="@dimen/textsize_table_cap"
+                android:padding="@dimen/pading_edittext_waybill_cap"
+                android:text="@string/client_name"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.7"
+                android:background="@drawable/shape_cap_left"
+                android:textColor="@color/tab_background"
+                android:gravity="left|center_horizontal"
+                android:textSize="@dimen/textsize_table_cap"
+                android:padding="@dimen/pading_edittext_waybill_cap"
+                android:text="@string/client_phone"/>
+
+        </LinearLayout>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_window_body"
+            android:layout_marginRight="@dimen/marging_waybill_cap"
+            android:layout_marginLeft="@dimen/marging_waybill_cap"
+            android:layout_marginBottom="@dimen/marging_waybill_cap"
+            android:id="@+id/client_listview">
+        </ListView>
+
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:fabSize="normal"
+        android:id="@+id/client_del_bt"
+        android:layout_marginEnd="17dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="@dimen/marging_button_map"
+        android:layout_above="@+id/client_search_bt"
+        android:layout_alignParentEnd="true"
+        app:srcCompat="@drawable/ic_delete" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/ic_plus"
+        android:id="@+id/client_add_bt"
+        android:layout_marginBottom="18dp"
+        android:layout_above="@+id/client_del_bt"
+        android:layout_alignStart="@+id/client_del_bt" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/ic_open"
+        android:id="@+id/client_search_bt"
+        android:layout_marginBottom="50dp"
+        android:layout_marginRight="@dimen/marging_button_map"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/client_del_bt" />
+
+</RelativeLayout>

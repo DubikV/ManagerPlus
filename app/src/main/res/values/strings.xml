@@ -5,7 +5,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Налаштування</string>
-    <string name="action_show_location">Налаштування</string>
+    <string name="action_show_location">Паказати положення</string>
     <string name="action_sync">Виконати обмін</string>
 
     <string name="item_waybill">Дорожній лист</string>
@@ -64,6 +64,7 @@
     <!--AlertDialog-->
     <string name="questions_exit_clear">При виході будуть очищені всі дані!
         Ви впевнені що хочете вийти ?</string>
+    <string name="questions_data_save">Зберегти дані в базу?</string>
     <string name="questions_title_info">Інфо</string>
     <string name="questions_answer_yes">Так</string>
     <string name="questions_answer_no">Ні</string>
@@ -110,6 +111,10 @@
     <string name="visit_type">Тип події</string>
 
     <!--Clients-->
-    <string name="client_name">Клієнт</string>
+    <string name="client">Клієнт</string>
+    <string name="clients">Клієнти</string>
+    <string name="client_name">Найменування</string>
+    <string name="client_phone">Телефон</string>
+    <string name="client_adress">Адреса</string>
 
 </resources>

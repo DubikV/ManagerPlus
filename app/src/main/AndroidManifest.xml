@@ -73,6 +73,9 @@
             android:label="@string/action_settings">
         </activity>
         <activity
+            android:name=".activity.ClientDetailActivity">
+        </activity>
+        <activity
             android:name=".activity.MapActivity">
         </activity>
     </application>
