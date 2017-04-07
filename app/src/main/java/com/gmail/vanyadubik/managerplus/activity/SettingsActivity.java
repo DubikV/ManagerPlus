@@ -1,7 +1,7 @@
 package com.gmail.vanyadubik.managerplus.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -21,12 +21,13 @@ import java.io.IOException;
 import java.util.Properties;
 
 import javax.inject.Inject;
+
 import static com.gmail.vanyadubik.managerplus.common.Consts.LOGIN;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_SYNK_TRACK_NAME;
 import static com.gmail.vanyadubik.managerplus.common.Consts.PASSWORD;
 import static com.gmail.vanyadubik.managerplus.common.Consts.SERVER;
 
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends AppCompatActivity {
     @Inject
     DataRepository dataRepository;
 
@@ -39,6 +40,7 @@ public class SettingsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        getSupportActionBar().setTitle(getResources().getString(R.string.action_settings));
 
         ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
 

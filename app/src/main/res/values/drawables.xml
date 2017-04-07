@@ -35,4 +35,5 @@
     <item name="ic_calendar_grey" type="drawable">@mipmap/ic_calendar_grey</item>
     <item name="ic_visit" type="drawable">@mipmap/ic_visit</item>
     <item name="ic_visit_grey" type="drawable">@mipmap/ic_visit_grey</item>
+    <item name="ic_arrow_back" type="drawable">@mipmap/ic_arrow_back</item>
 </resources>

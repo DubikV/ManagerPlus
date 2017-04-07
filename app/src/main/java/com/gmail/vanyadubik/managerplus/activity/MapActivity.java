@@ -12,9 +12,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -44,12 +45,13 @@ import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.R.id.map;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
+import static com.gmail.vanyadubik.managerplus.common.Consts.WIDTH_POLYLINE_MAP;
 
-public class MapActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
+public class MapActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback {
 
     @Inject
@@ -65,12 +67,13 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
     private PolylineOptions pOptions;
     private FloatingActionButton current_position;
     private Boolean moveMarker;
+    private Waybill_Element waybill;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_map);
+        getSupportActionBar().setTitle(getResources().getString(R.string.map_name));
 
         ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
 
@@ -173,6 +176,23 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.map_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_back) {
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public void onLocationChanged(Location location) {
@@ -188,7 +208,7 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
         mLocationRequest.setPriority(TYPE_PRIORITY_CONNECTION_GPS);
         mLocationRequest.setInterval(MIN_TIME_WRITE_TRACK);
         mLocationRequest.setFastestInterval(MIN_TIME_WRITE_TRACK);
-        mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_WRITE_TRACK);
+        mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_LOCATION_MAP);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
@@ -242,16 +262,9 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
     protected void onResume() {
         super.onResume();
 
-        Waybill_Element waybill = dataRepository.getLastWaybill();
-
-        if(waybill==null){
-            return;
-        }
+        waybill = dataRepository.getLastWaybill();
 
         setPolylineOptions();
-
-        pOptions = dataRepository.getBuildTrackLatLng(pOptions, waybill.getDateStart(),
-                waybill.getDateEnd().getTime() <1000 ? LocalDateTime.now().toDate() : waybill.getDateEnd());
 
         insertMarker();
     }
@@ -284,11 +297,6 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return super.onCreateOptionsMenu(menu);
-    }
-
     private void setUpMap() {
 
 //        if (Build.VERSION.SDK_INT < 21) {
@@ -312,7 +320,7 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
         }
 
         pOptions = new PolylineOptions()
-                .width(5)
+                .width(WIDTH_POLYLINE_MAP)
                 .color(getResources().getColor(R.color.colorPrimary))
                 .geodesic(true);
     }
@@ -323,6 +331,12 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
             polylineTrack.remove();
         }
 
+        if(waybill==null){
+            return;
+        }
+
+        pOptions = dataRepository.getBuildTrackLatLng(pOptions, waybill.getDateStart(),
+                waybill.getDateEnd().getTime() <1000 ? LocalDateTime.now().toDate() : waybill.getDateEnd());
 
         if(pOptions!=null && mMap != null) {
 
@@ -334,8 +348,6 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
     }
 
     private void insertMarker() {
-
-        setPolylineTrack();
 
         if(lastCurrentLocation!=null&&mMap!=null) {
 
@@ -357,6 +369,8 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
             }
         }
+
+        setPolylineTrack();
 
     }
 
