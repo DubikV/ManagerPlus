@@ -164,7 +164,7 @@ public class SyncIntentTrackService extends IntentService{
                 .setOngoing(true)
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
                 .setProgress(100, 0, false)
-                .setSmallIcon(R.mipmap.ic_sync_success)
+                .setSmallIcon(R.drawable.ic_sync_success)
                 .setContentTitle(mContext.getString(R.string.app_name) +" |"+
                         mContext.getString(R.string.sync_tracklist))
                 .setContentText(mContext.getString(R.string.sync_processing))
@@ -186,7 +186,7 @@ public class SyncIntentTrackService extends IntentService{
         mBuilder.setProgress(100, proggress, false);
 
         if(error){
-            mBuilder.setSmallIcon(R.mipmap.ic_sync_error);
+            mBuilder.setSmallIcon(R.drawable.ic_sync_error);
         }
 
         Notification notification;

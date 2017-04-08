@@ -200,7 +200,7 @@ public class GPSTrackerServiceAndroidAPI extends Service implements LocationList
         mBuilder.setContentIntent(contentIntent)
                 .setOngoing(true)
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                .setSmallIcon(R.mipmap.ic_gps_track_connect)
+                .setSmallIcon(R.drawable.ic_gps_track_connect)
                 .setContentTitle(mContext.getString(R.string.app_name) +" |"+
                         mContext.getString(R.string.gps_tracer_name))
                 .setContentText(mContext.getString(R.string.sync_processing))
@@ -221,7 +221,7 @@ public class GPSTrackerServiceAndroidAPI extends Service implements LocationList
         mBuilder.setContentText(text);
 
         if (error) {
-            mBuilder.setSmallIcon(R.mipmap.ic_gps_track_not_connect);
+            mBuilder.setSmallIcon(R.drawable.ic_gps_track_not_connect);
         }
 
         Notification notification;

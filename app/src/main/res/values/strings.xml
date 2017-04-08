@@ -7,6 +7,10 @@
     <string name="action_settings">Налаштування</string>
     <string name="action_show_location">Паказати положення</string>
     <string name="action_sync">Виконати обмін</string>
+    <string name="action_save">Зберегти</string>
+    <string name="action_return">Назад</string>
+    <string name="action_foto">Фото</string>
+    <string name="action_phone_call">Подзвонити</string>
 
     <string name="item_waybill">Дорожній лист</string>
     <string name="nav_service">Сервіс</string>
@@ -17,7 +21,6 @@
     <string name="prompt_login">Логін</string>
     <string name="prompt_password">Пароль</string>
     <string name="prompt_server_adress">Адреса серверу</string>
-    <string name="action_save">Зберегти</string>
     <string name="action_sign_in_short">Увійти</string>
     <string name="using_track_sync_service">Використ. автоматичну вигрузку треку</string>
     <string name="min_timetrack_sync_service">Період повтору :</string>

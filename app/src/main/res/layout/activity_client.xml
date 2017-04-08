@@ -2,10 +2,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_activity"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-              android:paddingTop="@dimen/activity_vertical_margin">
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/colorGrey">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,7 +18,9 @@
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:hintTextAppearance="@style/text_size_small_style">
+            app:hintTextAppearance="@style/text_size_small_style"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:background="@color/colorWhite">
 
             <EditText
                 android:layout_width="match_parent"
@@ -36,7 +38,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:hintTextAppearance="@style/text_size_small_style"
-            android:layout_marginBottom="@dimen/activity_vertical_margin">
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:background="@color/colorWhite">
 
             <EditText
                 android:layout_width="match_parent"
@@ -53,7 +56,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:hintTextAppearance="@style/text_size_small_style"
-            android:layout_marginBottom="@dimen/activity_vertical_margin">
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:background="@color/colorWhite">
 
             <EditText
                 android:layout_width="match_parent"
@@ -72,21 +76,28 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="80dp">
+        android:layout_height="@dimen/base_button_height"
+        android:layout_marginRight="@dimen/base_button_margin_left"
+        android:layout_marginLeft="@dimen/base_button_margin_left"
+        android:layout_marginBottom="@dimen/base_button_margin_botton">
 
         <Button
             android:id="@+id/close_client_detail_button"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:background="@drawable/button_base_left"
+            android:layout_weight="1"
+            android:textColor='@color/colorWhite'
+            android:text="@string/action_return"
+            android:textSize="@dimen/base_button_textsize"/>
         <Button
             android:id="@+id/save_client_detail_button"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/shape_button_right_botton"
+            android:background="@drawable/button_base_right"
             android:text="@string/action_save"
             android:textColor='@color/colorWhite'
-            android:textSize="@dimen/text_size_medium"
+            android:textSize="@dimen/base_button_textsize"
             android:layout_weight="1"/>
     </LinearLayout>
 

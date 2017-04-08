@@ -46,7 +46,7 @@ import javax.inject.Inject;
 import static com.gmail.vanyadubik.managerplus.R.id.map;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_LOCATION_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.WIDTH_POLYLINE_MAP;
@@ -206,8 +206,8 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
     public void onConnected(@Nullable Bundle bundle) {
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(TYPE_PRIORITY_CONNECTION_GPS);
-        mLocationRequest.setInterval(MIN_TIME_WRITE_TRACK);
-        mLocationRequest.setFastestInterval(MIN_TIME_WRITE_TRACK);
+        mLocationRequest.setInterval(MIN_TIME_LOCATION_MAP);
+        mLocationRequest.setFastestInterval(MIN_TIME_LOCATION_MAP);
         mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_LOCATION_MAP);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED
@@ -391,8 +391,8 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
         // Check whether the new location fix is newer or older
         long timeDelta = location.getTime() - currentBestLocation.getTime();
-        boolean isSignificantlyNewer = timeDelta > MIN_TIME_WRITE_TRACK * 2;
-        boolean isSignificantlyOlder = timeDelta < -MIN_TIME_WRITE_TRACK * 2;
+        boolean isSignificantlyNewer = timeDelta > MIN_TIME_LOCATION_MAP * 2;
+        boolean isSignificantlyOlder = timeDelta < -MIN_TIME_LOCATION_MAP * 2;
         boolean isNewer = timeDelta > 0;
 
         // If it's been more than two minutes since the current location, use the new location,

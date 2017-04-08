@@ -5,10 +5,13 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,7 +26,7 @@ import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 
-public class ClientDetailActivity extends FragmentActivity {
+public class ClientDetailActivity extends AppCompatActivity {
 
     @Inject
     DataRepository dataRepository;
@@ -39,6 +42,34 @@ public class ClientDetailActivity extends FragmentActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.visit_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id){
+            case R.id.action_return:
+                closeView();
+                return true;
+            case R.id.action_save:
+                saveData();
+                return true;
+            case R.id.action_call:
+                return true;
+            case R.id.action_foto:
+                return true;
+            case R.id.action_show_location:
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
 
@@ -51,7 +82,7 @@ public class ClientDetailActivity extends FragmentActivity {
         }
 
         mDetailNameView = (EditText) findViewById(R.id.client_detail_name);
-        mDetailNameView.setFocusableInTouchMode(false);
+        //mDetailNameView.setFocusableInTouchMode(false);
         mDetailNameView.setText(client.getName());
 
 
@@ -118,38 +149,42 @@ public class ClientDetailActivity extends FragmentActivity {
         retMemberDet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ClientDetailActivity.this);
-                builder.setMessage(getString(R.string.questions_data_save));
-
-                builder.setPositiveButton(getString(R.string.questions_answer_yes), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        saveData();
-                        dialog.dismiss();
-                        finish();
-                    }
-                });
-
-                builder.setNegativeButton(getString(R.string.questions_answer_no), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        finish();
-                    }
-                });
-                AlertDialog alert = builder.create();
-                alert.show();
-
-                // TODO (start stub): to set size text in AlertDialog
-                TextView textView = (TextView) alert.findViewById(android.R.id.message);
-                textView.setTextSize(getResources().getDimension(R.dimen.text_size_medium));
-                Button button1 = (Button) alert.findViewById(android.R.id.button1);
-                button1.setTextSize(getResources().getDimension(R.dimen.text_size_medium));
-                Button button2 = (Button) alert.findViewById(android.R.id.button2);
-                button2.setTextSize(getResources().getDimension(R.dimen.text_size_medium));
-                // TODO: (end stub) ------------------
+               closeView();
             }
         });
 
+    }
+
+    private void closeView(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(ClientDetailActivity.this);
+        builder.setMessage(getString(R.string.questions_data_save));
+
+        builder.setPositiveButton(getString(R.string.questions_answer_yes), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                saveData();
+                dialog.dismiss();
+                finish();
+            }
+        });
+
+        builder.setNegativeButton(getString(R.string.questions_answer_no), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                finish();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+
+        // TODO (start stub): to set size text in AlertDialog
+        TextView textView = (TextView) alert.findViewById(android.R.id.message);
+        textView.setTextSize(getResources().getDimension(R.dimen.text_size_medium));
+        Button button1 = (Button) alert.findViewById(android.R.id.button1);
+        button1.setTextSize(getResources().getDimension(R.dimen.text_size_medium));
+        Button button2 = (Button) alert.findViewById(android.R.id.button2);
+        button2.setTextSize(getResources().getDimension(R.dimen.text_size_medium));
+        // TODO: (end stub) ------------------
     }
 
     private void saveData() {

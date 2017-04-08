@@ -29,16 +29,16 @@
     </style>
 
     <style name="text_size_small_style" parent="TextAppearance.Design.Hint">
-        <item name="android:textSize">17sp</item>
+        <item name="android:textSize">22sp</item>
     </style>
 
     <style name="textinputlayout_textsize_style" parent="TextAppearance.Design.Hint">
-        <item name="android:textSize">17sp</item>
+        <item name="android:textSize">22sp</item>
     </style>
 
     <style name="NavigationDrawerStyle">
-        <item name="android:textSize">20sp</item>
-        <item name="android:listPreferredItemHeightSmall">20sp</item>
+        <item name="android:textSize">26sp</item>
+        <item name="android:listPreferredItemHeightSmall">26sp</item>
     </style>
 
     <style name="MineTabText" parent="TextAppearance.Design.Tab">

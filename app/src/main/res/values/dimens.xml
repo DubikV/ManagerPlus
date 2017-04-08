@@ -6,7 +6,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">10dp</dimen>
-    <dimen name="text_size_medium">16sp</dimen>
+    <dimen name="text_size_medium">16dp</dimen>
 
     <dimen name="tab_layout_height">15dp</dimen>
     <dimen name="marging_button_map">7dp</dimen>
@@ -15,9 +15,18 @@
     <dimen name="marging_waybill_cap">3dp</dimen>
     <dimen name="pading_edittext_waybill_cap">5dp</dimen>
     <dimen name="textsize_cap">16dp</dimen>
+
+    <!--Table-->
     <dimen name="textsize_table_cap">15dp</dimen>
     <dimen name="textsize_table_item">15dp</dimen>
     <dimen name="textsize_cap_visitstoday">10dp</dimen>
+
+    <!--Base button-->
+    <dimen name="base_button_height">60dp</dimen>
+    <dimen name="base_button_textsize">16dp</dimen>
+    <dimen name="base_button_margin_botton">5dp</dimen>
+    <dimen name="base_button_margin_left">20dp</dimen>
+    <dimen name="base_button_margin_right">20dp</dimen>
 
     <!--Floating action button-->
     <dimen name="design_fab_image_size" tools:override="true">25dp</dimen>
