@@ -11,11 +11,14 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.github.jjobes.slidedatetimepicker.SlideDateTimeListener;
+import com.github.jjobes.slidedatetimepicker.SlideDateTimePicker;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
@@ -28,6 +31,7 @@ import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import org.joda.time.LocalDateTime;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -45,23 +49,25 @@ public class VisitDetailActivity extends AppCompatActivity {
     private LocationPoint visitPosition;
     private SimpleDateFormat dateFormatter;
 
-//    private SlideDateTimeListener listener = new SlideDateTimeListener() {
-//
-//        @Override
-//        public void onDateTimeSet(Date date)
-//        {
-//            Toast.makeText(SampleActivity.this,
-//                    mFormatter.format(date), Toast.LENGTH_SHORT).show();
-//        }
-//
-//        // Optional cancel listener
-//        @Override
-//        public void onDateTimeCancel()
-//        {
-//            Toast.makeText(SampleActivity.this,
-//                    "Canceled", Toast.LENGTH_SHORT).show();
-//        }
-//    };
+    private SlideDateTimeListener dateTimeListener = new SlideDateTimeListener() {
+
+        @Override
+        public void onDateTimeSet(Date date)
+        {
+            if(visit!=null){
+                visit.setDate(date);
+            }
+
+            mDetailDateView.setText(dateFormatter.format(date));
+
+        }
+
+        @Override
+        public void onDateTimeCancel()
+        {
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +78,30 @@ public class VisitDetailActivity extends AppCompatActivity {
         dateFormatter = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
         mDetailDateView = (EditText) findViewById(R.id.visit_detail_date);
+        mDetailDateView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Date date = new Date();
+                if(visit!=null){
+                    if(visit.getDate()!=null){
+                        if(visit.getDate().getTime() > 1000) {
+                            date = visit.getDate();
+                        }
+                    }
+                }
+
+                new SlideDateTimePicker.Builder(getSupportFragmentManager())
+                        .setListener(dateTimeListener)
+                        .setInitialDate(date)
+                        .setIs24HourTime(true)
+                        .setIndicatorColor(getResources().getColor(R.color.colorPrimary))
+                        .setTheme(SlideDateTimePicker.HOLO_LIGHT)
+                        .build()
+                        .show();
+                return true;
+            }
+        });
+
         mDetailTypeView = (EditText) findViewById(R.id.visit_detail_typevisit);
         mDetailClientView = (EditText) findViewById(R.id.visit_detail_client);
         mDetailInfoView = (EditText) findViewById(R.id.visit_detail_info);
@@ -255,7 +285,7 @@ public class VisitDetailActivity extends AppCompatActivity {
                     .inDB(visit.isInDB())
                     .date(visit.getDate())
                     .dateVisit(visit.getDateVisit())
-                    .clientExternalId(client.getExternalId())
+                    .clientExternalId( client != null ? client.getExternalId() : "")
                     .createLP(visitPosition.getId())
                     .visitLP(idPosition)
                     .typeVisit(visit.getTypeVisit())

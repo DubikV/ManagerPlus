@@ -46,6 +46,7 @@ dependencies {
     compile 'io.hypertrack:smart-scheduler:0.0.3'
     compile 'com.google.android.gms:play-services-maps:9.6.1'
     compile 'com.google.android.gms:play-services:9.6.1'
+    compile project(':slideDateTimePicker')
 
     // Version 23+ is required
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
