@@ -1,8 +1,10 @@
 package com.gmail.vanyadubik.managerplus.repository;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 
 import com.gmail.vanyadubik.managerplus.model.ParameterInfo;
 import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
@@ -23,6 +25,9 @@ import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.TrackLis
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.UserSettings;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.VisitContract;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.WaybillContract;
+import static com.gmail.vanyadubik.managerplus.repository.ModelConverter.buildClient;
+import static com.gmail.vanyadubik.managerplus.repository.ModelConverter.buildVisit;
+import static com.gmail.vanyadubik.managerplus.repository.ModelConverter.convertLocationPoint;
 
 public class DataRepositoryImpl implements DataRepository{
 
@@ -48,7 +53,7 @@ public class DataRepositoryImpl implements DataRepository{
 
             List<LocationPoint> result = new ArrayList<>();
             while (cursor.moveToNext())
-                result.add(ModelConverter.buildLocationPoint(cursor));
+                result.add(ModelConverter.buildTrackPoint(cursor));
             return result;
         }
     }
@@ -91,7 +96,7 @@ public class DataRepositoryImpl implements DataRepository{
 
             List<LocationPoint> result = new ArrayList<>();
             while (cursor.moveToNext())
-                result.add(ModelConverter.buildLocationPoint(cursor));
+                result.add(ModelConverter.buildTrackPoint(cursor));
             return result;
         }
     }
@@ -111,7 +116,7 @@ public class DataRepositoryImpl implements DataRepository{
 
             List<LocationPoint> result = new ArrayList<>();
             while (cursor.moveToNext())
-                result.add(ModelConverter.buildLocationPoint(cursor));
+                result.add(ModelConverter.buildTrackPoint(cursor));
             return result;
         }
     }
@@ -149,15 +154,15 @@ public class DataRepositoryImpl implements DataRepository{
                 null, TrackListContract.DEFAULT_SORT_ORDER)) {
 
             if (cursor == null || !cursor.moveToFirst()) return null;
-            return ModelConverter.buildLocationPoint(cursor);
+            return ModelConverter.buildTrackPoint(cursor);
         }
     }
 
     @Override
-    public LocationPoint getLocationPoint(String id) {
+    public LocationPoint getLocationPoint(int id) {
         try (Cursor cursor = contentResolver.query(LocationPointContract.CONTENT_URI,
-                LocationPointContract.PROJECTION_ALL, LocationPointContract._ID + " =?",
-                new String[]{id}, LocationPointContract.DEFAULT_SORT_ORDER)) {
+                LocationPointContract.PROJECTION_ALL, LocationPointContract._ID + "=" + id,
+                null, LocationPointContract.DEFAULT_SORT_ORDER)) {
 
             if (cursor == null || !cursor.moveToFirst()) return null;
             return ModelConverter.buildLocationPoint(cursor);
@@ -212,13 +217,13 @@ public class DataRepositoryImpl implements DataRepository{
 
     @Override
     public List<Client_Element> getAllClients() {
-        try (Cursor cursor = contentResolver.query(VisitContract.CONTENT_URI,
-                VisitContract.PROJECTION_ALL, null, null, VisitContract.DEFAULT_SORT_ORDER)) {
+        try (Cursor cursor = contentResolver.query(ClientContract.CONTENT_URI,
+                ClientContract.PROJECTION_ALL, null, null, ClientContract.DEFAULT_SORT_ORDER)) {
 
             if (cursor == null) return null;
             List<Client_Element> result = new ArrayList<>();
             while (cursor.moveToNext())
-                result.add(ModelConverter.buildClient(cursor));
+                result.add(buildClient(cursor));
             return result;
         }
     }
@@ -252,7 +257,25 @@ public class DataRepositoryImpl implements DataRepository{
                 return null;
             }
             if (cursor.moveToFirst()) {
-                return ModelConverter.buildClient(cursor);
+                return buildClient(cursor);
+            } else {
+                return null;
+            }
+        }
+    }
+
+    @Override
+    public Visit_Element getVisit(String externalId) {
+        try (Cursor cursor = contentResolver.query(
+                VisitContract.CONTENT_URI,
+                VisitContract.PROJECTION_ALL, VisitContract.VISIT_ID + "='" + externalId + "'",
+                null, VisitContract.DEFAULT_SORT_ORDER)) {
+
+            if (cursor == null) {
+                return null;
+            }
+            if (cursor.moveToFirst()) {
+                return buildVisit(cursor);
             } else {
                 return null;
             }
@@ -261,7 +284,7 @@ public class DataRepositoryImpl implements DataRepository{
 
     @Override
     public void insertTrackPoint(LocationPoint locationPoint) {
-        ContentValues values = ModelConverter.convertLocationPoint(locationPoint);
+        ContentValues values = ModelConverter.convertTrackPoint(locationPoint);
         contentResolver.insert(TrackListContract.CONTENT_URI, values);
     }
 
@@ -279,9 +302,10 @@ public class DataRepositoryImpl implements DataRepository{
     }
 
     @Override
-    public void insertLocationPoint(LocationPoint locationPoint) {
-        ContentValues values = ModelConverter.convertLocationPoint(locationPoint);
-        contentResolver.insert(LocationPointContract.CONTENT_URI, values);
+    public int insertLocationPoint(LocationPoint locationPoint) {
+        ContentValues values = convertLocationPoint(locationPoint);
+        Uri uri = contentResolver.insert(LocationPointContract.CONTENT_URI, values);
+        return (int)ContentUris.parseId(uri);
     }
 
     @Override

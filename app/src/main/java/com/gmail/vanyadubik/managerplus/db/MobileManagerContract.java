@@ -19,7 +19,6 @@ public class MobileManagerContract {
         public static final String DATE = "date";
         public static final String LATITUDE = "latitude";
         public static final String LONGITUDE = "longitude";
-        public static final String IN_CAR = "incar";
         public static final String UNLOADED = "unloaded";
 
         public static final Uri CONTENT_URI =
@@ -40,7 +39,7 @@ public class MobileManagerContract {
                         + TABLE_NAME;
 
         public static final String[] PROJECTION_ALL =
-                {_ID, DATE, LATITUDE, LONGITUDE, IN_CAR, UNLOADED};
+                {_ID, DATE, LATITUDE, LONGITUDE, UNLOADED};
 
         public static final String[] UNIQUE_COLUMNS =
                 {DATE};
@@ -106,6 +105,7 @@ public class MobileManagerContract {
         public static final String VISIT_CLIENT = "visit_client";
         public static final String VISIT_POINT_CREATE = "point_create";
         public static final String VISIT_POINT_VISIT = "point_visit";
+        public static final String VISIT_TYPE = "visit_type";
         public static final String VISIT_INFORMATION = "visit_info";
 
         public static final Uri CONTENT_URI =
@@ -127,7 +127,8 @@ public class MobileManagerContract {
 
         public static final String[] PROJECTION_ALL =
                 {_ID, VISIT_ID, VISIT_DELETED, VISIT_INDB, VISIT_DATE, VISIT_DATE_VISIT,
-                        VISIT_CLIENT, VISIT_POINT_CREATE, VISIT_POINT_VISIT, VISIT_INFORMATION};
+                        VISIT_CLIENT, VISIT_POINT_CREATE, VISIT_POINT_VISIT, VISIT_TYPE,
+                        VISIT_INFORMATION};
 
         public static final String[] UNIQUE_COLUMNS =
                 {VISIT_ID};
@@ -184,7 +185,6 @@ public class MobileManagerContract {
         public static final String LOCATION_DATE = "date";
         public static final String LOCATION_LATITUDE = "latitude";
         public static final String LOCATION_LONGITUDE = "longitude";
-        public static final String LOCATION_IN_CAR = "inCar";
 
         public static final Uri CONTENT_URI =
                 Uri.withAppendedPath(
@@ -204,10 +204,10 @@ public class MobileManagerContract {
                         + TABLE_NAME;
 
         public static final String[] PROJECTION_ALL =
-                {_ID, LOCATION_DATE, LOCATION_LATITUDE, LOCATION_LONGITUDE, LOCATION_IN_CAR};
+                {_ID, LOCATION_DATE, LOCATION_LATITUDE, LOCATION_LONGITUDE};
 
         public static final String[] UNIQUE_COLUMNS =
-                {LOCATION_DATE};
+                {_ID};
 
         public static final String DEFAULT_SORT_ORDER = LOCATION_DATE + " ASC";
 

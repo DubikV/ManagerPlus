@@ -4,6 +4,7 @@ import com.gmail.vanyadubik.managerplus.activity.ClientDetailActivity;
 import com.gmail.vanyadubik.managerplus.activity.MapActivity;
 import com.gmail.vanyadubik.managerplus.activity.SettingsActivity;
 import com.gmail.vanyadubik.managerplus.activity.StartActivity;
+import com.gmail.vanyadubik.managerplus.activity.VisitDetailActivity;
 import com.gmail.vanyadubik.managerplus.fragment.ClientListFragment;
 import com.gmail.vanyadubik.managerplus.fragment.FuelListFragment;
 import com.gmail.vanyadubik.managerplus.fragment.VisitListFragment;
@@ -43,6 +44,8 @@ public interface DIComponent {
     void inject(FuelListFragment fuelListFragment);
 
     void inject(VisitListFragment visitListFragment);
+
+    void inject(VisitDetailActivity visitDetailActivity);
 
     void inject(ClientListFragment clientListFragment);
 

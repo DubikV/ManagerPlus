@@ -6,13 +6,13 @@ public class Waybill_Element extends Element {
 
     private Date dateStart;
     private Date dateEnd;
-    private String startLP;
-    private String endLP;
+    private int startLP;
+    private int endLP;
     private int startOdometer;
     private int endOdometer;
 
     public Waybill_Element(int id, String externalId, boolean deleted, boolean inDB,
-             Date dateStart, Date dateEnd, String startLP, String endLP,
+             Date dateStart, Date dateEnd, int startLP, int endLP,
                            int startOdometer, int endOdometer) {
         super(id, externalId, deleted, inDB);
         this.startLP = startLP;
@@ -23,11 +23,11 @@ public class Waybill_Element extends Element {
         this.endOdometer = endOdometer;
     }
 
-    public String getStartLP() {
+    public int getStartLP() {
         return startLP;
     }
 
-    public String getEndLP() {
+    public int getEndLP() {
         return endLP;
     }
 
@@ -55,11 +55,11 @@ public class Waybill_Element extends Element {
         this.dateEnd = dateEnd;
     }
 
-    public void setStartLP(String startLP) {
+    public void setStartLP(int startLP) {
         this.startLP = startLP;
     }
 
-    public void setEndLP(String endLP) {
+    public void setEndLP(int endLP) {
         this.endLP = endLP;
     }
 
@@ -82,8 +82,8 @@ public class Waybill_Element extends Element {
         private boolean inDB;
         private Date dateStart;
         private Date dateEnd;
-        private String startLP;
-        private String endLP;
+        private int startLP;
+        private int endLP;
         private int startOdometer;
         private int endOdometer;
 
@@ -128,12 +128,12 @@ public class Waybill_Element extends Element {
             return this;
         }
 
-        public Builder startLP(String startLP) {
+        public Builder startLP(int startLP) {
             this.startLP = startLP;
             return this;
         }
 
-        public Builder endLP(String endLP) {
+        public Builder endLP(int endLP) {
             this.endLP = endLP;
             return this;
         }

@@ -12,18 +12,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.MapActivity;
+import com.gmail.vanyadubik.managerplus.adapter.VisitListAdapter;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
+import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
+import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
 import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
+import com.gmail.vanyadubik.managerplus.model.documents.VisitList;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 
 import org.joda.time.LocalDateTime;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -43,6 +50,8 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
     private EditText startDateEditText, endDateEditText, startOdometerEditText, endOdometerEditText;
     private SimpleDateFormat dateFormatter;
     private Waybill_Element waybill;
+    private List<VisitList> listVisits;
+    private ListView listVisitsView;
 
     public static WorkPlaseFragment getInstance() {
 
@@ -89,6 +98,8 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
             }
         });
 
+        listVisitsView = (ListView) view.findViewById(R.id.visits_today_listview);
+
         return view;
     }
 
@@ -126,7 +137,26 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
 
         if(waybill!=null) {
             initDataInCap();
+        }else{
+            return;
         }
+
+        listVisits = new ArrayList<>();
+
+        List<Visit_Element> visits = dataRepository.getVisitByPeriod(waybill.getDateStart(),
+                waybill.getDateEnd().getTime() <1000 ? LocalDateTime.now().toDate() : waybill.getDateEnd());
+
+        for (Visit_Element visit : visits) {
+            VisitList visitList = new VisitList(visit.getExternalId(), visit.getDate(), visit.getTypeVisit());
+            Client_Element client = dataRepository.getClient(visit.getExternalId());
+            if (client != null) {
+                visitList.setClient(client.getName());
+            }
+            listVisits.add(visitList);
+        }
+
+        VisitListAdapter adapter = new VisitListAdapter(getActivity(), listVisits);
+        listVisitsView.setAdapter(adapter);
     }
 
     @Override

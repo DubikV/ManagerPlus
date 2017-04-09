@@ -107,18 +107,26 @@ public class DataContentProvider extends ContentProvider{
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
+        long inserted;
         SQLiteDatabase db = mobileManagerDb.getWritableDatabase();
         String table = getTable(uri);
-
         String[] uniqueColumn = getUniqueColumn(uri);
+
         if (uniqueColumn != null) {
             String selection = buildSelection(uniqueColumn);
             String[] args = buildSelectionArgs(uniqueColumn, values);
 
-            db.update(table, values, selection, args);
+            inserted = db.update(table, values, selection, args);
         }
 
-        return db.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_IGNORE) != -1 ? uri : null;
+        inserted = db.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+
+        if(inserted != -1){
+            return Uri.parse(uri + "/" + inserted);
+        }else{
+            return null;
+        }
+
     }
 
     @Override

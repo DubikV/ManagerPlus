@@ -28,7 +28,6 @@ public class MobileManagerDb extends SQLiteOpenHelper {
                 + TrackListContract.DATE + " integer,"
                 + TrackListContract.LATITUDE + " real,"
                 + TrackListContract.LONGITUDE + " real,"
-                + TrackListContract.IN_CAR + " numeric,"
                 + TrackListContract.UNLOADED + " numeric,"
                 + "UNIQUE (" + TextUtils.join(", ", TrackListContract.UNIQUE_COLUMNS) + ")"
                 + ");");
@@ -38,7 +37,6 @@ public class MobileManagerDb extends SQLiteOpenHelper {
                 + LocationPointContract.LOCATION_DATE + " integer,"
                 + LocationPointContract.LOCATION_LATITUDE + " real,"
                 + LocationPointContract.LOCATION_LONGITUDE + " real,"
-                + LocationPointContract.LOCATION_IN_CAR + " numeric,"
                 + "UNIQUE (" + TextUtils.join(", ", LocationPointContract.UNIQUE_COLUMNS) + ")"
                 + ");");
 
@@ -49,8 +47,8 @@ public class MobileManagerDb extends SQLiteOpenHelper {
                 + WaybillContract.WAYBILL_INDB + " numeric,"
                 + WaybillContract.WAYBILL_DATE_START + " integer,"
                 + WaybillContract.WAYBILL_DATE_END + " integer,"
-                + WaybillContract.WAYBILL_POINT_START + " text,"
-                + WaybillContract.WAYBILL_POINT_END + " text,"
+                + WaybillContract.WAYBILL_POINT_START + " integer,"
+                + WaybillContract.WAYBILL_POINT_END + " integer,"
                 + WaybillContract.WAYBILL_ODOMETER_START + " integer,"
                 + WaybillContract.WAYBILL_ODOMETER_END + " integer,"
                 + "UNIQUE (" + TextUtils.join(", ", WaybillContract.UNIQUE_COLUMNS) + ")"
@@ -64,8 +62,9 @@ public class MobileManagerDb extends SQLiteOpenHelper {
                 + VisitContract.VISIT_DATE + " integer,"
                 + VisitContract.VISIT_DATE_VISIT + " integer,"
                 + VisitContract.VISIT_CLIENT + " text,"
-                + VisitContract.VISIT_POINT_CREATE + " text,"
-                + VisitContract.VISIT_POINT_VISIT + " text,"
+                + VisitContract.VISIT_POINT_CREATE + " integer,"
+                + VisitContract.VISIT_POINT_VISIT + " integer,"
+                + VisitContract.VISIT_TYPE + " text,"
                 + VisitContract.VISIT_INFORMATION + " text,"
                 + "UNIQUE (" + TextUtils.join(", ", VisitContract.UNIQUE_COLUMNS) + ")"
                 + ");");
@@ -78,7 +77,7 @@ public class MobileManagerDb extends SQLiteOpenHelper {
                 + ClientContract.CLIENT_NAME + " text,"
                 + ClientContract.CLIENT_ADDRESS + " text,"
                 + ClientContract.CLIENT_PHONE + " text,"
-                + ClientContract.CLIENT_POSITION + " text,"
+                + ClientContract.CLIENT_POSITION + " integer,"
                 + "UNIQUE (" + TextUtils.join(", ", ClientContract.UNIQUE_COLUMNS) + ")"
                 + ");");
 

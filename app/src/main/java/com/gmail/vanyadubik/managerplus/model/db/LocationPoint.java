@@ -46,6 +46,18 @@ public class LocationPoint implements Serializable {
         return inCar;
     }
 
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
     public static Builder builder() {
         return new Builder();
     }

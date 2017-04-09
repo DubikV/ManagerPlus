@@ -1,5 +1,7 @@
 package com.gmail.vanyadubik.managerplus.repository;
 
+import android.net.Uri;
+
 import com.gmail.vanyadubik.managerplus.model.ParameterInfo;
 import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
@@ -24,7 +26,7 @@ public interface DataRepository {
 
     LocationPoint getLastTrackPoint();
 
-    LocationPoint getLocationPoint(String id);
+    LocationPoint getLocationPoint(int id);
 
     Waybill_Element getLastWaybill();
 
@@ -38,11 +40,13 @@ public interface DataRepository {
 
     Client_Element getClient(String externalId);
 
+    Visit_Element getVisit(String externalId);
+
     void insertTrackPoint(LocationPoint locationPoint);
 
     void SetTrackListUloadedLocationTrack(Date dateFrom, Date dateBy);
 
-    void insertLocationPoint(LocationPoint locationPoint);
+    int insertLocationPoint(LocationPoint locationPoint);
 
     void insertClient(Client_Element client);
 

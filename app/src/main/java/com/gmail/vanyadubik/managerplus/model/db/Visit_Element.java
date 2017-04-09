@@ -7,43 +7,78 @@ public class Visit_Element extends Element {
     private Date date;
     private Date dateVisit;
     private String clientExternalId;
-    private String createLP;
-    private String visitLP;
+    private int createLP;
+    private int visitLP;
+    private String typeVisit;
     private String information;
 
     public Visit_Element(int id, String externalId, boolean deleted, boolean inDB,
-                Date date, Date dateVisit, String clientExternalId, String createLP, String visitLP, String information) {
+                Date date, Date dateVisit, String clientExternalId, int createLP, int visitLP,
+                         String typeVisit, String information) {
         super(id, externalId, deleted, inDB);
         this.date = date;
         this.dateVisit = dateVisit;
         this.clientExternalId = clientExternalId;
         this.createLP = createLP;
         this.visitLP = visitLP;
+        this.typeVisit = typeVisit;
         this.information = information;
     }
 
-    public Date getDate() {
-        return date;
+    public String getInformation() {
+        return information;
     }
 
-    public Date getDateVisit() {
-        return dateVisit;
+    public void setInformation(String information) {
+        this.information = information;
+    }
+
+    public String getTypeVisit() {
+        return typeVisit;
+    }
+
+    public void setTypeVisit(String typeVisit) {
+        this.typeVisit = typeVisit;
+    }
+
+    public int getVisitLP() {
+        return visitLP;
+    }
+
+    public void setVisitLP(int visitLP) {
+        this.visitLP = visitLP;
+    }
+
+    public int getCreateLP() {
+        return createLP;
+    }
+
+    public void setCreateLP(int createLP) {
+        this.createLP = createLP;
     }
 
     public String getClientExternalId() {
         return clientExternalId;
     }
 
-    public String getCreateLP() {
-        return createLP;
+    public void setClientExternalId(String clientExternalId) {
+        this.clientExternalId = clientExternalId;
     }
 
-    public String getVisitLP() {
-        return visitLP;
+    public Date getDateVisit() {
+        return dateVisit;
     }
 
-    public String getInformation() {
-        return information;
+    public void setDateVisit(Date dateVisit) {
+        this.dateVisit = dateVisit;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public static Builder builder() {
@@ -58,8 +93,9 @@ public class Visit_Element extends Element {
         private Date date;
         private Date dateVisit;
         private String clientExternalId;
-        private String createLP;
-        private String visitLP;
+        private int createLP;
+        private int visitLP;
+        private String typeVisit;
         private String information;
 
 
@@ -98,13 +134,18 @@ public class Visit_Element extends Element {
             return this;
         }
 
-        public Builder createLP(String createLP) {
+        public Builder createLP(int createLP) {
             this.createLP = createLP;
             return this;
         }
 
-        public Builder visitLP(String visitLP) {
+        public Builder visitLP(int visitLP) {
             this.visitLP = visitLP;
+            return this;
+        }
+
+        public Builder typeVisit(String typeVisit) {
+            this.typeVisit = typeVisit;
             return this;
         }
 
@@ -115,7 +156,7 @@ public class Visit_Element extends Element {
 
         public Visit_Element build() {
             return new Visit_Element(id, externalId, deleted, inDB,
-                    date, dateVisit, clientExternalId, createLP, visitLP, information);
+                    date, dateVisit, clientExternalId, createLP, visitLP, typeVisit, information);
         }
     }
 }

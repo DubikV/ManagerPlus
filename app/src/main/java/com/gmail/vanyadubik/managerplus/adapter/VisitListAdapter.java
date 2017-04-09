@@ -1,23 +1,31 @@
 package com.gmail.vanyadubik.managerplus.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 import com.gmail.vanyadubik.managerplus.R;
+import com.gmail.vanyadubik.managerplus.activity.ClientDetailActivity;
+import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
 import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
+import com.gmail.vanyadubik.managerplus.model.documents.VisitList;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class VisitListAdapter extends BaseAdapter {
 
-    private List<Visit_Element> list;
+    private List<VisitList> list;
     private LayoutInflater layoutInflater;
+    private Context context;
 
-    public VisitListAdapter(Context context, List<Visit_Element> list) {
+    public VisitListAdapter(Context context, List<VisitList> list) {
         this.list = list;
+        this.context = context;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -42,24 +50,30 @@ public class VisitListAdapter extends BaseAdapter {
         if (view == null) {
             view = layoutInflater.inflate(R.layout.waybill_list_item, parent, false);
         }
-        Visit_Element visit = getDataTable(position);
+        final VisitList visit = getDataTable(position);
 
-//        TextView waybilllistDate = (TextView) view.findViewById(R.id.waybilllist_date);
-//        waybilllistDate.setText(new SimpleDateFormat("dd.MM.yyyy").format(waybill.getDateStart()));
-//
-//        TextView waybilllistOdStart = (TextView) view.findViewById(R.id.waybilllist_odometer_start);
-//        waybilllistOdStart.setText(String.valueOf(waybill.getStartOdometer()));
-//
-//        TextView waybilllistOdEnd = (TextView) view.findViewById(R.id.waybilllist_odometer_end);
-//        waybilllistOdEnd.setText(String.valueOf(waybill.getEndOdometer()));
-//
-//        TextView waybilllistKm = (TextView) view.findViewById(R.id.waybilllist_km);
-//        waybilllistKm.setText(String.valueOf(waybill.getEndOdometer()-waybill.getStartOdometer()));
+        TextView date = (TextView) view.findViewById(R.id.visit_item_date);
+        date.setText(new SimpleDateFormat("dd.MM.yyyy").format(visit.getDate().getTime()));
+
+        TextView client = (TextView) view.findViewById(R.id.visit_item_client);
+        client.setText(visit.getClient());
+
+        TextView typevisit = (TextView) view.findViewById(R.id.visit_item_typevisit);
+        typevisit.setText(visit.getTypeVisit());
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.getContext().startActivity(
+                        new Intent(context, ClientDetailActivity.class)
+                                .putExtra(MobileManagerContract.VisitContract.VISIT_ID, visit.getExternalId()));
+            }
+        });
 
         return view;
     }
 
-    private Visit_Element getDataTable(int position) {
-        return (Visit_Element) getItem(position);
+    private VisitList getDataTable(int position) {
+        return (VisitList) getItem(position);
     }
 }

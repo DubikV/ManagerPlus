@@ -1,7 +1,9 @@
 package com.gmail.vanyadubik.managerplus.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,12 +11,19 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.gmail.vanyadubik.managerplus.R;
+import com.gmail.vanyadubik.managerplus.activity.ClientDetailActivity;
+import com.gmail.vanyadubik.managerplus.activity.VisitDetailActivity;
 import com.gmail.vanyadubik.managerplus.adapter.VisitListAdapter;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
+import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
+import com.gmail.vanyadubik.managerplus.model.documents.VisitList;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 
+import org.joda.time.LocalDate;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -26,7 +35,7 @@ public class VisitListFragment extends Fragment implements FragmentBecameVisible
     DataRepository dataRepository;
 
     private View view;
-    private List<Visit_Element> list;
+    private List<VisitList> list;
     private ListView listView;
 
     public static VisitListFragment getInstance() {
@@ -45,13 +54,33 @@ public class VisitListFragment extends Fragment implements FragmentBecameVisible
 
         listView = (ListView) view.findViewById(R.id.visitlist_listview);
 
+        FloatingActionButton visitAddBtn = (FloatingActionButton) view.findViewById(R.id.visit_add_bt);
+        visitAddBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(), VisitDetailActivity.class));
+            }
+        });
+
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        list = dataRepository.getAllVisit();
+
+        list = new ArrayList<>();
+
+        List<Visit_Element> visits = dataRepository.getAllVisit();
+
+        for (Visit_Element visit : visits) {
+            VisitList visitList = new VisitList(visit.getExternalId(), visit.getDate(), visit.getTypeVisit());
+            Client_Element client = dataRepository.getClient(visit.getExternalId());
+            if (client != null) {
+                visitList.setClient(client.getName());
+            }
+            list.add(visitList);
+        }
 
         VisitListAdapter adapter = new VisitListAdapter(getActivity(), list);
         listView.setAdapter(adapter);

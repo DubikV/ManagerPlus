@@ -112,6 +112,9 @@
     <string name="visit_name">Події</string>
     <string name="visit_plane_name">Планування подій</string>
     <string name="visit_type">Тип події</string>
+    <string name="visit_client">Клієнт</string>
+    <string name="visit_date">Дата</string>
+    <string name="visit_info">Інформація</string>
 
     <!--Clients-->
     <string name="client">Клієнт</string>

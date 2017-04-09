@@ -78,6 +78,9 @@
         <activity
             android:name=".activity.MapActivity">
         </activity>
+        <activity
+            android:name=".activity.VisitDetailActivity">
+        </activity>
     </application>
 
 </manifest>
