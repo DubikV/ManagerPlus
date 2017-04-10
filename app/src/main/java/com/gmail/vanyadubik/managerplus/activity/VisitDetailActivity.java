@@ -5,14 +5,14 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -20,18 +20,18 @@ import android.widget.TextView;
 import com.github.jjobes.slidedatetimepicker.SlideDateTimeListener;
 import com.github.jjobes.slidedatetimepicker.SlideDateTimePicker;
 import com.gmail.vanyadubik.managerplus.R;
+import com.gmail.vanyadubik.managerplus.adapter.ClientSmalListAdapter;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
-import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.ClientContract;
 import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 
 import org.joda.time.LocalDateTime;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -45,9 +45,11 @@ public class VisitDetailActivity extends AppCompatActivity {
 
     private Visit_Element visit;
     private Client_Element client;
-    private EditText mDetailDateView, mDetailTypeView, mDetailClientView, mDetailInfoView, mLatView, mLongView;
+    private EditText mDetailDateView, mDetailTypeView, mDetailInfoView, mLatView, mLongView;
+    private AutoCompleteTextView mDetailClientView;
     private LocationPoint visitPosition;
     private SimpleDateFormat dateFormatter;
+    private ClientSmalListAdapter clientAdapter;
 
     private SlideDateTimeListener dateTimeListener = new SlideDateTimeListener() {
 
@@ -103,7 +105,32 @@ public class VisitDetailActivity extends AppCompatActivity {
         });
 
         mDetailTypeView = (EditText) findViewById(R.id.visit_detail_typevisit);
-        mDetailClientView = (EditText) findViewById(R.id.visit_detail_client);
+
+        mDetailClientView = (AutoCompleteTextView) findViewById(R.id.visit_detail_client);
+        mDetailClientView.setOnTouchListener(new View.OnTouchListener() {
+            final int DRAWABLE_LEFT = 0;
+            final int DRAWABLE_TOP = 1;
+            final int DRAWABLE_RIGHT = 2;
+            final int DRAWABLE_BOTTOM = 3;
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    int leftEdgeOfRightDrawable = mDetailClientView.getRight()
+                            - mDetailClientView.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width();
+                    if (event.getRawX() >= leftEdgeOfRightDrawable) {
+                        mDetailClientView.setText("");
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+        mDetailClientView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                client = clientAdapter.getSuggestions().get(position);
+            }
+        });
         mDetailInfoView = (EditText) findViewById(R.id.visit_detail_info);
     }
 
@@ -197,6 +224,19 @@ public class VisitDetailActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        List<Client_Element> clientsList = dataRepository.getAllClients();
+
+        clientAdapter = new ClientSmalListAdapter(this, clientsList);
+
+        mDetailClientView.setThreshold(1);
+        mDetailClientView.setAdapter(clientAdapter);
+
+    }
+
     private void closeView(){
         AlertDialog.Builder builder = new AlertDialog.Builder(VisitDetailActivity.this);
         builder.setMessage(getString(R.string.questions_data_save));
@@ -286,10 +326,10 @@ public class VisitDetailActivity extends AppCompatActivity {
                     .date(visit.getDate())
                     .dateVisit(visit.getDateVisit())
                     .clientExternalId( client != null ? client.getExternalId() : "")
-                    .createLP(visitPosition.getId())
+                    .createLP(visitPosition != null ? visitPosition.getId() : 0)
                     .visitLP(idPosition)
-                    .typeVisit(visit.getTypeVisit())
-                    .information(visit.getInformation())
+                    .typeVisit(mDetailTypeView.getText().toString())
+                    .information(mDetailInfoView.getText().toString())
                     .build());
 
             finish();

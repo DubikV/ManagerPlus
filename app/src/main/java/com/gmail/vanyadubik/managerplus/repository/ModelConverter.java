@@ -67,8 +67,10 @@ public class ModelConverter {
         values.put(VisitContract.VISIT_ID, visit.getExternalId());
         values.put(VisitContract.VISIT_DELETED, visit.isDeleted());
         values.put(VisitContract.VISIT_INDB, visit.isInDB());
-        values.put(VisitContract.VISIT_DATE, visit.getDate().getTime());
-        values.put(VisitContract.VISIT_DATE_VISIT, visit.getDateVisit().getTime());
+        values.put(VisitContract.VISIT_DATE, visit.getDate()== null?
+                null: visit.getDate().getTime());
+        values.put(VisitContract.VISIT_DATE_VISIT, visit.getDateVisit()== null?
+                null: visit.getDateVisit().getTime());
         values.put(VisitContract.VISIT_CLIENT, visit.getClientExternalId());
         values.put(VisitContract.VISIT_POINT_CREATE, visit.getCreateLP());
         values.put(VisitContract.VISIT_POINT_VISIT, visit.getVisitLP());
@@ -116,8 +118,8 @@ public class ModelConverter {
                 .externalId(cursor.getString(cursor.getColumnIndex(VisitContract.VISIT_ID)))
                 .deleted(cursor.getInt(cursor.getColumnIndex(VisitContract.VISIT_DELETED))== 1)
                 .inDB(cursor.getInt(cursor.getColumnIndex(VisitContract.VISIT_INDB))== 1)
-                .date(new Date(Long.valueOf(cursor.getString(cursor.getColumnIndex(VisitContract.VISIT_DATE)))))
-                .dateVisit(new Date(Long.valueOf(cursor.getString(cursor.getColumnIndex(VisitContract.VISIT_DATE_VISIT)))))
+                .date(convertDate(cursor, VisitContract.VISIT_DATE))
+                .dateVisit(convertDate(cursor, VisitContract.VISIT_DATE_VISIT))
                 .clientExternalId(cursor.getString(cursor.getColumnIndex(VisitContract.VISIT_CLIENT)))
                 .createLP(cursor.getInt(cursor.getColumnIndex(VisitContract.VISIT_POINT_CREATE)))
                 .visitLP(cursor.getInt(cursor.getColumnIndex(VisitContract.VISIT_POINT_VISIT)))

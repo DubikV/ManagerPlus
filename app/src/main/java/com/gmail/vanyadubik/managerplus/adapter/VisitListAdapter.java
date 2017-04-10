@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.ClientDetailActivity;
+import com.gmail.vanyadubik.managerplus.activity.VisitDetailActivity;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
 import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
 import com.gmail.vanyadubik.managerplus.model.documents.VisitList;
@@ -48,12 +49,12 @@ public class VisitListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null) {
-            view = layoutInflater.inflate(R.layout.waybill_list_item, parent, false);
+            view = layoutInflater.inflate(R.layout.visit_list_item, parent, false);
         }
         final VisitList visit = getDataTable(position);
 
         TextView date = (TextView) view.findViewById(R.id.visit_item_date);
-        date.setText(new SimpleDateFormat("dd.MM.yyyy").format(visit.getDate().getTime()));
+        date.setText(new SimpleDateFormat("dd.MM.yyyy HH:mm").format(visit.getDate().getTime()));
 
         TextView client = (TextView) view.findViewById(R.id.visit_item_client);
         client.setText(visit.getClient());
@@ -65,7 +66,7 @@ public class VisitListAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 v.getContext().startActivity(
-                        new Intent(context, ClientDetailActivity.class)
+                        new Intent(context, VisitDetailActivity.class)
                                 .putExtra(MobileManagerContract.VisitContract.VISIT_ID, visit.getExternalId()));
             }
         });

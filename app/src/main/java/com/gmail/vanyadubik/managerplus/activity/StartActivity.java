@@ -104,12 +104,14 @@ public class StartActivity extends AppCompatActivity{
         if (id == R.id.action_show_location) {
 
             LocationPoint locationPoint = dataRepository.getLastTrackPoint();
-            Toast.makeText(getApplicationContext(),
+            if(locationPoint!=null) {
+                Toast.makeText(getApplicationContext(),
                         new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
                                 .format(locationPoint.getDate().getTime())
                                 + " location is - \nLat: " + locationPoint.getLatitude()
                                 + "\nLong: " + locationPoint.getLongitude(),
                         Toast.LENGTH_LONG).show();
+            }
 //            if(gpsTracker.canGetLocation()){
 //                LocationPoint locationPoint = gpsTracker.getLocationPoint();
 //

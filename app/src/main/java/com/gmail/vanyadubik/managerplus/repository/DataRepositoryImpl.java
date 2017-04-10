@@ -11,7 +11,11 @@ import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
 import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
+import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
@@ -79,6 +83,70 @@ public class DataRepositoryImpl implements DataRepository{
                                 cursor.getDouble(cursor.getColumnIndex(TrackListContract.LONGITUDE))));
             return pOptions;
         }
+    }
+
+    @Override
+    public PolylineOptions getBuildVisitsTrackLatLng(PolylineOptions pOptions, Date dateFrom, Date dateBy) {
+
+        try (Cursor cursor = contentResolver.query(
+                VisitContract.CONTENT_URI,
+                new String[]{VisitContract.VISIT_CLIENT},
+                VisitContract.VISIT_DATE + ">=" + dateFrom.getTime() + " AND "
+                        + VisitContract.VISIT_DATE + "<=" + dateBy.getTime(),
+                new String[]{},
+                VisitContract.DEFAULT_SORT_ORDER)) {
+
+            if (cursor == null || !cursor.moveToFirst()) return null;
+
+            while (cursor.moveToNext()){
+
+                Client_Element client = getClient(cursor.getString(cursor.getColumnIndex(VisitContract.VISIT_CLIENT)));
+
+                if(client!=null){
+                    LocationPoint locationPoint = getLocationPoint(client.getPositionLP());
+
+                    if(locationPoint!=null){
+                        pOptions.add(
+                                new LatLng(locationPoint.getLatitude(),
+                                        locationPoint.getLongitude()));
+                    }
+                }
+            }
+        }
+        return pOptions;
+    }
+
+    @Override
+    public List<MarkerMap> getBuildVisitsMarkers(Date dateFrom, Date dateBy) {
+        List<MarkerMap> markers;
+        try (Cursor cursor = contentResolver.query(
+                VisitContract.CONTENT_URI,
+                new String[]{VisitContract.VISIT_CLIENT},
+                VisitContract.VISIT_DATE + ">=" + dateFrom.getTime() + " AND "
+                        + VisitContract.VISIT_DATE + "<=" + dateBy.getTime(),
+                new String[]{},
+                VisitContract.DEFAULT_SORT_ORDER)) {
+
+            if (cursor == null || !cursor.moveToFirst()) return null;
+
+            markers = new ArrayList<>();
+
+            while (cursor.moveToNext()) {
+
+                Client_Element client = getClient(cursor.getString(cursor.getColumnIndex(VisitContract.VISIT_CLIENT)));
+
+                if (client != null) {
+                    LocationPoint locationPoint = getLocationPoint(client.getPositionLP());
+
+                    if (locationPoint != null) {
+
+                        markers.add(new MarkerMap(client.getName(), new LatLng(locationPoint.getLatitude(),
+                                locationPoint.getLongitude())));
+                    }
+                }
+            }
+        }
+        return markers;
     }
 
     @Override
@@ -233,7 +301,7 @@ public class DataRepositoryImpl implements DataRepository{
         try (Cursor cursor = contentResolver.query(
                 VisitContract.CONTENT_URI,
                 VisitContract.PROJECTION_ALL,
-                VisitContract.VISIT_DATE + ">=" + dateFrom.getTime()+ " AND "
+                VisitContract.VISIT_DATE + ">=" + dateFrom.getTime() + " AND "
                         + VisitContract.VISIT_DATE + "<=" + dateBy.getTime(),
                 new String[]{},
                 VisitContract.DEFAULT_SORT_ORDER)) {

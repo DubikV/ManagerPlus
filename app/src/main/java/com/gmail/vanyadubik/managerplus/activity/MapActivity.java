@@ -2,10 +2,12 @@ package com.gmail.vanyadubik.managerplus.activity;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -22,6 +24,7 @@ import android.widget.Toast;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
+import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -38,8 +41,19 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.ui.IconGenerator;
 
 import org.joda.time.LocalDateTime;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -62,12 +76,15 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private Location lastCurrentLocation;
-    private Marker mCurrLocationMarker;
-    private Polyline polylineTrack;
-    private PolylineOptions pOptions;
+    private Marker mCurrLocationMarker, mOtherLocationMarker;
+    private Polyline polylineTrack, polylineNavigation;
+    private PolylineOptions pOptions, pOptionsNavigation;
     private FloatingActionButton current_position;
     private Boolean moveMarker;
     private Waybill_Element waybill;
+    private List<MarkerMap> markerMaps;
+    private ProgressDialog pDialog;
+    private List<LatLng> polyz;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -256,6 +273,8 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
         mMap.setIndoorEnabled(true);
         mMap.setBuildingsEnabled(true);
 
+        setOtherMarkers();
+
     }
 
     @Override
@@ -264,7 +283,20 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
         waybill = dataRepository.getLastWaybill();
 
-        setPolylineOptions();
+        if (waybill!=null) {
+            Date dateEnd = waybill.getDateEnd();
+            if (dateEnd.getTime() < 1000) {
+                dateEnd = LocalDateTime.now().toDate();
+                dateEnd.setHours(23);
+                dateEnd.setMinutes(59);
+                dateEnd.setSeconds(59);
+            }
+
+            markerMaps = dataRepository.getBuildVisitsMarkers(waybill.getDateStart(), dateEnd);
+
+            setPolylineOptions();
+
+        }
 
         insertMarker();
     }
@@ -315,14 +347,19 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
     private void setPolylineOptions(){
 
-        if(pOptions != null){
-            return;
+        if(pOptions == null){
+            pOptions = new PolylineOptions()
+                    .width(WIDTH_POLYLINE_MAP)
+                    .color(getResources().getColor(R.color.colorPrimary))
+                    .geodesic(true);
         }
 
-        pOptions = new PolylineOptions()
-                .width(WIDTH_POLYLINE_MAP)
-                .color(getResources().getColor(R.color.colorPrimary))
-                .geodesic(true);
+        if(pOptionsNavigation == null){
+            pOptionsNavigation = new PolylineOptions()
+                    .width(WIDTH_POLYLINE_MAP)
+                    .color(getResources().getColor(R.color.colorGreen))
+                    .geodesic(true);
+        }
     }
 
     private void setPolylineTrack() {
@@ -344,6 +381,19 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
         }
 
+        if (polylineNavigation!=null){
+            polylineNavigation.remove();
+        }
+
+        if(pOptionsNavigation!=null && mMap != null && lastCurrentLocation !=null && markerMaps != null) {
+
+            LatLng oldPoint = new LatLng(lastCurrentLocation.getLatitude(), lastCurrentLocation.getLongitude());
+            for (MarkerMap markerMap : markerMaps) {
+                new GetDirection(oldPoint, markerMap.getLatLng()).execute();
+                oldPoint = markerMap.getLatLng();
+            }
+        }
+
 
     }
 
@@ -355,7 +405,6 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
                 mCurrLocationMarker.remove();
             }
 
-            //Place current location marker
             LatLng latLng = new LatLng(lastCurrentLocation.getLatitude(), lastCurrentLocation.getLongitude());
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLng);
@@ -372,6 +421,31 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
         setPolylineTrack();
 
+    }
+
+    private void setOtherMarkers(){
+        if (mOtherLocationMarker != null) {
+            mOtherLocationMarker.remove();
+        }
+
+        if(markerMaps==null){
+            return;
+        }
+
+        for (MarkerMap markerMap : markerMaps) {
+
+            IconGenerator iconFactory = new IconGenerator(this);
+            iconFactory.setRotation(90);
+            iconFactory.setContentRotation(-90);
+            iconFactory.setStyle(IconGenerator.STYLE_GREEN);
+
+            MarkerOptions markerOptions = new MarkerOptions()
+                    .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(markerMap.getName())))
+                    .position(new LatLng(markerMap.getLatLng().latitude, markerMap.getLatLng().longitude))
+                    .anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
+
+            mOtherLocationMarker = mMap.addMarker(markerOptions);
+        }
     }
 
 
@@ -466,6 +540,124 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
         // Showing Alert Message
         alertDialog.show();
+    }
+
+    class GetDirection extends AsyncTask<String, String, String> {
+        private LatLng startLocation;
+        private LatLng endLocation;
+
+        public GetDirection(LatLng startLocation, LatLng endLocation) {
+            this.startLocation = startLocation;
+            this.endLocation = endLocation;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(MapActivity.this);
+            pDialog.setMessage("Loading route. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+           // pDialog.show();
+        }
+
+        protected String doInBackground(String... args) {
+            String startLocationString = String.valueOf(startLocation.latitude)+","+String.valueOf(startLocation.longitude);
+            String endLocationString = String.valueOf(endLocation.latitude)+","+String.valueOf(endLocation.longitude);
+            String stringUrl = "http://maps.googleapis.com/maps/api/directions/json?origin=" + startLocationString + "&destination=" + endLocationString + "&sensor=false";
+            StringBuilder response = new StringBuilder();
+            try {
+                URL url = new URL(stringUrl);
+                HttpURLConnection httpconn = (HttpURLConnection) url
+                        .openConnection();
+                if (httpconn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    BufferedReader input = new BufferedReader(
+                            new InputStreamReader(httpconn.getInputStream()),
+                            8192);
+                    String strLine = null;
+
+                    while ((strLine = input.readLine()) != null) {
+                        response.append(strLine);
+                    }
+                    input.close();
+                }
+
+                String jsonOutput = response.toString();
+
+                JSONObject jsonObject = new JSONObject(jsonOutput);
+
+                // routesArray contains ALL routes
+                JSONArray routesArray = jsonObject.getJSONArray("routes");
+                // Grab the first route
+                JSONObject route = routesArray.getJSONObject(0);
+
+                JSONObject poly = route.getJSONObject("overview_polyline");
+                String polyline = poly.getString("points");
+                polyz = decodePoly(polyline);
+
+            } catch (Exception e) {
+
+            }
+
+            return null;
+
+        }
+
+        protected void onPostExecute(String file_url) {
+
+            for (int i = 0; i < polyz.size() - 1; i++) {
+                LatLng src = polyz.get(i);
+                LatLng dest = polyz.get(i + 1);
+                polylineNavigation = mMap.addPolyline(
+//                        new PolylineOptions()
+//                                .width(WIDTH_POLYLINE_MAP)
+//                                .color(getResources().getColor(R.color.colorGreen))
+//                                .geodesic(true)
+                         pOptionsNavigation
+                                .add(new LatLng(src.latitude, src.longitude),
+                                        new LatLng(dest.latitude, dest.longitude)));
+                        //.width(2).color(Color.RED)
+                        //.geodesic(true));
+
+            }
+           // pDialog.dismiss();
+
+        }
+    }
+
+    /* Method to decode polyline points */
+    private List<LatLng> decodePoly(String encoded) {
+
+        List<LatLng> poly = new ArrayList<LatLng>();
+        int index = 0, len = encoded.length();
+        int lat = 0, lng = 0;
+
+        while (index < len) {
+            int b, shift = 0, result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lat += dlat;
+
+            shift = 0;
+            result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lng += dlng;
+
+            LatLng p = new LatLng((((double) lat / 1E5)),
+                    (((double) lng / 1E5)));
+            poly.add(p);
+        }
+
+        return poly;
     }
 
     //    public static float distFrom(float lat1, float lng1, float lat2, float lng2) {

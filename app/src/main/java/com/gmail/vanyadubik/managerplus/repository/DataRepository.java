@@ -7,6 +7,8 @@ import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
 import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
+import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.Date;
@@ -17,6 +19,10 @@ public interface DataRepository {
     List<LocationPoint> getTrack(Date dateFrom, Date dateBy);
 
     PolylineOptions getBuildTrackLatLng(PolylineOptions pOptionsDate, Date dateFrom, Date dateBy);
+
+    PolylineOptions getBuildVisitsTrackLatLng(PolylineOptions pOptionsDate, Date dateFrom, Date dateBy);
+
+    List<MarkerMap> getBuildVisitsMarkers(Date dateFrom, Date dateBy);
 
     List<LocationPoint> getUloadedLocationTrack();
 

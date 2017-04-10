@@ -75,7 +75,7 @@ public class VisitListFragment extends Fragment implements FragmentBecameVisible
 
         for (Visit_Element visit : visits) {
             VisitList visitList = new VisitList(visit.getExternalId(), visit.getDate(), visit.getTypeVisit());
-            Client_Element client = dataRepository.getClient(visit.getExternalId());
+            Client_Element client = dataRepository.getClient(visit.getClientExternalId());
             if (client != null) {
                 visitList.setClient(client.getName());
             }

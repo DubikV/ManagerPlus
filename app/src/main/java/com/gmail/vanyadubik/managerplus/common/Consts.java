@@ -36,7 +36,7 @@ public class Consts {
 
     // Map
     public static final int WIDTH_POLYLINE_MAP = 10;
-    public static final long MIN_DISTANCE_LOCATION_MAP = 2; // meters
+    public static final long MIN_DISTANCE_LOCATION_MAP = 5; // meters
     public static final long MIN_TIME_LOCATION_MAP = 10; // seconds
 
     // notifications

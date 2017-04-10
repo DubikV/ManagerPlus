@@ -26,6 +26,7 @@ import com.gmail.vanyadubik.managerplus.model.documents.VisitList;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 
 import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -143,20 +144,28 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
 
         listVisits = new ArrayList<>();
 
-        List<Visit_Element> visits = dataRepository.getVisitByPeriod(waybill.getDateStart(),
-                waybill.getDateEnd().getTime() <1000 ? LocalDateTime.now().toDate() : waybill.getDateEnd());
-
-        for (Visit_Element visit : visits) {
-            VisitList visitList = new VisitList(visit.getExternalId(), visit.getDate(), visit.getTypeVisit());
-            Client_Element client = dataRepository.getClient(visit.getExternalId());
-            if (client != null) {
-                visitList.setClient(client.getName());
-            }
-            listVisits.add(visitList);
+        Date dateEnd = waybill.getDateEnd();
+        if(waybill.getDateEnd().getTime() <1000){
+            dateEnd = LocalDateTime.now().toDate();
+            dateEnd.setHours(23);
+            dateEnd.setMinutes(59);
+            dateEnd.setSeconds(59);
         }
+        List<Visit_Element> visits = dataRepository.getVisitByPeriod(waybill.getDateStart(), dateEnd);
 
-        VisitListAdapter adapter = new VisitListAdapter(getActivity(), listVisits);
-        listVisitsView.setAdapter(adapter);
+        if(visits!=null) {
+            for (Visit_Element visit : visits) {
+                VisitList visitList = new VisitList(visit.getExternalId(), visit.getDate(), visit.getTypeVisit());
+                Client_Element client = dataRepository.getClient(visit.getClientExternalId());
+                if (client != null) {
+                    visitList.setClient(client.getName());
+                }
+                listVisits.add(visitList);
+            }
+
+            VisitListAdapter adapter = new VisitListAdapter(getActivity(), listVisits);
+            listVisitsView.setAdapter(adapter);
+        }
     }
 
     @Override
