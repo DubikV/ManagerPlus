@@ -62,10 +62,12 @@ import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.R.id.map;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_ZOOM_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SPEED_MAP_SET_ZOOM;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_LOCATION_MAP;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_ZOOM_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.WIDTH_POLYLINE_MAP;
@@ -80,14 +82,13 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
     private SupportMapFragment locationMapFragment;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-    private Location lastCurrentLocation, locationCheckNavigation;
+    private Location lastCurrentLocation, locationCheckNavigation, oldCurrentLocation;
     private Marker mCurrLocationMarker, mOtherLocationMarker;
     private Polyline polylineTrack, polylineNavigation;
     private FloatingActionButton current_position;
     private Boolean moveMarker;
     private Waybill_Element waybill;
     private List<MarkerMap> markerMaps;
-    private ProgressDialog pDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -215,6 +216,9 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
     @Override
     public void onLocationChanged(Location location) {
         if ( isBetterLocation(location, lastCurrentLocation) ) {
+
+            oldCurrentLocation = lastCurrentLocation;
+
             lastCurrentLocation = location;
         }
         insertMarker();
@@ -374,7 +378,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
     private void insertMarker() {
 
-        if(lastCurrentLocation!=null&&mMap!=null) {
+        if(lastCurrentLocation!=null && mMap!=null) {
 
             if (mCurrLocationMarker != null) {
                 mCurrLocationMarker.remove();
@@ -383,23 +387,35 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
             LatLng latLng = new LatLng(lastCurrentLocation.getLatitude(), lastCurrentLocation.getLongitude());
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLng);
-            //markerOptions.title("Current Position");
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker));//BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
             mCurrLocationMarker = mMap.addMarker(markerOptions);
 
             if(moveMarker) {
                 //move map camera
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                if(lastCurrentLocation.getSpeed() < MIN_SPEED_MAP_SET_ZOOM ) {
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
-                }else{
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
-                }
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(
+                        lastCurrentLocation.getSpeed() < MIN_SPEED_MAP_SET_ZOOM  ?
+                                MIN_ZOOM_MAP : MAX_ZOOM_MAP));
             }
+
+            setCameraPosition(oldCurrentLocation, lastCurrentLocation);
         }
 
         setPolylineTrack();
 
+    }
+
+    private void setCameraPosition(Location firstLocation, Location secondLocation){
+
+        float targetBearing = secondLocation.bearingTo(firstLocation);
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(firstLocation.getLatitude(),
+                        firstLocation.getLongitude())).bearing(targetBearing + 530)
+                .tilt(67).zoom(MIN_ZOOM_MAP).build();
+
+        mMap.animateCamera(
+                CameraUpdateFactory.newCameraPosition(cameraPosition), 5000,
+                null);
     }
 
     private void setOtherMarkers(){
@@ -658,20 +674,17 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
             polylineNavigation = mMap.addPolyline(lineOptions);
 
             if(points!=null) {
-                LatLng newLatLng = points.get(0);
-                Location destLocation = new Location("service Provider");
-                destLocation.setLatitude(newLatLng.latitude);
-                destLocation.setLongitude(newLatLng.longitude);
+                LatLng firstLatLng = points.get(0);
+                Location firstLocation = new Location("service Provider");
+                firstLocation.setLatitude(firstLatLng.latitude);
+                firstLocation.setLongitude(firstLatLng.longitude);
 
-                float targetBearing = destLocation.bearingTo(lastCurrentLocation);
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(lastCurrentLocation.getLatitude(),
-                                lastCurrentLocation.getLongitude())).bearing(targetBearing + 530)
-                        .tilt(67).zoom(15).build();
+                LatLng secondLatLng = points.get(0);
+                Location secondLocation = new Location("service Provider");
+                secondLocation.setLatitude(secondLatLng.latitude);
+                secondLocation.setLongitude(secondLatLng.longitude);
 
-                mMap.animateCamera(
-                        CameraUpdateFactory.newCameraPosition(cameraPosition), 5000,
-                        null);
+                setCameraPosition(firstLocation, secondLocation);
             }
         }
     }

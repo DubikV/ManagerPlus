@@ -36,10 +36,12 @@ public class Consts {
 
     // Map
     public static final int WIDTH_POLYLINE_MAP = 10;
-    public static final long MIN_DISTANCE_LOCATION_MAP = 5; // meters
+    public static final long MIN_DISTANCE_LOCATION_MAP = 10; // meters
     public static final long MIN_TIME_LOCATION_MAP = 10; // seconds
-    public static final long MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION = 100;// meters
+    public static final long MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION = 50;// meters
     public static final double  MIN_SPEED_MAP_SET_ZOOM = 10.0; //
+    public static final float  MIN_ZOOM_MAP = 18;
+    public static final float  MAX_ZOOM_MAP = 21;
 
     // notifications
     public static final int DEFAULT_NOTIFICATION_GPS_TRACER_ID = 101;

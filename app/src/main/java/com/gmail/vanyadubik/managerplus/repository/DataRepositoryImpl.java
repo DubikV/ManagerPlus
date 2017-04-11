@@ -51,7 +51,7 @@ public class DataRepositoryImpl implements DataRepository{
                 new String[]{},
                 TrackListContract.DEFAULT_SORT_ORDER)) {
 
-            if (cursor == null || !cursor.moveToFirst()) {
+            if (cursor == null) {
                 return null;
             }
 
@@ -72,7 +72,7 @@ public class DataRepositoryImpl implements DataRepository{
                 new String[]{},
                 TrackListContract.DEFAULT_SORT_ORDER)) {
 
-            if (cursor == null || !cursor.moveToFirst()) {
+            if (cursor == null) {
                 return null;
             }
 
@@ -96,7 +96,7 @@ public class DataRepositoryImpl implements DataRepository{
                 new String[]{},
                 VisitContract.DEFAULT_SORT_ORDER)) {
 
-            if (cursor == null || !cursor.moveToFirst()) return null;
+            if (cursor == null) return null;
 
             while (cursor.moveToNext()){
 
@@ -127,7 +127,7 @@ public class DataRepositoryImpl implements DataRepository{
                 new String[]{},
                 VisitContract.DEFAULT_SORT_ORDER)) {
 
-            if (cursor == null || !cursor.moveToFirst()) return null;
+            if (cursor == null) return null;
 
             markers = new ArrayList<>();
 
@@ -306,7 +306,7 @@ public class DataRepositoryImpl implements DataRepository{
                 new String[]{},
                 VisitContract.DEFAULT_SORT_ORDER)) {
 
-            if (cursor == null || !cursor.moveToFirst()) return null;
+            if (cursor == null) return null;
             List<Visit_Element> result = new ArrayList<>();
             while (cursor.moveToNext())
                 result.add(ModelConverter.buildVisit(cursor));
