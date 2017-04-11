@@ -36,6 +36,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -655,6 +656,23 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
             }
 
             polylineNavigation = mMap.addPolyline(lineOptions);
+
+            if(points!=null) {
+                LatLng newLatLng = points.get(0);
+                Location destLocation = new Location("service Provider");
+                destLocation.setLatitude(newLatLng.latitude);
+                destLocation.setLongitude(newLatLng.longitude);
+
+                float targetBearing = destLocation.bearingTo(lastCurrentLocation);
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(lastCurrentLocation.getLatitude(),
+                                lastCurrentLocation.getLongitude())).bearing(targetBearing + 530)
+                        .tilt(67).zoom(15).build();
+
+                mMap.animateCamera(
+                        CameraUpdateFactory.newCameraPosition(cameraPosition), 5000,
+                        null);
+            }
         }
     }
 
