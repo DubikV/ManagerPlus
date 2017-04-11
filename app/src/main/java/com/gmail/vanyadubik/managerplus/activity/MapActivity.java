@@ -19,10 +19,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
+import com.gmail.vanyadubik.managerplus.gps.DirectionsJSONParser;
 import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
@@ -44,15 +44,17 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.ui.IconGenerator;
 
 import org.joda.time.LocalDateTime;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -60,6 +62,8 @@ import javax.inject.Inject;
 import static com.gmail.vanyadubik.managerplus.R.id.map;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SPEED_MAP_SET_ZOOM;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_LOCATION_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
@@ -75,16 +79,14 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
     private SupportMapFragment locationMapFragment;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-    private Location lastCurrentLocation;
+    private Location lastCurrentLocation, locationCheckNavigation;
     private Marker mCurrLocationMarker, mOtherLocationMarker;
     private Polyline polylineTrack, polylineNavigation;
-    private PolylineOptions pOptions, pOptionsNavigation;
     private FloatingActionButton current_position;
     private Boolean moveMarker;
     private Waybill_Element waybill;
     private List<MarkerMap> markerMaps;
     private ProgressDialog pDialog;
-    private List<LatLng> polyz;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,8 +103,6 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
                 .build();
 
         moveMarker = true;
-
-        setPolylineOptions();
 
         setUpMap();
 
@@ -217,6 +217,8 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
             lastCurrentLocation = location;
         }
         insertMarker();
+
+        setOtherTracks();
     }
 
     @Override
@@ -294,8 +296,6 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
             markerMaps = dataRepository.getBuildVisitsMarkers(waybill.getDateStart(), dateEnd);
 
-            setPolylineOptions();
-
         }
 
         insertMarker();
@@ -345,56 +345,30 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
     }
 
-    private void setPolylineOptions(){
-
-        if(pOptions == null){
-            pOptions = new PolylineOptions()
-                    .width(WIDTH_POLYLINE_MAP)
-                    .color(getResources().getColor(R.color.colorPrimary))
-                    .geodesic(true);
-        }
-
-        if(pOptionsNavigation == null){
-            pOptionsNavigation = new PolylineOptions()
-                    .width(WIDTH_POLYLINE_MAP)
-                    .color(getResources().getColor(R.color.colorGreen))
-                    .geodesic(true);
-        }
-    }
-
     private void setPolylineTrack() {
-
-        if (polylineTrack!=null){
-            polylineTrack.remove();
-        }
 
         if(waybill==null){
             return;
         }
 
-        pOptions = dataRepository.getBuildTrackLatLng(pOptions, waybill.getDateStart(),
-                waybill.getDateEnd().getTime() <1000 ? LocalDateTime.now().toDate() : waybill.getDateEnd());
+        if (polylineTrack!=null){
+            polylineTrack.remove();
+        }
+
+        PolylineOptions pOptions = dataRepository.getBuildTrackLatLng(
+                new PolylineOptions()
+                        .width(WIDTH_POLYLINE_MAP)
+                        .color(getResources().getColor(R.color.colorPrimary))
+                        .geodesic(true),
+                waybill.getDateStart(),
+                waybill.getDateEnd().getTime() <1000 ?
+                        LocalDateTime.now().toDate() : waybill.getDateEnd());
 
         if(pOptions!=null && mMap != null) {
 
             polylineTrack = mMap.addPolyline(pOptions);
 
         }
-
-        if (polylineNavigation!=null){
-            polylineNavigation.remove();
-        }
-
-        if(pOptionsNavigation!=null && mMap != null && lastCurrentLocation !=null && markerMaps != null) {
-
-            LatLng oldPoint = new LatLng(lastCurrentLocation.getLatitude(), lastCurrentLocation.getLongitude());
-            for (MarkerMap markerMap : markerMaps) {
-                new GetDirection(oldPoint, markerMap.getLatLng()).execute();
-                oldPoint = markerMap.getLatLng();
-            }
-        }
-
-
     }
 
     private void insertMarker() {
@@ -415,7 +389,11 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
             if(moveMarker) {
                 //move map camera
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+                if(lastCurrentLocation.getSpeed() < MIN_SPEED_MAP_SET_ZOOM ) {
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+                }else{
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
+                }
             }
         }
 
@@ -428,31 +406,64 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
             mOtherLocationMarker.remove();
         }
 
-        if(markerMaps==null){
-            return;
+        if(markerMaps!=null) {
+            for (MarkerMap markerMap : markerMaps) {
+
+                IconGenerator iconFactory = new IconGenerator(this);
+                iconFactory.setRotation(90);
+                iconFactory.setContentRotation(-90);
+                iconFactory.setStyle(IconGenerator.STYLE_GREEN);
+
+                MarkerOptions markerOptions = new MarkerOptions()
+                        .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(markerMap.getName())))
+                        .position(new LatLng(markerMap.getLatLng().latitude, markerMap.getLatLng().longitude))
+                        .anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
+
+                mOtherLocationMarker = mMap.addMarker(markerOptions);
+            }
+        }
+    }
+
+    private void setOtherTracks(){
+
+        if(locationCheckNavigation==null) {
+            locationCheckNavigation = lastCurrentLocation;
+        }else {
+            if (lastCurrentLocation.distanceTo(locationCheckNavigation)
+                    < MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION) {
+                return;
+            }
         }
 
-        for (MarkerMap markerMap : markerMaps) {
-
-            IconGenerator iconFactory = new IconGenerator(this);
-            iconFactory.setRotation(90);
-            iconFactory.setContentRotation(-90);
-            iconFactory.setStyle(IconGenerator.STYLE_GREEN);
-
-            MarkerOptions markerOptions = new MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(markerMap.getName())))
-                    .position(new LatLng(markerMap.getLatLng().latitude, markerMap.getLatLng().longitude))
-                    .anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
-
-            mOtherLocationMarker = mMap.addMarker(markerOptions);
+        if (polylineNavigation!=null){
+            polylineNavigation.remove();
         }
+
+        if (mMap != null && lastCurrentLocation !=null && markerMaps != null) {
+
+            LatLng oldPoint = new LatLng(lastCurrentLocation.getLatitude(), lastCurrentLocation.getLongitude());
+            for (MarkerMap markerMap : markerMaps) {
+
+                String url = getDirectionsUrl(oldPoint, markerMap.getLatLng());
+
+                DownloadTask downloadTask = new DownloadTask();
+
+                // Start downloading json data from Google Directions API
+                downloadTask.execute(url);
+
+                //new GetDirection(oldPoint, markerMap.getLatLng()).execute();
+                oldPoint = markerMap.getLatLng();
+            }
+        }
+
+        locationCheckNavigation = lastCurrentLocation;
     }
 
 
     protected boolean isBetterLocation(Location location, Location currentBestLocation) {
 
-        Toast.makeText(this, " Accuracy: " + location.getAccuracy() +
-                "  \nSpeed: " + location.getSpeed(), Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, " Accuracy: " + location.getAccuracy() +
+//                "  \nSpeed: " + location.getSpeed(), Toast.LENGTH_LONG).show();
 
         if (currentBestLocation == null) {
             return true;
@@ -542,122 +553,109 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
         alertDialog.show();
     }
 
-    class GetDirection extends AsyncTask<String, String, String> {
-        private LatLng startLocation;
-        private LatLng endLocation;
+    private String getDirectionsUrl(LatLng origin,LatLng dest){
 
-        public GetDirection(LatLng startLocation, LatLng endLocation) {
-            this.startLocation = startLocation;
-            this.endLocation = endLocation;
+        String str_origin = "origin="+origin.latitude+","+origin.longitude;
+        String str_dest = "destination="+dest.latitude+","+dest.longitude;
+        String sensor = "sensor=false";
+        String parameters = str_origin+"&"+str_dest+"&"+sensor;
+        String output = "json";
+        String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
+
+        return url;
+    }
+
+    private String downloadUrl(String strUrl) throws IOException {
+        String data = "";
+        InputStream iStream = null;
+        HttpURLConnection urlConnection = null;
+        try{
+            URL url = new URL(strUrl);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.connect();
+            iStream = urlConnection.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
+            StringBuffer sb  = new StringBuffer();
+            String line = "";
+            while( ( line = br.readLine())  != null){
+                sb.append(line);
+            }
+            data = sb.toString();
+
+            br.close();
+        }catch(Exception e){
+            Log.d("Exception while downloading url", e.toString());
+        }finally{
+            iStream.close();
+            urlConnection.disconnect();
         }
+        return data;
+    }
 
+    private class DownloadTask extends AsyncTask<String, Void, String> {
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pDialog = new ProgressDialog(MapActivity.this);
-            pDialog.setMessage("Loading route. Please wait...");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
-           // pDialog.show();
-        }
-
-        protected String doInBackground(String... args) {
-            String startLocationString = String.valueOf(startLocation.latitude)+","+String.valueOf(startLocation.longitude);
-            String endLocationString = String.valueOf(endLocation.latitude)+","+String.valueOf(endLocation.longitude);
-            String stringUrl = "http://maps.googleapis.com/maps/api/directions/json?origin=" + startLocationString + "&destination=" + endLocationString + "&sensor=false";
-            StringBuilder response = new StringBuilder();
-            try {
-                URL url = new URL(stringUrl);
-                HttpURLConnection httpconn = (HttpURLConnection) url
-                        .openConnection();
-                if (httpconn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    BufferedReader input = new BufferedReader(
-                            new InputStreamReader(httpconn.getInputStream()),
-                            8192);
-                    String strLine = null;
-
-                    while ((strLine = input.readLine()) != null) {
-                        response.append(strLine);
-                    }
-                    input.close();
-                }
-
-                String jsonOutput = response.toString();
-
-                JSONObject jsonObject = new JSONObject(jsonOutput);
-
-                // routesArray contains ALL routes
-                JSONArray routesArray = jsonObject.getJSONArray("routes");
-                // Grab the first route
-                JSONObject route = routesArray.getJSONObject(0);
-
-                JSONObject poly = route.getJSONObject("overview_polyline");
-                String polyline = poly.getString("points");
-                polyz = decodePoly(polyline);
-
-            } catch (Exception e) {
-
+        protected String doInBackground(String... url) {
+            String data = "";
+            try{
+                data = downloadUrl(url[0]);
+            }catch(Exception e){
+                Log.d("Background Task",e.toString());
             }
-
-            return null;
-
+            return data;
         }
-
-        protected void onPostExecute(String file_url) {
-
-            for (int i = 0; i < polyz.size() - 1; i++) {
-                LatLng src = polyz.get(i);
-                LatLng dest = polyz.get(i + 1);
-                polylineNavigation = mMap.addPolyline(
-//                        new PolylineOptions()
-//                                .width(WIDTH_POLYLINE_MAP)
-//                                .color(getResources().getColor(R.color.colorGreen))
-//                                .geodesic(true)
-                         pOptionsNavigation
-                                .add(new LatLng(src.latitude, src.longitude),
-                                        new LatLng(dest.latitude, dest.longitude)));
-                        //.width(2).color(Color.RED)
-                        //.geodesic(true));
-
-            }
-           // pDialog.dismiss();
-
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            ParserTask parserTask = new ParserTask();
+            parserTask.execute(result);
         }
     }
 
-    /* Method to decode polyline points */
-    private List<LatLng> decodePoly(String encoded) {
+    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String,String>>> >{
 
-        List<LatLng> poly = new ArrayList<LatLng>();
-        int index = 0, len = encoded.length();
-        int lat = 0, lng = 0;
+        @Override
+        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
 
-        while (index < len) {
-            int b, shift = 0, result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lat += dlat;
-
-            shift = 0;
-            result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lng += dlng;
-
-            LatLng p = new LatLng((((double) lat / 1E5)),
-                    (((double) lng / 1E5)));
-            poly.add(p);
+            JSONObject jObject;
+            List<List<HashMap<String, String>>> routes = null;
+            try{
+                jObject = new JSONObject(jsonData[0]);
+                DirectionsJSONParser parser = new DirectionsJSONParser();
+                routes = parser.parse(jObject);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            return routes;
         }
 
-        return poly;
+        @Override
+        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
+            ArrayList<LatLng> points = null;
+            PolylineOptions lineOptions = null;
+
+            for(int i=0;i<result.size();i++){
+                points = new ArrayList<LatLng>();
+                lineOptions = new PolylineOptions()
+                        .width(WIDTH_POLYLINE_MAP)
+                        .color(getResources().getColor(R.color.colorGreen))
+                        .geodesic(true);
+
+                List<HashMap<String, String>> path = result.get(i);
+
+                for(int j=0;j<path.size();j++){
+                    HashMap<String,String> point = path.get(j);
+
+                    double lat = Double.parseDouble(point.get("lat"));
+                    double lng = Double.parseDouble(point.get("lng"));
+                    LatLng position = new LatLng(lat, lng);
+
+                    points.add(position);
+                }
+                lineOptions.addAll(points);
+            }
+
+            polylineNavigation = mMap.addPolyline(lineOptions);
+        }
     }
 
     //    public static float distFrom(float lat1, float lng1, float lat2, float lng2) {

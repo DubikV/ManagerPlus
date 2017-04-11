@@ -26,7 +26,6 @@ import com.gmail.vanyadubik.managerplus.model.documents.VisitList;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 
 import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -105,8 +104,8 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         initData();
     }
 

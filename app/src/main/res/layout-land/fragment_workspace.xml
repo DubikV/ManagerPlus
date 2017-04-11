@@ -284,7 +284,8 @@
             android:background="@drawable/shape_window_body"
             android:layout_marginRight="@dimen/marging_waybill_cap"
             android:layout_marginLeft="@dimen/marging_waybill_cap"
-            android:layout_marginBottom="@dimen/marging_waybill_cap" />
+            android:layout_marginBottom="@dimen/marging_waybill_cap"
+            android:id="@+id/visits_today_listview"/>
     </LinearLayout>
 
 </LinearLayout>
