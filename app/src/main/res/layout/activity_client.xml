@@ -81,7 +81,7 @@
             <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="number"
+                android:inputType="numberDecimal"
                 android:id="@+id/client_lat_edit"
                 android:layout_weight="1"
                 android:background="@color/colorWhite"
@@ -92,7 +92,7 @@
             <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="number"
+                android:inputType="numberDecimal"
                 android:id="@+id/client_long_edit"
                 android:layout_weight="1"
                 android:background="@color/colorWhite"

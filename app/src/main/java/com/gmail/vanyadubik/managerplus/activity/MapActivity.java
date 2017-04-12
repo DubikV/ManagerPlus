@@ -2,7 +2,6 @@ package com.gmail.vanyadubik.managerplus.activity;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -61,6 +60,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.R.id.map;
+import static com.gmail.vanyadubik.managerplus.common.Consts.DIVISION_ZOOM_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_ZOOM_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP;
@@ -69,6 +69,7 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SPEED_MAP_SET_Z
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_LOCATION_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_ZOOM_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
+import static com.gmail.vanyadubik.managerplus.common.Consts.TILT_CAMERA_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.WIDTH_POLYLINE_MAP;
 
@@ -84,7 +85,8 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
     private LocationRequest mLocationRequest;
     private Location lastCurrentLocation, locationCheckNavigation, oldCurrentLocation;
     private Marker mCurrLocationMarker, mOtherLocationMarker;
-    private Polyline polylineTrack, polylineNavigation;
+    private Polyline polylineTrack;
+    private List<Polyline> polylineNavigation;
     private FloatingActionButton current_position;
     private Boolean moveMarker;
     private Waybill_Element waybill;
@@ -105,6 +107,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
                 .build();
 
         moveMarker = true;
+        polylineNavigation = new ArrayList<>();
 
         setUpMap();
 
@@ -116,7 +119,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
                 Log.d(TAGLOG, "Press button 'zoomUpButton'");
                 if (mMap != null) {
                     mMap.animateCamera(CameraUpdateFactory
-                            .zoomTo(mMap.getCameraPosition().zoom + 0.5f));
+                            .zoomTo(mMap.getCameraPosition().zoom + DIVISION_ZOOM_MAP));
                 }
 
             }
@@ -130,7 +133,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
                 Log.d(TAGLOG, "Press button 'zoomDownButton'");
                 if (mMap != null) {
                     mMap.animateCamera(CameraUpdateFactory
-                            .zoomTo(mMap.getCameraPosition().zoom - 0.5f));
+                            .zoomTo(mMap.getCameraPosition().zoom - DIVISION_ZOOM_MAP));
                 }
 
             }
@@ -387,6 +390,9 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
             LatLng latLng = new LatLng(lastCurrentLocation.getLatitude(), lastCurrentLocation.getLongitude());
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLng);
+//            markerOptions.rotation(
+//                    lastCurrentLocation!=null && oldCurrentLocation != null ?
+//                            lastCurrentLocation.bearingTo(oldCurrentLocation) : 0);
             markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker));//BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
             mCurrLocationMarker = mMap.addMarker(markerOptions);
 
@@ -405,17 +411,25 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
     }
 
-    private void setCameraPosition(Location firstLocation, Location secondLocation){
+    private void setCameraPosition(Location firstLocation, Location secondLocation) {
 
-        float targetBearing = secondLocation.bearingTo(firstLocation);
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(firstLocation.getLatitude(),
-                        firstLocation.getLongitude())).bearing(targetBearing + 530)
-                .tilt(67).zoom(MIN_ZOOM_MAP).build();
+        if (moveMarker) {
 
-        mMap.animateCamera(
-                CameraUpdateFactory.newCameraPosition(cameraPosition), 5000,
-                null);
+            if (firstLocation == null || secondLocation == null) {
+                return;
+            }
+
+            float targetBearing = secondLocation.bearingTo(firstLocation);
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(secondLocation.getLatitude(),
+                            secondLocation.getLongitude())).bearing(targetBearing + 530)
+                    .tilt(TILT_CAMERA_MAP).zoom(MIN_ZOOM_MAP).build();
+
+            mMap.animateCamera(
+                    CameraUpdateFactory.newCameraPosition(cameraPosition), 5000,
+                    null);
+        }
+
     }
 
     private void setOtherMarkers(){
@@ -453,7 +467,10 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
         }
 
         if (polylineNavigation!=null){
-            polylineNavigation.remove();
+            for (Polyline polyline : polylineNavigation){
+                polyline.remove();
+            }
+            polylineNavigation.clear();
         }
 
         if (mMap != null && lastCurrentLocation !=null && markerMaps != null) {
@@ -650,6 +667,9 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
             ArrayList<LatLng> points = null;
             PolylineOptions lineOptions = null;
 
+            if(result == null){
+                return;
+            }
             for(int i=0;i<result.size();i++){
                 points = new ArrayList<LatLng>();
                 lineOptions = new PolylineOptions()
@@ -671,21 +691,23 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
                 lineOptions.addAll(points);
             }
 
-            polylineNavigation = mMap.addPolyline(lineOptions);
-
-            if(points!=null) {
-                LatLng firstLatLng = points.get(0);
-                Location firstLocation = new Location("service Provider");
-                firstLocation.setLatitude(firstLatLng.latitude);
-                firstLocation.setLongitude(firstLatLng.longitude);
-
-                LatLng secondLatLng = points.get(0);
-                Location secondLocation = new Location("service Provider");
-                secondLocation.setLatitude(secondLatLng.latitude);
-                secondLocation.setLongitude(secondLatLng.longitude);
-
-                setCameraPosition(firstLocation, secondLocation);
+            if(lineOptions != null) {
+                polylineNavigation.add(mMap.addPolyline(lineOptions));
             }
+
+//            if(points!=null) {
+//                LatLng firstLatLng = points.get(0);
+//                Location firstLocation = new Location("service Provider");
+//                firstLocation.setLatitude(firstLatLng.latitude);
+//                firstLocation.setLongitude(firstLatLng.longitude);
+//
+//                LatLng secondLatLng = points.get(0);
+//                Location secondLocation = new Location("service Provider");
+//                secondLocation.setLatitude(secondLatLng.latitude);
+//                secondLocation.setLongitude(secondLatLng.longitude);
+//
+//                setCameraPosition(firstLocation, secondLocation);
+//            }
         }
     }
 
