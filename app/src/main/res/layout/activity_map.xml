@@ -5,7 +5,7 @@
                 android:layout_height="match_parent"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 xmlns:map="http://schemas.android.com/apk/res-auto"
-                tools:context="com.gmail.vanyadubik.managerplus.activity.MapActivity">
+                tools:context="com.gmail.vanyadubik.managerplus.activity.MapTrackerActivity">
 
 
     <fragment android:id="@+id/map"

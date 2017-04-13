@@ -2,6 +2,7 @@ package com.gmail.vanyadubik.managerplus.app;
 
 import com.gmail.vanyadubik.managerplus.activity.ClientDetailActivity;
 import com.gmail.vanyadubik.managerplus.activity.MapActivity;
+import com.gmail.vanyadubik.managerplus.activity.MapTrackerActivity;
 import com.gmail.vanyadubik.managerplus.activity.SettingsActivity;
 import com.gmail.vanyadubik.managerplus.activity.StartActivity;
 import com.gmail.vanyadubik.managerplus.activity.VisitDetailActivity;
@@ -32,6 +33,8 @@ public interface DIComponent {
     void inject(StartActivity startActivity);
 
     void inject(SettingsActivity settingsActivity);
+
+    void inject(MapTrackerActivity mapTrackerActivity);
 
     void inject(MapActivity mapActivity);
 

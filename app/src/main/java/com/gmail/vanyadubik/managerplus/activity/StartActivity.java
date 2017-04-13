@@ -296,11 +296,11 @@ public class StartActivity extends AppCompatActivity{
 
         // TODO (start stub): to set size text in AlertDialog
         TextView textView = (TextView) alert.findViewById(android.R.id.message);
-        textView.setTextSize(getResources().getDimension(R.dimen.text_size_medium));
+        textView.setTextSize(getResources().getDimension(R.dimen.alert_text_size));
         Button button1 = (Button) alert.findViewById(android.R.id.button1);
-        button1.setTextSize(getResources().getDimension(R.dimen.text_size_medium));
+        button1.setTextSize(getResources().getDimension(R.dimen.alert_text_size));
         Button button2 = (Button) alert.findViewById(android.R.id.button2);
-        button2.setTextSize(getResources().getDimension(R.dimen.text_size_medium));
+        button2.setTextSize(getResources().getDimension(R.dimen.alert_text_size));
         // TODO: (end stub) ------------------
     }
 

@@ -2,6 +2,7 @@ package com.gmail.vanyadubik.managerplus.activity;
 
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +30,10 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import static com.gmail.vanyadubik.managerplus.activity.MapActivity.MAP_SHOW_POSITION_LAT;
+import static com.gmail.vanyadubik.managerplus.activity.MapActivity.MAP_SHOW_POSITION_LON;
+import static com.gmail.vanyadubik.managerplus.activity.MapActivity.MAP_TYPE;
+import static com.gmail.vanyadubik.managerplus.activity.MapActivity.MAP_TYPE_GET_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 
 public class ClientDetailActivity extends AppCompatActivity {
@@ -67,6 +72,18 @@ public class ClientDetailActivity extends AppCompatActivity {
             case R.id.action_call:
                 return true;
             case R.id.action_foto:
+                return true;
+            case R.id.action_show_map_location:
+                Intent intent = new Intent(this, MapActivity.class);
+                intent.putExtra(MAP_TYPE, MAP_TYPE_GET_LOCATION);
+                LocationPoint locationPoint = dataRepository.getLastTrackPoint();
+                if(locationPoint!=null){
+                    break;
+                }
+                intent.putExtra(MAP_TYPE, MAP_TYPE_GET_LOCATION);
+                intent.putExtra(MAP_SHOW_POSITION_LAT, String.valueOf(locationPoint.getLatitude()));
+                intent.putExtra(MAP_SHOW_POSITION_LON, String.valueOf(locationPoint.getLongitude()));
+                startActivityForResult(intent, 1);
                 return true;
             case R.id.action_show_location:
                 LocationPoint lastPoint = dataRepository.getLastTrackPoint();
@@ -178,6 +195,19 @@ public class ClientDetailActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data == null) {return;}
+        String lat = data.getStringExtra(MAP_SHOW_POSITION_LAT);
+        String lon = data.getStringExtra(MAP_SHOW_POSITION_LON);
+        if(lat != null && lon != null){
+            mLatView.setText(lat);
+            mLongView.setText(lon);
+        }
+
+    }
+
     private void closeView(){
         AlertDialog.Builder builder = new AlertDialog.Builder(ClientDetailActivity.this);
         builder.setMessage(getString(R.string.questions_data_save));
@@ -202,11 +232,11 @@ public class ClientDetailActivity extends AppCompatActivity {
 
         // TODO (start stub): to set size text in AlertDialog
         TextView textView = (TextView) alert.findViewById(android.R.id.message);
-        textView.setTextSize(getResources().getDimension(R.dimen.text_size_medium));
+        textView.setTextSize(getResources().getDimension(R.dimen.alert_text_size));
         Button button1 = (Button) alert.findViewById(android.R.id.button1);
-        button1.setTextSize(getResources().getDimension(R.dimen.text_size_medium));
+        button1.setTextSize(getResources().getDimension(R.dimen.alert_text_size));
         Button button2 = (Button) alert.findViewById(android.R.id.button2);
-        button2.setTextSize(getResources().getDimension(R.dimen.text_size_medium));
+        button2.setTextSize(getResources().getDimension(R.dimen.alert_text_size));
         // TODO: (end stub) ------------------
     }
 

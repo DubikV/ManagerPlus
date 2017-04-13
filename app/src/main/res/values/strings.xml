@@ -11,6 +11,7 @@
     <string name="action_return">Назад</string>
     <string name="action_foto">Фото</string>
     <string name="action_phone_call">Подзвонити</string>
+    <string name="action_map">Rfhnf</string>
 
     <string name="item_waybill">Дорожній лист</string>
     <string name="nav_service">Сервіс</string>
@@ -79,6 +80,15 @@
     <!--Name objects-->
     <string name="map_name">Карта</string>
     <string name="work_plase_name">Робочий стіл</string>
+
+    <!--Map-->
+    <string name="map_not_init_param">Не вказані параметри</string>
+    <string name="map_not_init_location">Не вказано місцезнаходження</string>
+    <string name="map_you_position">Ваше місцезнаходження</string>
+    <string name="map_track_route">Трек маршруту</string>
+    <string name="map_select_location">Виберіть координати</string>
+    <string name="map_coordinates">Координати</string>
+    <string name="map_get_location">Отримати координати</string>
 
     <!--Waybill-->
     <string name="waybill_name">Дорожній лист</string>

@@ -11,6 +11,9 @@
     <dimen name="tab_layout_height">15dp</dimen>
     <dimen name="marging_button_map">7dp</dimen>
 
+    <!--Alert-->
+    <dimen name="alert_text_size">16dp</dimen>
+
     <!--Waybill-->
     <dimen name="marging_waybill_cap">3dp</dimen>
     <dimen name="pading_edittext_waybill_cap">5dp</dimen>

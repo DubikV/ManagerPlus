@@ -15,7 +15,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.activity.MapActivity;
+import com.gmail.vanyadubik.managerplus.activity.MapTrackerActivity;
 import com.gmail.vanyadubik.managerplus.adapter.VisitListAdapter;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
@@ -94,7 +94,7 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
         showMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getContext(), MapActivity.class));
+                startActivity(new Intent(getContext(), MapTrackerActivity.class));
             }
         });
 
