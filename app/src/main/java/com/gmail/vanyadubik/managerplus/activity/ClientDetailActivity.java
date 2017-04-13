@@ -77,7 +77,7 @@ public class ClientDetailActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, MapActivity.class);
                 intent.putExtra(MAP_TYPE, MAP_TYPE_GET_LOCATION);
                 LocationPoint locationPoint = dataRepository.getLastTrackPoint();
-                if(locationPoint!=null){
+                if(locationPoint==null){
                     break;
                 }
                 intent.putExtra(MAP_TYPE, MAP_TYPE_GET_LOCATION);

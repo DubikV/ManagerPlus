@@ -14,6 +14,7 @@ import com.gmail.vanyadubik.managerplus.fragment.WorkPlaseFragment;
 import com.gmail.vanyadubik.managerplus.modules.ActivityUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.DataApiModule;
 import com.gmail.vanyadubik.managerplus.modules.ErrorUtilsApiModule;
+import com.gmail.vanyadubik.managerplus.modules.GPSTaskUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.NetworkUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.PhoneUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.service.gps.GPSTrackerService;
@@ -27,7 +28,8 @@ import dagger.Component;
 
 @Singleton
 @Component(modules = {DataApiModule.class, NetworkUtilsApiModule.class,
-        ActivityUtilsApiModule.class, ErrorUtilsApiModule.class, PhoneUtilsApiModule.class})
+        ActivityUtilsApiModule.class, ErrorUtilsApiModule.class,
+        PhoneUtilsApiModule.class, GPSTaskUtilsApiModule.class})
 public interface DIComponent {
 
     void inject(StartActivity startActivity);

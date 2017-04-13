@@ -30,6 +30,7 @@ import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
+import com.gmail.vanyadubik.managerplus.utils.GPSTaskUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -79,7 +80,8 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.TILT_CAMERA_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.WIDTH_POLYLINE_MAP;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback  {
     public static final String MAP_TYPE = "map_type";
     public static final int MAP_TYPE_SHOW_TRACK = 1;
     public static final int MAP_TYPE_GET_LOCATION = 2;
@@ -91,11 +93,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Inject
     DataRepository dataRepository;
+    @Inject
+    GPSTaskUtils gpsTaskUtils;
 
     private GoogleMap mMap;
     private SupportMapFragment locationMapFragment;
+    private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
+    private Location lastCurrentLocation;
     private LatLng currentLocation;
+    private Bundle extras;
     private int typeShow;
+    private Boolean moveMarker;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -104,6 +113,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         getSupportActionBar().setTitle(getResources().getString(R.string.map_name));
 
         ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
 
         typeShow = 0;
 
@@ -223,7 +238,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                 @Override
                 public void onMapLongClick(LatLng latLng) {
-                    showAskAlert();
+                    showAskAlert(latLng);
                 }
             });
         }
@@ -239,6 +254,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.setIndoorEnabled(true);
         mMap.setBuildingsEnabled(true);
 
+        switch (typeShow) {
+            case MAP_TYPE_SHOW_TRACK:
+                moveMarker = false;
+                getSupportActionBar().setTitle(getResources().getString(R.string.map_track_route));
+                Date dateStart = new Date(extras.getInt(MAP_SHOW_TRACK_DATE_START));
+                Date dateEnd = new Date(extras.getInt(MAP_SHOW_TRACK_DATE_END));
+                showTrack(dateStart, dateEnd);
+                return;
+            case MAP_TYPE_GET_LOCATION:
+                getSupportActionBar().setTitle(getResources().getString(R.string.map_select_location));
+                moveMarker = false;
+                insertMarker(currentLocation);
+                return;
+            case MAP_TYPE_SHOW_POSITION:
+                getSupportActionBar().setTitle(getResources().getString(R.string.map_you_position));
+                moveMarker = true;
+                insertMarker(currentLocation);
+                return;
+            default:
+                moveMarker = true;
+                insertMarker(currentLocation);
+        }
 
     }
 
@@ -258,7 +295,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onResume() {
         super.onResume();
 
-        Bundle extras = getIntent().getExtras();
+        extras = getIntent().getExtras();
 
         if (extras != null) {
             typeShow = extras.getInt(MAP_TYPE);
@@ -278,28 +315,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     getResources().getString(R.string.map_not_init_location),
                     Toast.LENGTH_LONG).show();
             finish();
-            finish();
         }
-
-        switch (typeShow) {
-            case MAP_TYPE_SHOW_TRACK:
-                getSupportActionBar().setTitle(getResources().getString(R.string.map_track_route));
-                Date dateStart = new Date(extras.getInt(MAP_SHOW_TRACK_DATE_START));
-                Date dateEnd = new Date(extras.getInt(MAP_SHOW_TRACK_DATE_END));
-                showTrack(dateStart, dateEnd);
-                return;
-            case MAP_TYPE_GET_LOCATION:
-                getSupportActionBar().setTitle(getResources().getString(R.string.map_select_location));
-                insertMarker(currentLocation);
-                return;
-            case MAP_TYPE_SHOW_POSITION:
-                getSupportActionBar().setTitle(getResources().getString(R.string.map_you_position));
-                insertMarker(currentLocation);
-                return;
-            default:
-                insertMarker(currentLocation);
-        }
-
     }
 
 
@@ -311,8 +327,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         markerOptions.title(getResources().getString(R.string.map_you_position));
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
         mMap.addMarker(markerOptions);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(MAX_ZOOM_MAP));
+
+        if(moveMarker) {
+            //move map camera
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(MAX_ZOOM_MAP));
+        }
 
     }
 
@@ -332,25 +352,29 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
-    public void showAskAlert(){
+    public void showAskAlert(final LatLng latLng){
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(this.getString(R.string.map_coordinates));
-        builder.setMessage(this.getString(R.string.map_get_location));
-        builder.setPositiveButton(this.getString(R.string.action_settings), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog,int which) {
-                Intent intent = new Intent();
-                intent.putExtra(MAP_SHOW_POSITION_LAT, String.valueOf(currentLocation.latitude));
-                intent.putExtra(MAP_SHOW_POSITION_LON, String.valueOf(currentLocation.longitude));
-                setResult(RESULT_OK, intent);
-            }
-        });
+        builder.setTitle(getString(R.string.map_coordinates));
+        builder.setMessage(getString(R.string.map_get_location));
 
-        builder.setNegativeButton(this.getString(R.string.questions_title_cancel), new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.questions_answer_yes), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
+                Intent intent = new Intent();
+                intent.putExtra(MAP_SHOW_POSITION_LAT, String.valueOf(latLng.latitude));
+                intent.putExtra(MAP_SHOW_POSITION_LON, String.valueOf(latLng.longitude));
+                setResult(RESULT_OK, intent);
+                finish();
             }
         });
 
+        builder.setNegativeButton(getString(R.string.questions_answer_no), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+            }
+        });
         AlertDialog alert = builder.create();
         alert.show();
 
@@ -363,7 +387,70 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         button2.setTextSize(getResources().getDimension(R.dimen.alert_text_size));
         // TODO: (end stub) ------------------
 
+    }
 
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        mLocationRequest = LocationRequest.create();
+        mLocationRequest.setPriority(TYPE_PRIORITY_CONNECTION_GPS);
+        mLocationRequest.setInterval(MIN_TIME_LOCATION_MAP);
+        mLocationRequest.setFastestInterval(MIN_TIME_LOCATION_MAP);
+        mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_LOCATION_MAP);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if ( gpsTaskUtils.isBetterLocation(location, lastCurrentLocation,
+                MIN_TIME_LOCATION_MAP, MAX_COEFFICIENT_CURRENCY_LOCATION) ) {
+            lastCurrentLocation = location;
+        }
+        insertMarker(new LatLng(lastCurrentLocation.getLatitude(),
+                lastCurrentLocation.getLongitude()));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mGoogleApiClient == null){
+            return;
+        }
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(mGoogleApiClient == null){
+            return;
+        }
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
     }
 }
 
