@@ -40,8 +40,8 @@ public class Consts {
     public static final long MIN_TIME_LOCATION_MAP = 10; // seconds
     public static final long MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION = 70;// meters
     public static final double  MIN_SPEED_MAP_SET_ZOOM = 10.0; //
-    public static final float  MIN_ZOOM_MAP = 18;
-    public static final float  MAX_ZOOM_MAP = 21;
+    public static final float  MIN_ZOOM_MAP = 25; //18
+    public static final float  MAX_ZOOM_MAP = 30; //21
     public static final float  TILT_CAMERA_MAP = 55; //67
     public static final float  DIVISION_ZOOM_MAP = 1.0f; //0.5f
 

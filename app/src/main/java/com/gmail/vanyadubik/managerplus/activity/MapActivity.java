@@ -6,9 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -24,11 +22,6 @@ import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
-import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
-import com.gmail.vanyadubik.managerplus.gps.DirectionsJSONParser;
-import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
-import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
-import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.utils.GPSTaskUtils;
 import com.google.android.gms.common.ConnectionResult;
@@ -41,28 +34,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.ui.IconGenerator;
-
-import org.joda.time.LocalDateTime;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -71,12 +47,8 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.DIVISION_ZOOM_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_ZOOM_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SPEED_MAP_SET_ZOOM;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_LOCATION_MAP;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_ZOOM_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
-import static com.gmail.vanyadubik.managerplus.common.Consts.TILT_CAMERA_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.WIDTH_POLYLINE_MAP;
 
@@ -102,6 +74,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
     private LocationRequest mLocationRequest;
     private Location lastCurrentLocation;
     private LatLng currentLocation;
+    private Marker mCurrLocationMarker;
     private Bundle extras;
     private int typeShow;
     private Boolean moveMarker;
@@ -258,8 +231,8 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
             case MAP_TYPE_SHOW_TRACK:
                 moveMarker = false;
                 getSupportActionBar().setTitle(getResources().getString(R.string.map_track_route));
-                Date dateStart = new Date(extras.getInt(MAP_SHOW_TRACK_DATE_START));
-                Date dateEnd = new Date(extras.getInt(MAP_SHOW_TRACK_DATE_END));
+                Date dateStart = new Date(Long.valueOf(extras.getString(MAP_SHOW_TRACK_DATE_START)));
+                Date dateEnd = new Date(Long.valueOf(extras.getString(MAP_SHOW_TRACK_DATE_END)));
                 showTrack(dateStart, dateEnd);
                 return;
             case MAP_TYPE_GET_LOCATION:
@@ -322,11 +295,15 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
     private void insertMarker(LatLng latLng) {
 
+        if (mCurrLocationMarker != null) {
+            mCurrLocationMarker.remove();
+        }
+
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title(getResources().getString(R.string.map_you_position));
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-        mMap.addMarker(markerOptions);
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        mCurrLocationMarker = mMap.addMarker(markerOptions);
 
         if(moveMarker) {
             //move map camera
@@ -347,6 +324,10 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
         if(pOptions!=null && mMap != null) {
 
             mMap.addPolyline(pOptions);
+
+            moveMarker = true;
+            insertMarker(pOptions.getPoints().get(0));
+            moveMarker = false;
 
         }
 

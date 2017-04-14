@@ -1,14 +1,10 @@
 package com.gmail.vanyadubik.managerplus.activity;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -99,7 +95,7 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        getSupportActionBar().setTitle(getResources().getString(R.string.map_name));
+        getSupportActionBar().setTitle(getResources().getString(R.string.map_track_route));
 
         ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
 
@@ -447,7 +443,7 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
                 IconGenerator iconFactory = new IconGenerator(this);
                 iconFactory.setRotation(90);
                 iconFactory.setContentRotation(-90);
-                iconFactory.setStyle(IconGenerator.STYLE_GREEN);
+                iconFactory.setStyle(IconGenerator.STYLE_BLUE);
 
                 MarkerOptions markerOptions = new MarkerOptions()
                         .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(markerMap.getName())))
@@ -584,7 +580,7 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
                 points = new ArrayList<LatLng>();
                 lineOptions = new PolylineOptions()
                         .width(WIDTH_POLYLINE_MAP)
-                        .color(getResources().getColor(R.color.colorGreen))
+                        .color(getResources().getColor(R.color.colorBlue))
                         .geodesic(true);
 
                 List<HashMap<String, String>> path = result.get(i);

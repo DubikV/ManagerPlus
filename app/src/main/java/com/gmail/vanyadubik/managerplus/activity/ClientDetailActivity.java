@@ -74,12 +74,15 @@ public class ClientDetailActivity extends AppCompatActivity {
             case R.id.action_foto:
                 return true;
             case R.id.action_show_map_location:
-                Intent intent = new Intent(this, MapActivity.class);
-                intent.putExtra(MAP_TYPE, MAP_TYPE_GET_LOCATION);
-                LocationPoint locationPoint = dataRepository.getLastTrackPoint();
+
+                LocationPoint locationPoint = position;
+                if(locationPoint==null) {
+                    locationPoint = dataRepository.getLastTrackPoint();
+                }
                 if(locationPoint==null){
                     break;
                 }
+                Intent intent = new Intent(this, MapActivity.class);
                 intent.putExtra(MAP_TYPE, MAP_TYPE_GET_LOCATION);
                 intent.putExtra(MAP_SHOW_POSITION_LAT, String.valueOf(locationPoint.getLatitude()));
                 intent.putExtra(MAP_SHOW_POSITION_LON, String.valueOf(locationPoint.getLongitude()));
