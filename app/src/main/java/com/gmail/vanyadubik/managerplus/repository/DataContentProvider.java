@@ -15,12 +15,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.AUTHORITY;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.ChangingContrack;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.ClientContract;
-import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.TrackListContract;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.FuelContract;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.LocationPointContract;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.TrackListContract;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.UserSettings;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.UsingCarContrack;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.VisitContract;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.WaybillContract;
+
 
 public class DataContentProvider extends ContentProvider{
 
@@ -40,6 +44,12 @@ public class DataContentProvider extends ContentProvider{
     private static final int CLIENT_ID = 10;
     private static final int LOCATION_POINT_LIST = 11;
     private static final int LOCATION_POINT_ID = 12;
+    private static final int USING_CAR_LIST = 13;
+    private static final int USING_CAR_ID = 14;
+    private static final int CHANGING_LIST = 15;
+    private static final int CHANGING_ID = 16;
+    private static final int FUEL_LIST = 17;
+    private static final int FUEL_ID = 18;
 
     public DataContentProvider() {
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
@@ -55,6 +65,12 @@ public class DataContentProvider extends ContentProvider{
         URI_MATCHER.addURI(AUTHORITY, ClientContract.TABLE_NAME + "/#", CLIENT_ID);
         URI_MATCHER.addURI(AUTHORITY, LocationPointContract.TABLE_NAME, LOCATION_POINT_LIST);
         URI_MATCHER.addURI(AUTHORITY, LocationPointContract.TABLE_NAME + "/#", LOCATION_POINT_ID);
+        URI_MATCHER.addURI(AUTHORITY, UsingCarContrack.TABLE_NAME, USING_CAR_LIST);
+        URI_MATCHER.addURI(AUTHORITY, UsingCarContrack.TABLE_NAME + "/#", USING_CAR_ID);
+        URI_MATCHER.addURI(AUTHORITY, ChangingContrack.TABLE_NAME, CHANGING_LIST);
+        URI_MATCHER.addURI(AUTHORITY, ChangingContrack.TABLE_NAME + "/#", CHANGING_ID);
+        URI_MATCHER.addURI(AUTHORITY, FuelContract.TABLE_NAME, FUEL_LIST);
+        URI_MATCHER.addURI(AUTHORITY, FuelContract.TABLE_NAME + "/#", FUEL_ID);
     }
     @Override
     public boolean onCreate() {
@@ -98,6 +114,18 @@ public class DataContentProvider extends ContentProvider{
                 return LocationPointContract.CONTENT_TYPE;
             case LOCATION_POINT_ID:
                 return LocationPointContract.CONTENT_ITEM_TYPE;
+            case USING_CAR_LIST:
+                return UsingCarContrack.CONTENT_TYPE;
+            case USING_CAR_ID:
+                return UsingCarContrack.CONTENT_ITEM_TYPE;
+            case CHANGING_LIST:
+                return ChangingContrack.CONTENT_TYPE;
+            case CHANGING_ID:
+                return ChangingContrack.CONTENT_ITEM_TYPE;
+            case FUEL_LIST:
+                return FuelContract.CONTENT_TYPE;
+            case FUEL_ID:
+                return FuelContract.CONTENT_ITEM_TYPE;
 
             default:
                 throw new RuntimeException("Cannot identify uri " + uri.toString());
@@ -241,6 +269,15 @@ public class DataContentProvider extends ContentProvider{
             case LOCATION_POINT_ID:
             case LOCATION_POINT_LIST:
                 return LocationPointContract.TABLE_NAME;
+            case USING_CAR_ID:
+            case USING_CAR_LIST:
+                return UsingCarContrack.TABLE_NAME;
+            case CHANGING_ID:
+            case CHANGING_LIST:
+                return ChangingContrack.TABLE_NAME;
+            case FUEL_ID:
+            case FUEL_LIST:
+                return FuelContract.TABLE_NAME;
             default:
                 throw new RuntimeException("Cannot identify uri " + uri.toString());
         }
@@ -266,6 +303,15 @@ public class DataContentProvider extends ContentProvider{
             case LOCATION_POINT_ID:
             case LOCATION_POINT_LIST:
                 return LocationPointContract.UNIQUE_COLUMNS;
+            case USING_CAR_ID:
+            case USING_CAR_LIST:
+                return UsingCarContrack.UNIQUE_COLUMNS;
+            case CHANGING_ID:
+            case CHANGING_LIST:
+                return ChangingContrack.UNIQUE_COLUMNS;
+            case FUEL_ID:
+            case FUEL_LIST:
+                return FuelContract.UNIQUE_COLUMNS;
             default:
                 throw new RuntimeException("Cannot identify uri " + uri.toString());
         }

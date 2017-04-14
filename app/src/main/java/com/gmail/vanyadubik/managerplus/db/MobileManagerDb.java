@@ -5,12 +5,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
-import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.TrackListContract;
-import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.LocationPointContract;
-import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.WaybillContract;
-import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.VisitContract;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.ClientContract;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.LocationPointContract;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.TrackListContract;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.UserSettings;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.VisitContract;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.WaybillContract;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.UsingCarContrack;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.ChangingContrack;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.FuelContract;
 
 public class MobileManagerDb extends SQLiteOpenHelper {
 
@@ -87,6 +90,34 @@ public class MobileManagerDb extends SQLiteOpenHelper {
                 + UserSettings.SETTING_VALUE + " text,"
                 + "UNIQUE (" + TextUtils.join(",", UserSettings.UNIQUE_COLUMNS) + ")"
                 + ");");
+
+        db.execSQL("create table " + ChangingContrack.TABLE_NAME + "("
+                + ChangingContrack._ID + " integer primary key AUTOINCREMENT,"
+                + ChangingContrack.MANE_ELEMENT + " text,"
+                + ChangingContrack.ELEMENT_ID + " text,"
+                + "UNIQUE (" + TextUtils.join(",", ChangingContrack.UNIQUE_COLUMNS) + ")"
+                + ");");
+
+        db.execSQL("create table " + UsingCarContrack.TABLE_NAME + "("
+                + UsingCarContrack._ID + " integer primary key AUTOINCREMENT,"
+                + UsingCarContrack.DATE + " text,"
+                + UsingCarContrack.INCAR + " numeric,"
+                + "UNIQUE (" + TextUtils.join(",", UsingCarContrack.UNIQUE_COLUMNS) + ")"
+                + ");");
+
+        db.execSQL("create table " + FuelContract.TABLE_NAME + "("
+                + FuelContract._ID + " integer primary key AUTOINCREMENT,"
+                + FuelContract.EXTERNAL_ID + " text,"
+                + FuelContract.DELETED + " numeric,"
+                + FuelContract.INDB + " numeric,"
+                + FuelContract.DATE + " integer,"
+                + FuelContract.TYPE_FUEL + " text,"
+                + FuelContract.TYPE_PAYMENT + " text,"
+                + FuelContract.LITRES + " real,"
+                + FuelContract.MONEY + " real,"
+                + FuelContract.POINT_CREATE + " integer,"
+                + "UNIQUE (" + TextUtils.join(",", FuelContract.UNIQUE_COLUMNS) + ")"
+                + ");");
     }
 
     @Override
@@ -97,6 +128,9 @@ public class MobileManagerDb extends SQLiteOpenHelper {
         db.execSQL("drop table if exists " + VisitContract.TABLE_NAME);
         db.execSQL("drop table if exists " + ClientContract.TABLE_NAME);
         db.execSQL("drop table if exists " + UserSettings.TABLE_NAME);
+        db.execSQL("drop table if exists " + ChangingContrack.TABLE_NAME);
+        db.execSQL("drop table if exists " + UsingCarContrack.TABLE_NAME);
+        db.execSQL("drop table if exists " + FuelContract.TABLE_NAME);
 
         onCreate(db);
 

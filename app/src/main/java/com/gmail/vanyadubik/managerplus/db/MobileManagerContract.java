@@ -247,4 +247,115 @@ public class MobileManagerContract {
 
     }
 
+    public static final class ChangingContrack implements BaseColumns {
+
+        public static final String TABLE_NAME = "changed_element";
+
+        public static final String MANE_ELEMENT = "name";
+        public static final String ELEMENT_ID = "externa_id";
+
+        public static final Uri CONTENT_URI =
+                Uri.withAppendedPath(
+                        MobileManagerContract.CONTENT_URI,
+                        TABLE_NAME);
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE
+                        + "/vnd."
+                        + AUTHORITY + "."
+                        + TABLE_NAME;
+
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE
+                        + "/vnd."
+                        + AUTHORITY + "."
+                        + TABLE_NAME;
+
+        public static final String[] PROJECTION_ALL =
+                {_ID, MANE_ELEMENT, ELEMENT_ID};
+
+        public static final String[] UNIQUE_COLUMNS =
+                {ELEMENT_ID};
+
+        public static final String DEFAULT_SORT_ORDER = ELEMENT_ID + " ASC";
+
+    }
+
+    public static final class UsingCarContrack implements BaseColumns {
+
+        public static final String TABLE_NAME = "track_not_car";
+
+        public static final String DATE = "date";
+        public static final String INCAR = "incar";
+
+        public static final Uri CONTENT_URI =
+                Uri.withAppendedPath(
+                        MobileManagerContract.CONTENT_URI,
+                        TABLE_NAME);
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE
+                        + "/vnd."
+                        + AUTHORITY + "."
+                        + TABLE_NAME;
+
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE
+                        + "/vnd."
+                        + AUTHORITY + "."
+                        + TABLE_NAME;
+
+        public static final String[] PROJECTION_ALL =
+                {_ID, DATE, INCAR};
+
+        public static final String[] UNIQUE_COLUMNS =
+                {DATE};
+
+        public static final String DEFAULT_SORT_ORDER = DATE + " ASC";
+
+    }
+
+    public static final class FuelContract implements BaseColumns{
+
+        public static final String TABLE_NAME = "fuel_list";
+
+        public static final String EXTERNAL_ID = "external_id";
+        public static final String DELETED = "deleted";
+        public static final String INDB = "incdb";
+        public static final String DATE = "date_start";
+        public static final String TYPE_FUEL = "tupe_fuel";
+        public static final String TYPE_PAYMENT = "type_payment";
+        public static final String LITRES = "litres";
+        public static final String MONEY = "money";
+        public static final String POINT_CREATE = "point_create";
+
+        public static final Uri CONTENT_URI =
+                Uri.withAppendedPath(
+                        MobileManagerContract.CONTENT_URI,
+                        TABLE_NAME);
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE
+                        + "/vnd."
+                        + AUTHORITY + "."
+                        + TABLE_NAME;
+
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE
+                        + "/vnd."
+                        + AUTHORITY + "."
+                        + TABLE_NAME;
+
+        public static final String[] PROJECTION_ALL =
+                {_ID, EXTERNAL_ID, DELETED, INDB, DATE,
+                        TYPE_FUEL, TYPE_PAYMENT, LITRES, MONEY, POINT_CREATE};
+
+        public static final String[] UNIQUE_COLUMNS =
+                {EXTERNAL_ID};
+
+        public static final String DEFAULT_SORT_ORDER = DATE + " ASC";
+
+
+    }
+
 }
