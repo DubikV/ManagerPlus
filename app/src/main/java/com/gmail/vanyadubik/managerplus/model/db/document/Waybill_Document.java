@@ -1,8 +1,8 @@
-package com.gmail.vanyadubik.managerplus.model.db;
+package com.gmail.vanyadubik.managerplus.model.db.document;
 
 import java.util.Date;
 
-public class Waybill_Element extends Element {
+public class Waybill_Document extends Document {
 
     private Date dateStart;
     private Date dateEnd;
@@ -11,10 +11,10 @@ public class Waybill_Element extends Element {
     private int startOdometer;
     private int endOdometer;
 
-    public Waybill_Element(int id, String externalId, boolean deleted, boolean inDB,
-             Date dateStart, Date dateEnd, int startLP, int endLP,
+    public Waybill_Document(int id, String externalId, boolean deleted, boolean inDB,
+                            Date date, Date dateStart, Date dateEnd, int startLP, int endLP,
                            int startOdometer, int endOdometer) {
-        super(id, externalId, deleted, inDB);
+        super(id, externalId, deleted, inDB, date);
         this.startLP = startLP;
         this.endLP = endLP;
         this.dateStart = dateStart;
@@ -71,15 +71,17 @@ public class Waybill_Element extends Element {
         this.endOdometer = endOdometer;
     }
 
+
     public static Builder builder() {
         return new Builder();
     }
 
-    public static class Builder extends Element.Builder{
+    public static class Builder extends Document.Builder{
         private int id;
         private String externalId;
         private boolean deleted;
         private boolean inDB;
+        private Date date;
         private Date dateStart;
         private Date dateEnd;
         private int startLP;
@@ -105,6 +107,11 @@ public class Waybill_Element extends Element {
 
         public Builder inDB(Boolean inDB) {
             this.inDB = inDB;
+            return this;
+        }
+
+        public Builder date(Date date) {
+            this.date = date;
             return this;
         }
 
@@ -138,8 +145,8 @@ public class Waybill_Element extends Element {
             return this;
         }
 
-        public Waybill_Element build() {
-            return new Waybill_Element(id, externalId, deleted, inDB,
+        public Waybill_Document build() {
+            return new Waybill_Document(id, externalId, deleted, inDB, date,
                     dateStart, dateEnd, startLP, endLP, startOdometer, endOdometer);
         }
     }

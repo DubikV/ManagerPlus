@@ -1,14 +1,12 @@
 package com.gmail.vanyadubik.managerplus.repository;
 
-import android.net.Uri;
-
 import com.gmail.vanyadubik.managerplus.model.ParameterInfo;
-import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
+import com.gmail.vanyadubik.managerplus.model.db.document.Fuel_Document;
+import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
-import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
-import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
+import com.gmail.vanyadubik.managerplus.model.db.document.Visit_Document;
+import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.Date;
@@ -34,19 +32,27 @@ public interface DataRepository {
 
     LocationPoint getLocationPoint(int id);
 
-    Waybill_Element getLastWaybill();
+    Waybill_Document getLastWaybill();
 
-    List<Waybill_Element> getAllWaybill();
+    List<Waybill_Document> getAllWaybill();
 
-    List<Visit_Element> getAllVisit();
+    List<Visit_Document> getAllVisit();
 
     List<Client_Element> getAllClients();
 
-    List<Visit_Element> getVisitByPeriod(Date dateFrom, Date dateBy);
+    List<Fuel_Document> getAllFuel();
+
+    List<Visit_Document> getVisitByPeriod(Date dateFrom, Date dateBy);
 
     Client_Element getClient(String externalId);
 
-    Visit_Element getVisit(String externalId);
+    Visit_Document getVisit(String externalId);
+
+    Boolean isInCar();
+
+    List<String> getChangedElements(String nameElement);
+
+    Fuel_Document getFuel(String externalId);
 
     void insertTrackPoint(LocationPoint locationPoint);
 
@@ -56,10 +62,16 @@ public interface DataRepository {
 
     void insertClient(Client_Element client);
 
-    void insertWaybill(Waybill_Element waybill);
+    void insertWaybill(Waybill_Document waybill);
 
-    void insertVisit(Visit_Element visit);
+    void insertVisit(Visit_Document visit);
 
     void insertUserSetting(ParameterInfo usersetting);
+
+    void insertInCar(Date date, boolean inCar);
+
+    void insertChangedElement(String nameElement, String externalID);
+
+    void insertFuel(Fuel_Document fuelDoc);
 
 }

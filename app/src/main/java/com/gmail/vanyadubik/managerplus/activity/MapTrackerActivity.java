@@ -18,7 +18,7 @@ import android.view.View;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.gps.DirectionsJSONParser;
-import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
+import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.utils.GPSTaskUtils;
@@ -88,7 +88,7 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
     private List<Polyline> polylineNavigation;
     private FloatingActionButton current_position;
     private Boolean moveMarker;
-    private Waybill_Element waybill;
+    private Waybill_Document waybill;
     private List<MarkerMap> markerMaps;
 
     @Override

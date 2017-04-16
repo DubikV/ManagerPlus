@@ -23,9 +23,9 @@ import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.adapter.ClientSmalListAdapter;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
-import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
+import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
-import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
+import com.gmail.vanyadubik.managerplus.model.db.document.Visit_Document;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 
 import org.joda.time.LocalDateTime;
@@ -43,7 +43,7 @@ public class VisitDetailActivity extends AppCompatActivity {
     @Inject
     DataRepository dataRepository;
 
-    private Visit_Element visit;
+    private Visit_Document visit;
     private Client_Element client;
     private EditText mDetailDateView, mDetailTypeView, mDetailInfoView, mLatView, mLongView;
     private AutoCompleteTextView mDetailClientView;
@@ -187,7 +187,7 @@ public class VisitDetailActivity extends AppCompatActivity {
             mDetailInfoView.setText(visit.getInformation());
 
         }else{
-            visit = Visit_Element.builder()
+            visit = Visit_Document.builder()
                     .externalId("app-" + UUID.randomUUID().toString())
                     .build();
         }
@@ -318,7 +318,7 @@ public class VisitDetailActivity extends AppCompatActivity {
                 }
                 idPosition = dataRepository.insertLocationPoint(visitPosition);
             }
-            dataRepository.insertVisit(Visit_Element.builder()
+            dataRepository.insertVisit(Visit_Document.builder()
                     .id(visit.getId())
                     .externalId(visit.getExternalId())
                     .deleted(visit.isDeleted())

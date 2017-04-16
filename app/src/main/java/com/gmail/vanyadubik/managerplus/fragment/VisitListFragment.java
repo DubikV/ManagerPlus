@@ -11,17 +11,14 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.activity.ClientDetailActivity;
 import com.gmail.vanyadubik.managerplus.activity.VisitDetailActivity;
 import com.gmail.vanyadubik.managerplus.adapter.VisitListAdapter;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
-import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
-import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
+import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
+import com.gmail.vanyadubik.managerplus.model.db.document.Visit_Document;
 import com.gmail.vanyadubik.managerplus.model.documents.VisitList;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
-
-import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,9 +68,9 @@ public class VisitListFragment extends Fragment implements FragmentBecameVisible
 
         list = new ArrayList<>();
 
-        List<Visit_Element> visits = dataRepository.getAllVisit();
+        List<Visit_Document> visits = dataRepository.getAllVisit();
 
-        for (Visit_Element visit : visits) {
+        for (Visit_Document visit : visits) {
             VisitList visitList = new VisitList(visit.getExternalId(), visit.getDate(), visit.getTypeVisit());
             Client_Element client = dataRepository.getClient(visit.getClientExternalId());
             if (client != null) {

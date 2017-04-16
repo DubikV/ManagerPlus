@@ -84,6 +84,9 @@
         <activity
             android:name=".activity.VisitDetailActivity">
         </activity>
+        <activity
+            android:name=".activity.FuelDetailActivity">
+        </activity>
     </application>
 
 </manifest>

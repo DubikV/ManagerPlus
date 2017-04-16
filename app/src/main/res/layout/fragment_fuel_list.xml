@@ -60,7 +60,7 @@
                 android:gravity="left|center_horizontal"
                 android:textSize="@dimen/textsize_table_cap"
                 android:padding="@dimen/pading_edittext_waybill_cap"
-                android:text="@string/fuel_sum_name"/>
+                android:text="@string/fuel_litres_name"/>
 
         </LinearLayout>
 

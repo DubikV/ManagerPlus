@@ -1,0 +1,193 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/colorGrey">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hintTextAppearance="@style/text_size_small_style"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:background="@color/colorWhite"
+                android:layout_weight="1"
+                android:layout_marginRight="@dimen/marging_waybill_cap">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/fuel_date"
+                    android:inputType="textUri"
+                    android:maxLines="1"
+                    android:textSize="@dimen/text_size_medium"
+                    android:id="@+id/fuel_detail_date" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hintTextAppearance="@style/text_size_small_style"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:background="@color/colorWhite"
+                android:layout_weight="1"
+                android:layout_marginLeft="@dimen/marging_waybill_cap">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/fuel_type_name"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:textSize="@dimen/text_size_medium"
+                    android:id="@+id/fuel_detail_typefuel"
+                    android:maxLength="14" />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hintTextAppearance="@style/text_size_small_style"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:background="@color/colorWhite">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/fuel_type_payment"
+                android:inputType="textPersonName"
+                android:maxLines="1"
+                android:textSize="@dimen/text_size_medium"
+                android:id="@+id/fuel_detail_typepayment" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hintTextAppearance="@style/text_size_small_style"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:background="@color/colorWhite"
+                android:layout_weight="1"
+                android:layout_marginRight="@dimen/marging_waybill_cap">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/fuel_litres_name"
+                    android:inputType="textUri|numberDecimal"
+                    android:maxLines="1"
+                    android:textSize="@dimen/text_size_medium"
+                    android:id="@+id/fuel_detail_litres" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hintTextAppearance="@style/text_size_small_style"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:background="@color/colorWhite"
+                android:layout_weight="1"
+                android:layout_marginLeft="@dimen/marging_waybill_cap">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/fuel_sum_name"
+                    android:inputType="text|numberDecimal"
+                    android:maxLines="1"
+                    android:textSize="@dimen/text_size_medium"
+                    android:id="@+id/fuel_detail_money"
+                    android:maxLength="14" />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginBottom="@dimen/activity_vertical_margin">
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:id="@+id/fuel_lat_edit"
+                android:layout_weight="1"
+                android:background="@color/colorWhite"
+                android:padding="@dimen/pading_edittext_waybill_cap"
+                android:layout_marginRight="@dimen/marging_waybill_cap"
+                android:layout_marginLeft="@dimen/marging_waybill_cap" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:id="@+id/fuel_long_edit"
+                android:layout_weight="1"
+                android:background="@color/colorWhite"
+                android:padding="@dimen/pading_edittext_waybill_cap"
+                android:layout_marginLeft="@dimen/marging_waybill_cap"
+                android:layout_marginRight="@dimen/marging_waybill_cap" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/base_button_height"
+        android:layout_marginRight="@dimen/base_button_margin_left"
+        android:layout_marginLeft="@dimen/base_button_margin_left"
+        android:layout_marginBottom="@dimen/base_button_margin_botton">
+
+        <Button
+            android:id="@+id/close_fuel_detail_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/button_base_left"
+            android:layout_weight="1"
+            android:textColor='@color/colorWhite'
+            android:text="@string/action_return"
+            android:textSize="@dimen/base_button_textsize"/>
+        <Button
+            android:id="@+id/save_fuel_detail_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/button_base_right"
+            android:text="@string/action_save"
+            android:textColor='@color/colorWhite'
+            android:textSize="@dimen/base_button_textsize"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+</LinearLayout>

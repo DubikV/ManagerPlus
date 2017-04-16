@@ -15,7 +15,7 @@ import com.gmail.vanyadubik.managerplus.activity.ClientDetailActivity;
 import com.gmail.vanyadubik.managerplus.adapter.ClientListAdapter;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
-import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
+import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 
 import java.util.List;

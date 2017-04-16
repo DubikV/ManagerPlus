@@ -38,6 +38,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.text.DecimalFormat;
 import java.util.Date;
 
 import javax.inject.Inject;
@@ -73,7 +75,6 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private Location lastCurrentLocation;
-    private LatLng currentLocation;
     private Marker mCurrLocationMarker;
     private Bundle extras;
     private int typeShow;
@@ -176,7 +177,9 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
             @Override
             public void onClick(View v) {
                 Log.d(TAGLOG, "Press button 'current_position'");
-                insertMarker(currentLocation);
+                moveMarker = true;
+                insertMarker(lastCurrentLocation);
+                moveMarker = false;
             }
         });
 
@@ -237,17 +240,18 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
                 return;
             case MAP_TYPE_GET_LOCATION:
                 getSupportActionBar().setTitle(getResources().getString(R.string.map_select_location));
+                moveMarker = true;
+                insertMarker(lastCurrentLocation);
                 moveMarker = false;
-                insertMarker(currentLocation);
                 return;
             case MAP_TYPE_SHOW_POSITION:
                 getSupportActionBar().setTitle(getResources().getString(R.string.map_you_position));
                 moveMarker = true;
-                insertMarker(currentLocation);
+                insertMarker(lastCurrentLocation);
                 return;
             default:
                 moveMarker = true;
-                insertMarker(currentLocation);
+                insertMarker(lastCurrentLocation);
         }
 
     }
@@ -279,35 +283,46 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
             finish();
         }
 
-        Double lat = extras.getDouble(MAP_SHOW_POSITION_LAT);
-        Double lon = extras.getDouble(MAP_SHOW_POSITION_LON);
-        currentLocation = new LatLng(lat, lon);
+        String lat = extras.getString(MAP_SHOW_POSITION_LAT);
+        String lon = extras.getString(MAP_SHOW_POSITION_LON);
 
-        if(currentLocation==null) {
+        if(lat!=null && lon !=null) {
+            lastCurrentLocation = new Location("service Provider");
+            lastCurrentLocation.setLatitude(Double.valueOf(lat));
+            lastCurrentLocation.setLongitude(Double.valueOf(lon));
+
+        }
+
+        if(lastCurrentLocation==null&&typeShow==MAP_TYPE_SHOW_POSITION) {
             Toast.makeText(getApplicationContext(),
                     getResources().getString(R.string.map_not_init_location),
                     Toast.LENGTH_LONG).show();
-            finish();
         }
     }
 
 
 
-    private void insertMarker(LatLng latLng) {
+    private void insertMarker(Location location) {
+
+        if(location==null){
+            return;
+        }
 
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
 
         MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
+        markerOptions.position(
+                new LatLng(location.getLatitude(), location.getLongitude()));
         markerOptions.title(getResources().getString(R.string.map_you_position));
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         mCurrLocationMarker = mMap.addMarker(markerOptions);
 
         if(moveMarker) {
             //move map camera
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(
+                    new LatLng(location.getLatitude(), location.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(MAX_ZOOM_MAP));
         }
 
@@ -325,9 +340,17 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
             mMap.addPolyline(pOptions);
 
-            moveMarker = true;
-            insertMarker(pOptions.getPoints().get(0));
-            moveMarker = false;
+            if(pOptions.getPoints().size()>0) {
+                LatLng firstloc = pOptions.getPoints().get(0);
+                if (firstloc != null) {
+                    moveMarker = true;
+                    Location location = new Location("service Provider");
+                    location.setLatitude(firstloc.latitude);
+                    location.setLongitude(firstloc.longitude);
+                    insertMarker(location);
+                    moveMarker = false;
+                }
+            }
 
         }
 
@@ -342,8 +365,12 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
         builder.setPositiveButton(getString(R.string.questions_answer_yes), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent();
-                intent.putExtra(MAP_SHOW_POSITION_LAT, String.valueOf(latLng.latitude));
-                intent.putExtra(MAP_SHOW_POSITION_LON, String.valueOf(latLng.longitude));
+                intent.putExtra(MAP_SHOW_POSITION_LAT,
+                        String.valueOf(
+                                (double)Math.round(latLng.latitude * 1000000d) / 1000000d));
+                intent.putExtra(MAP_SHOW_POSITION_LON,
+                        String.valueOf(
+                                (double)Math.round(latLng.longitude * 1000000d) / 1000000d));
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -402,8 +429,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
                 MIN_TIME_LOCATION_MAP, MAX_COEFFICIENT_CURRENCY_LOCATION) ) {
             lastCurrentLocation = location;
         }
-        insertMarker(new LatLng(lastCurrentLocation.getLatitude(),
-                lastCurrentLocation.getLongitude()));
+        insertMarker(lastCurrentLocation);
     }
 
     @Override

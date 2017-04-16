@@ -9,20 +9,22 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.gmail.vanyadubik.managerplus.R;
+import com.gmail.vanyadubik.managerplus.activity.FuelDetailActivity;
 import com.gmail.vanyadubik.managerplus.activity.VisitDetailActivity;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
+import com.gmail.vanyadubik.managerplus.model.documents.FuelList;
 import com.gmail.vanyadubik.managerplus.model.documents.VisitList;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-public class VisitListAdapter extends BaseAdapter {
+public class FuelListAdapter extends BaseAdapter {
 
-    private List<VisitList> list;
+    private List<FuelList> list;
     private LayoutInflater layoutInflater;
     private Context context;
 
-    public VisitListAdapter(Context context, List<VisitList> list) {
+    public FuelListAdapter(Context context, List<FuelList> list) {
         this.list = list;
         this.context = context;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -47,32 +49,32 @@ public class VisitListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null) {
-            view = layoutInflater.inflate(R.layout.visit_list_item, parent, false);
+            view = layoutInflater.inflate(R.layout.fuel_list_item, parent, false);
         }
-        final VisitList visit = getDataTable(position);
+        final FuelList fuelDoc = getDataTable(position);
 
-        TextView date = (TextView) view.findViewById(R.id.visit_item_date);
-        date.setText(new SimpleDateFormat("dd.MM.yyyy HH:mm").format(visit.getDate().getTime()));
+        TextView date = (TextView) view.findViewById(R.id.fuel_item_data);
+        date.setText(new SimpleDateFormat("dd.MM.yyyy HH:mm").format(fuelDoc.getDate().getTime()));
 
-        TextView client = (TextView) view.findViewById(R.id.visit_item_client);
-        client.setText(visit.getClient());
+        TextView typeFuel = (TextView) view.findViewById(R.id.fuel_item_type);
+        typeFuel.setText(fuelDoc.getTypeFuel());
 
-        TextView typevisit = (TextView) view.findViewById(R.id.visit_item_typevisit);
-        typevisit.setText(visit.getTypeVisit());
+        TextView litres = (TextView) view.findViewById(R.id.fuel_item_litres);
+        litres.setText(String.valueOf(fuelDoc.getLitres()));
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 v.getContext().startActivity(
-                        new Intent(context, VisitDetailActivity.class)
-                                .putExtra(MobileManagerContract.VisitContract.VISIT_ID, visit.getExternalId()));
+                        new Intent(context, FuelDetailActivity.class)
+                                .putExtra(MobileManagerContract.FuelContract.EXTERNAL_ID, fuelDoc.getExternalId()));
             }
         });
 
         return view;
     }
 
-    private VisitList getDataTable(int position) {
-        return (VisitList) getItem(position);
+    private FuelList getDataTable(int position) {
+        return (FuelList) getItem(position);
     }
 }

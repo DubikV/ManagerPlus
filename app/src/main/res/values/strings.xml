@@ -116,7 +116,9 @@
     <string name="fuel_today_name">Заправки на сьогодні:</string>
     <string name="fuel_date">Дата</string>
     <string name="fuel_type_name">Вид пального</string>
+    <string name="fuel_type_payment">Вид оплати</string>
     <string name="fuel_sum_name">Сума</string>
+    <string name="fuel_litres_name">Літри</string>
 
     <!--Visits-->
     <string name="visit_name">Події</string>

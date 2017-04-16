@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.ClientDetailActivity;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
-import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
+import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
 
 import java.util.List;
 

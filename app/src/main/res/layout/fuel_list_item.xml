@@ -15,7 +15,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1.5"
         android:background="@drawable/shape_body_left"
         android:textColor="@color/colorPrimary"
@@ -27,7 +27,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:background="@drawable/shape_body_left"
         android:textColor="@color/colorPrimary"
@@ -39,14 +39,14 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1.6"
         android:background="@drawable/shape_body_right"
         android:textColor="@color/colorPrimary"
         android:gravity="left|center_horizontal"
         android:textSize="@dimen/textsize_table_cap"
         android:padding="@dimen/pading_edittext_waybill_cap"
-        android:text="@string/fuel_sum_name"
-        android:id="@+id/fuel_item_sum"/>
+        android:text="@string/fuel_litres_name"
+        android:id="@+id/fuel_item_litres"/>
 
 </LinearLayout>

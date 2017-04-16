@@ -1,34 +1,24 @@
-package com.gmail.vanyadubik.managerplus.model.db;
+package com.gmail.vanyadubik.managerplus.model.db.document;
 
 import java.util.Date;
 
-public class Fuel_Element extends Element {
+public class Fuel_Document extends Document {
 
-    private Date date;
     private String typeFuel;
     private String typePayment;
     private double litres;
     private double money;
     private int createLP;
 
-    public Fuel_Element(int id, String externalId, boolean deleted, boolean inDB,
-                        Date date, String typeFuel, String typePayment, double litres,
-                        double money, int createLP) {
-        super(id, externalId, deleted, inDB);
-        this.date = date;
+    public Fuel_Document(int id, String externalId, boolean deleted, boolean inDB,
+                         Date date, String typeFuel, String typePayment, double litres,
+                         double money, int createLP) {
+        super(id, externalId, deleted, inDB, date);
         this.typeFuel = typeFuel;
         this.typePayment = typePayment;
         this.litres = litres;
         this.money = money;
         this.createLP = createLP;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     public String getTypeFuel() {
@@ -71,11 +61,11 @@ public class Fuel_Element extends Element {
         this.createLP = createLP;
     }
 
-    public static Builder builder() {
+    public static  Builder builder(){
         return new Builder();
     }
 
-    public static class Builder extends Element.Builder{
+    public static class Builder extends Document.Builder{
         private int id;
         private String externalId;
         private boolean deleted;
@@ -138,9 +128,9 @@ public class Fuel_Element extends Element {
             return this;
         }
 
-        public Fuel_Element build() {
-            return new Fuel_Element(id, externalId, deleted, inDB,
-                    date, typeFuel, typePayment, litres, money, createLP);
+        public Fuel_Document build() {
+            return new Fuel_Document(id, externalId, deleted, inDB, date,
+                    typeFuel, typePayment, litres, money, createLP);
         }
     }
 }

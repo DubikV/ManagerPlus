@@ -48,6 +48,7 @@ public class MobileManagerDb extends SQLiteOpenHelper {
                 + WaybillContract.WAYBILL_ID + " text,"
                 + WaybillContract.WAYBILL_DELETED + " numeric,"
                 + WaybillContract.WAYBILL_INDB + " numeric,"
+                + WaybillContract.WAYBILL_DATE + " integer,"
                 + WaybillContract.WAYBILL_DATE_START + " integer,"
                 + WaybillContract.WAYBILL_DATE_END + " integer,"
                 + WaybillContract.WAYBILL_POINT_START + " integer,"

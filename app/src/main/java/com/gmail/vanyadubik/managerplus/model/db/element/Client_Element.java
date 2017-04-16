@@ -1,23 +1,19 @@
-package com.gmail.vanyadubik.managerplus.model.db;
+package com.gmail.vanyadubik.managerplus.model.db.element;
+
+import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 
 public class Client_Element extends Element {
 
-    private String name;
     private String address;
     private String phone;
     private int positionLP;
 
     public Client_Element(int id, String externalId, boolean deleted, boolean inDB,
                           String name, String address, String phone, int positionLP) {
-        super(id, externalId, deleted, inDB);
-        this.name = name;
+        super(id, externalId, deleted, inDB, name);
         this.address = address;
         this.phone = phone;
         this.positionLP = positionLP;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public int getPositionLP() {

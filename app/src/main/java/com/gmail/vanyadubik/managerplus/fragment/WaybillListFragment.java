@@ -12,7 +12,7 @@ import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.adapter.WaybillListAdapter;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
-import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
+import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 
 import java.util.List;
@@ -26,7 +26,7 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
     DataRepository dataRepository;
 
     private View view;
-    private List<Waybill_Element> list;
+    private List<Waybill_Document> list;
     private ListView listView;
 
     public static WaybillListFragment getInstance() {

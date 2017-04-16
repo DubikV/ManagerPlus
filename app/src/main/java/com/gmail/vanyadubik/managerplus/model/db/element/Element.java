@@ -1,4 +1,4 @@
-package com.gmail.vanyadubik.managerplus.model.db;
+package com.gmail.vanyadubik.managerplus.model.db.element;
 
 import java.io.Serializable;
 
@@ -8,12 +8,14 @@ public class Element implements Serializable {
     private String externalId;
     private boolean deleted;
     private boolean inDB;
+    private String name;
 
-    public Element(int id, String externalId, boolean deleted, boolean inDB) {
+    public Element(int id, String externalId, boolean deleted, boolean inDB, String name) {
         this.id = id;
         this.externalId = externalId;
         this.deleted = deleted;
         this.inDB = inDB;
+        this.name = name;
     }
 
     public int getId() {
@@ -40,17 +42,32 @@ public class Element implements Serializable {
         this.deleted = deleted;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
-
-
 
     public static class Builder {
         private int id;
         private String externalId;
         private boolean deleted;
         private boolean inDB;
+        private String name;
 
         public Builder id(int id) {
             this.id = id;
@@ -73,8 +90,13 @@ public class Element implements Serializable {
             return this;
         }
 
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
         public Element build() {
-            return new Element(id, externalId, deleted, inDB);
+            return new Element(id, externalId, deleted, inDB, name);
         }
     }
 }

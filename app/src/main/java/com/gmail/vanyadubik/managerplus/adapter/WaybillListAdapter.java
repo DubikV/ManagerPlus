@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.MapActivity;
-import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
+import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,10 +24,10 @@ import static com.gmail.vanyadubik.managerplus.activity.MapActivity.MAP_TYPE_SHO
 public class WaybillListAdapter extends BaseAdapter {
 
     private Context context;
-    private List<Waybill_Element> list;
+    private List<Waybill_Document> list;
     private LayoutInflater layoutInflater;
 
-    public WaybillListAdapter(Context context, List<Waybill_Element> list) {
+    public WaybillListAdapter(Context context, List<Waybill_Document> list) {
         this.context = context;
         this.list = list;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -54,7 +54,7 @@ public class WaybillListAdapter extends BaseAdapter {
         if (view == null) {
             view = layoutInflater.inflate(R.layout.waybill_list_item, parent, false);
         }
-        final Waybill_Element waybill = getDataTable(position);
+        final Waybill_Document waybill = getDataTable(position);
 
         TextView waybilllistDate = (TextView) view.findViewById(R.id.waybilllist_date);
         waybilllistDate.setText(new SimpleDateFormat("dd.MM.yyyy").format(waybill.getDateStart()));
@@ -90,7 +90,7 @@ public class WaybillListAdapter extends BaseAdapter {
         return view;
     }
 
-    private Waybill_Element getDataTable(int position) {
-        return (Waybill_Element) getItem(position);
+    private Waybill_Document getDataTable(int position) {
+        return (Waybill_Document) getItem(position);
     }
 }

@@ -19,9 +19,9 @@ import com.gmail.vanyadubik.managerplus.activity.MapTrackerActivity;
 import com.gmail.vanyadubik.managerplus.adapter.VisitListAdapter;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
-import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
-import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
-import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
+import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
+import com.gmail.vanyadubik.managerplus.model.db.document.Visit_Document;
+import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.model.documents.VisitList;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 
@@ -46,12 +46,13 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
 
     private View view;
 
-    private Button inputStartOdometer, inputEndOdometer;
+    private Button inputStartOdometer, inputEndOdometer, usingCarButton;
     private EditText startDateEditText, endDateEditText, startOdometerEditText, endOdometerEditText;
     private SimpleDateFormat dateFormatter;
-    private Waybill_Element waybill;
+    private Waybill_Document waybill;
     private List<VisitList> listVisits;
     private ListView listVisitsView;
+    private Boolean inCar;
 
     public static WorkPlaseFragment getInstance() {
 
@@ -89,6 +90,16 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
         endDateEditText = (EditText) view.findViewById(R.id.wb_endday_date);
         startOdometerEditText = (EditText) view.findViewById(R.id.wb_startday_odometer);
         endOdometerEditText = (EditText) view.findViewById(R.id.wb_endday_odometer);
+
+        usingCarButton = (Button) view.findViewById(R.id.waybill_incar_button);
+        usingCarButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                inCar = inCar ? false : true;
+                dataRepository.insertInCar(LocalDateTime.now().toDate(), inCar);
+                setDrawableInCar();
+            }
+        });
 
         Button showMap = (Button) view.findViewById(R.id.waybill_show_map);
         showMap.setOnClickListener(new View.OnClickListener() {
@@ -150,10 +161,10 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
             dateEnd.setMinutes(59);
             dateEnd.setSeconds(59);
         }
-        List<Visit_Element> visits = dataRepository.getVisitByPeriod(waybill.getDateStart(), dateEnd);
+        List<Visit_Document> visits = dataRepository.getVisitByPeriod(waybill.getDateStart(), dateEnd);
 
         if(visits!=null) {
-            for (Visit_Element visit : visits) {
+            for (Visit_Document visit : visits) {
                 VisitList visitList = new VisitList(visit.getExternalId(), visit.getDate(), visit.getTypeVisit());
                 Client_Element client = dataRepository.getClient(visit.getClientExternalId());
                 if (client != null) {
@@ -165,6 +176,8 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
             VisitListAdapter adapter = new VisitListAdapter(getActivity(), listVisits);
             listVisitsView.setAdapter(adapter);
         }
+
+        inCar = dataRepository.isInCar();
     }
 
     @Override
@@ -215,8 +228,9 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
                 }
                 if(waybill == null || inputStart){
                     String externalId = "app-" + UUID.randomUUID().toString();
-                    waybill = Waybill_Element.builder()
+                    waybill = Waybill_Document.builder()
                             .externalId(externalId)
+                            .date(LocalDateTime.now().toDate())
                             .build();
                 }
 
@@ -269,5 +283,15 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
     @Override
     public void onBecameUnVisible() {
 
+    }
+
+    private void setDrawableInCar(){
+       if(inCar){
+           usingCarButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_noincar, 0);
+           usingCarButton.setText(getResources().getString(R.string.waybill_no_incar));
+       }else {
+           usingCarButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_incar, 0);
+           usingCarButton.setText(getResources().getString(R.string.waybill_incar));
+       }
     }
 }

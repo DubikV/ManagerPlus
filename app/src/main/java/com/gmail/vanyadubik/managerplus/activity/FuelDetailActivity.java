@@ -19,13 +19,15 @@ import android.widget.TextView;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
-import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.ClientContract;
-import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
+import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.FuelContract;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
+import com.gmail.vanyadubik.managerplus.model.db.document.Fuel_Document;
+import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 
 import org.joda.time.LocalDateTime;
 
+import java.text.SimpleDateFormat;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -36,83 +38,51 @@ import static com.gmail.vanyadubik.managerplus.activity.MapActivity.MAP_TYPE;
 import static com.gmail.vanyadubik.managerplus.activity.MapActivity.MAP_TYPE_GET_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 
-public class ClientDetailActivity extends AppCompatActivity {
+public class FuelDetailActivity extends AppCompatActivity {
 
     @Inject
     DataRepository dataRepository;
 
-    private Client_Element client;
-    private EditText mDetailNameView, mDetailAdressView, mDetailPhoneView, mLatView, mLongView;
+    private Fuel_Document fuelDoc;
+    private EditText mDetailDateView, mDetailTypeFuelView,
+            mDetailTypePaymentView, mDetailLitresView,
+            mDetailMoneyView, mLatView, mLongView;
     private LocationPoint position;
+    private SimpleDateFormat dateFormatter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_client);
+        setContentView(R.layout.activity_fuel_doc);
         ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
+
+        dateFormatter = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
         Bundle extras = getIntent().getExtras();
 
         if (extras != null) {
-            String externalId = extras.getString(ClientContract.CLIENT_ID);
-            client = dataRepository.getClient(externalId);
+            String externalId = extras.getString(FuelContract.EXTERNAL_ID);
+            fuelDoc = dataRepository.getFuel(externalId);
         }else{
-            client = Client_Element.builder()
+            fuelDoc = Fuel_Document.builder()
                     .externalId("app-" + UUID.randomUUID().toString())
+                    .date(LocalDateTime.now().toDate())
                     .build();
         }
 
-        position = dataRepository.getLocationPoint(client.getPositionLP());
+        position = dataRepository.getLocationPoint(fuelDoc.getCreateLP());
 
-        mDetailNameView = (EditText) findViewById(R.id.client_detail_name);
-        mDetailAdressView = (EditText) findViewById(R.id.client_detail_adress);
-        mDetailPhoneView = (EditText) findViewById(R.id.client_detail_phone);
-        mDetailPhoneView.addTextChangedListener(new TextWatcher() {
-            int length_before = 0;
+        mDetailDateView = (EditText) findViewById(R.id.fuel_detail_date);
+        mDetailTypeFuelView = (EditText) findViewById(R.id.fuel_detail_typefuel);
+        mDetailTypePaymentView = (EditText) findViewById(R.id.fuel_detail_typepayment);
+        mDetailLitresView = (EditText) findViewById(R.id.fuel_detail_litres);
+        mDetailMoneyView = (EditText) findViewById(R.id.fuel_detail_money);
 
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                length_before = s.length();
-            }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+        mLatView = (EditText) findViewById(R.id.fuel_lat_edit);
+        mLongView = (EditText) findViewById(R.id.fuel_long_edit);
 
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (length_before < s.length()) {
-                    if (s.length() == 1) {
-                        if (Character.isDigit(s.charAt(0)))
-                            s.insert(0, "(");
-                    }
-                    if (s.length() == 4) {
-                        s.append(")");
-                        if (s.length() > 4) {
-                            if (Character.isDigit(s.charAt(4)))
-                                s.insert(4, ")");
-                        }
-                    }
-                    if (s.length() == 8 || s.length() == 11) {
-                        s.append("-");
-                        if (s.length() > 8) {
-                            if (Character.isDigit(s.charAt(8)))
-                                s.insert(8, "-");
-                        }
-                        if (s.length() > 11) {
-                            if (Character.isDigit(s.charAt(11)))
-                                s.insert(11, "-");
-                        }
-                    }
-                }
-            }
-        });
-
-        mLatView = (EditText) findViewById(R.id.client_lat_edit);
-        mLongView = (EditText) findViewById(R.id.client_long_edit);
-
-        Button saveButton = (Button) findViewById(R.id.save_client_detail_button);
+        Button saveButton = (Button) findViewById(R.id.save_fuel_detail_button);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,7 +91,7 @@ public class ClientDetailActivity extends AppCompatActivity {
             }
         });
 
-        Button retMemberDet = (Button) findViewById(R.id.close_client_detail_button);
+        Button retMemberDet = (Button) findViewById(R.id.close_fuel_detail_button);
         retMemberDet.setFocusable(true);
         retMemberDet.setFocusableInTouchMode(true);
         retMemberDet.requestFocus();
@@ -182,11 +152,12 @@ public class ClientDetailActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        mDetailNameView.setText(client.getName());
 
-        mDetailAdressView.setText(client.getAddress());
-
-        mDetailPhoneView.setText(client.getPhone());
+        mDetailDateView.setText(dateFormatter.format(fuelDoc.getDate()));
+        mDetailTypeFuelView.setText(fuelDoc.getTypeFuel());
+        mDetailTypePaymentView.setText(fuelDoc.getTypePayment());
+        mDetailLitresView.setText(String.valueOf(fuelDoc.getLitres()));
+        mDetailMoneyView.setText(String.valueOf(fuelDoc.getMoney()));
 
         if(position != null) {
             mLatView.setText(String.valueOf(position.getLatitude()));
@@ -217,7 +188,7 @@ public class ClientDetailActivity extends AppCompatActivity {
     }
 
     private void closeView(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(ClientDetailActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(FuelDetailActivity.this);
         builder.setMessage(getString(R.string.questions_data_save));
 
         builder.setPositiveButton(getString(R.string.questions_answer_yes), new DialogInterface.OnClickListener() {
@@ -250,21 +221,35 @@ public class ClientDetailActivity extends AppCompatActivity {
 
     private void saveData() {
 
-        mDetailNameView.setError(null);
-        mDetailPhoneView.setError(null);
+        mDetailDateView.setError(null);
+        mDetailTypeFuelView.setError(null);
+        mDetailTypePaymentView.setError(null);
+        mDetailLitresView.setError(null);
 
         boolean cancel = false;
         View focusView = null;
 
-        if (TextUtils.isEmpty(mDetailNameView.getText().toString())) {
-            mDetailNameView.setError(getString(R.string.error_field_required));
-            focusView = mDetailNameView;
+        if (TextUtils.isEmpty(mDetailDateView.getText().toString())) {
+            mDetailDateView.setError(getString(R.string.error_field_required));
+            focusView = mDetailDateView;
             cancel = true;
         }
 
-        if (TextUtils.isEmpty(mDetailPhoneView.getText().toString())) {
-            mDetailPhoneView.setError(getString(R.string.error_field_required));
-            focusView = mDetailPhoneView;
+        if (TextUtils.isEmpty(mDetailTypeFuelView.getText().toString())) {
+            mDetailTypeFuelView.setError(getString(R.string.error_field_required));
+            focusView = mDetailTypeFuelView;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(mDetailTypePaymentView.getText().toString())) {
+            mDetailTypePaymentView.setError(getString(R.string.error_field_required));
+            focusView = mDetailTypePaymentView;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(mDetailLitresView.getText().toString())) {
+            mDetailLitresView.setError(getString(R.string.error_field_required));
+            focusView = mDetailLitresView;
             cancel = true;
         }
 
@@ -290,13 +275,20 @@ public class ClientDetailActivity extends AppCompatActivity {
                 }
                 idPosition = dataRepository.insertLocationPoint(position);
             }
-            dataRepository.insertClient(Client_Element.builder()
-                    .id(client.getId())
-                    .name(mDetailNameView.getText().toString())
-                    .externalId(client.getExternalId())
-                    .address(mDetailAdressView.getText().toString())
-                    .phone(mDetailPhoneView.getText().toString())
-                    .positionLP(idPosition).build());
+
+            dataRepository.insertFuel(Fuel_Document.builder()
+                    .id(fuelDoc.getId())
+                    .externalId(fuelDoc.getExternalId())
+                    .deleted(fuelDoc.isDeleted())
+                    .inDB(fuelDoc.isInDB())
+                    .date(fuelDoc.getDate())
+                    .typeFuel(mDetailTypeFuelView.getText().toString())
+                    .typePayment(mDetailTypePaymentView.getText().toString())
+                    .typePayment(mDetailTypePaymentView.getText().toString())
+                    .litres(Double.valueOf(mDetailLitresView.getText().toString()))
+                    .money(Double.valueOf(mDetailMoneyView.getText().toString()))
+                    .createLP(position != null ? position.getId() : 0)
+                    .build());
 
             finish();
         }

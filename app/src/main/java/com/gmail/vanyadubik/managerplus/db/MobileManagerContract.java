@@ -56,6 +56,7 @@ public class MobileManagerContract {
         public static final String WAYBILL_ID = "waybill_id";
         public static final String WAYBILL_DELETED = "deleted";
         public static final String WAYBILL_INDB = "incdb";
+        public static final String WAYBILL_DATE = "date";
         public static final String WAYBILL_DATE_START = "date_start";
         public static final String WAYBILL_DATE_END = "date_end";
         public static final String WAYBILL_POINT_START = "point_start";
@@ -81,7 +82,7 @@ public class MobileManagerContract {
                         + TABLE_NAME;
 
         public static final String[] PROJECTION_ALL =
-                {_ID, WAYBILL_ID, WAYBILL_DELETED, WAYBILL_INDB, WAYBILL_DATE_START,
+                {_ID, WAYBILL_ID, WAYBILL_DELETED, WAYBILL_INDB, WAYBILL_DATE, WAYBILL_DATE_START,
                         WAYBILL_DATE_END, WAYBILL_POINT_START, WAYBILL_POINT_END,
                         WAYBILL_ODOMETER_START, WAYBILL_ODOMETER_END};
 

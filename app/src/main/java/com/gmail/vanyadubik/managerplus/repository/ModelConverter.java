@@ -3,15 +3,17 @@ package com.gmail.vanyadubik.managerplus.repository;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.FuelContract;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.LocationPointContract;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.ClientContract;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.TrackListContract;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.VisitContract;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.WaybillContract;
-import com.gmail.vanyadubik.managerplus.model.db.Client_Element;
+import com.gmail.vanyadubik.managerplus.model.db.document.Fuel_Document;
+import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
-import com.gmail.vanyadubik.managerplus.model.db.Visit_Element;
-import com.gmail.vanyadubik.managerplus.model.db.Waybill_Element;
+import com.gmail.vanyadubik.managerplus.model.db.document.Visit_Document;
+import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 
 import java.util.Date;
 
@@ -46,11 +48,13 @@ public class ModelConverter {
         return values;
     }
 
-    static ContentValues convertWaybill(Waybill_Element waybill) {
+    static ContentValues convertWaybill(Waybill_Document waybill) {
         ContentValues values = new ContentValues();
         values.put(WaybillContract.WAYBILL_ID, waybill.getExternalId());
         values.put(WaybillContract.WAYBILL_DELETED, waybill.isDeleted());
         values.put(WaybillContract.WAYBILL_INDB, waybill.isInDB());
+        values.put(WaybillContract.WAYBILL_DATE, waybill.getDate()== null?
+                null: waybill.getDate().getTime());
         values.put(WaybillContract.WAYBILL_DATE_START, waybill.getDateStart()== null?
                 null: waybill.getDateStart().getTime());
         values.put(WaybillContract.WAYBILL_DATE_END, waybill.getDateEnd()== null?
@@ -62,7 +66,22 @@ public class ModelConverter {
         return values;
     }
 
-    static ContentValues convertVisit(Visit_Element visit) {
+    static ContentValues convertFuelDoc(Fuel_Document fuelDoc) {
+        ContentValues values = new ContentValues();
+        values.put(FuelContract.EXTERNAL_ID, fuelDoc.getExternalId());
+        values.put(FuelContract.DELETED, fuelDoc.isDeleted());
+        values.put(FuelContract.INDB, fuelDoc.isInDB());
+        values.put(FuelContract.DATE, fuelDoc.getDate()== null?
+                null: fuelDoc.getDate().getTime());
+        values.put(FuelContract.TYPE_FUEL, fuelDoc.getTypeFuel());
+        values.put(FuelContract.TYPE_PAYMENT, fuelDoc.getTypePayment());
+        values.put(FuelContract.LITRES, fuelDoc.getLitres());
+        values.put(FuelContract.MONEY, fuelDoc.getMoney());
+        values.put(FuelContract.POINT_CREATE, fuelDoc.getCreateLP());
+        return values;
+    }
+
+    static ContentValues convertVisit(Visit_Document visit) {
         ContentValues values = new ContentValues();
         values.put(VisitContract.VISIT_ID, visit.getExternalId());
         values.put(VisitContract.VISIT_DELETED, visit.isDeleted());
@@ -97,12 +116,13 @@ public class ModelConverter {
                 .build();
     }
 
-    static Waybill_Element buildWaybill(Cursor cursor) {
-        return Waybill_Element.builder()
+    static Waybill_Document buildWaybill(Cursor cursor) {
+        return Waybill_Document.builder()
                 .id(cursor.getInt(cursor.getColumnIndex(WaybillContract._ID)))
                 .externalId(cursor.getString(cursor.getColumnIndex(WaybillContract.WAYBILL_ID)))
                 .deleted(cursor.getInt(cursor.getColumnIndex(WaybillContract.WAYBILL_DELETED))== 1)
                 .inDB(cursor.getInt(cursor.getColumnIndex(WaybillContract.WAYBILL_INDB))== 1)
+                .date(convertDate(cursor, WaybillContract.WAYBILL_DATE))
                 .dateStart(convertDate(cursor, WaybillContract.WAYBILL_DATE_START))
                 .dateEnd(convertDate(cursor, WaybillContract.WAYBILL_DATE_END))
                 .startLP(cursor.getInt(cursor.getColumnIndex(WaybillContract.WAYBILL_POINT_START)))
@@ -112,8 +132,8 @@ public class ModelConverter {
                 .build();
     }
 
-    static Visit_Element buildVisit(Cursor cursor) {
-        return Visit_Element.builder()
+    static Visit_Document buildVisit(Cursor cursor) {
+        return Visit_Document.builder()
                 .id(cursor.getInt(cursor.getColumnIndex(VisitContract._ID)))
                 .externalId(cursor.getString(cursor.getColumnIndex(VisitContract.VISIT_ID)))
                 .deleted(cursor.getInt(cursor.getColumnIndex(VisitContract.VISIT_DELETED))== 1)
@@ -138,6 +158,21 @@ public class ModelConverter {
                 .address(cursor.getString(cursor.getColumnIndex(ClientContract.CLIENT_ADDRESS)))
                 .phone(cursor.getString(cursor.getColumnIndex(ClientContract.CLIENT_PHONE)))
                 .positionLP(cursor.getInt(cursor.getColumnIndex(ClientContract.CLIENT_POSITION)))
+                .build();
+    }
+
+    static Fuel_Document buildFuelDoc(Cursor cursor) {
+        return Fuel_Document.builder()
+                .id(cursor.getInt(cursor.getColumnIndex(FuelContract._ID)))
+                .externalId(cursor.getString(cursor.getColumnIndex(FuelContract.EXTERNAL_ID)))
+                .deleted(cursor.getInt(cursor.getColumnIndex(FuelContract.DELETED))== 1)
+                .inDB(cursor.getInt(cursor.getColumnIndex(FuelContract.INDB))== 1)
+                .date(convertDate(cursor, FuelContract.DATE))
+                .typeFuel(cursor.getString(cursor.getColumnIndex(FuelContract.TYPE_FUEL)))
+                .typePayment(cursor.getString(cursor.getColumnIndex(FuelContract.TYPE_PAYMENT)))
+                .litres(cursor.getDouble(cursor.getColumnIndex(FuelContract.LITRES)))
+                .money(cursor.getDouble(cursor.getColumnIndex(FuelContract.MONEY)))
+                .createLP(cursor.getInt(cursor.getColumnIndex(FuelContract.POINT_CREATE)))
                 .build();
     }
 

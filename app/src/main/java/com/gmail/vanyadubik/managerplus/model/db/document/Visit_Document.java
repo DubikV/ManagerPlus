@@ -1,10 +1,8 @@
-package com.gmail.vanyadubik.managerplus.model.db;
-
+package com.gmail.vanyadubik.managerplus.model.db.document;
 import java.util.Date;
 
-public class Visit_Element extends Element {
+public class Visit_Document extends Document {
 
-    private Date date;
     private Date dateVisit;
     private String clientExternalId;
     private int createLP;
@@ -12,11 +10,10 @@ public class Visit_Element extends Element {
     private String typeVisit;
     private String information;
 
-    public Visit_Element(int id, String externalId, boolean deleted, boolean inDB,
+    public Visit_Document(int id, String externalId, boolean deleted, boolean inDB,
                 Date date, Date dateVisit, String clientExternalId, int createLP, int visitLP,
                          String typeVisit, String information) {
-        super(id, externalId, deleted, inDB);
-        this.date = date;
+        super(id, externalId, deleted, inDB, date);
         this.dateVisit = dateVisit;
         this.clientExternalId = clientExternalId;
         this.createLP = createLP;
@@ -73,19 +70,11 @@ public class Visit_Element extends Element {
         this.dateVisit = dateVisit;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
     public static Builder builder() {
         return new Builder();
     }
 
-    public static class Builder extends Element.Builder{
+    public static class Builder extends Document.Builder{
         private int id;
         private String externalId;
         private boolean deleted;
@@ -154,9 +143,9 @@ public class Visit_Element extends Element {
             return this;
         }
 
-        public Visit_Element build() {
-            return new Visit_Element(id, externalId, deleted, inDB,
-                    date, dateVisit, clientExternalId, createLP, visitLP, typeVisit, information);
+        public Visit_Document build() {
+            return new Visit_Document(id, externalId, deleted, inDB, date,
+                    dateVisit, clientExternalId, createLP, visitLP, typeVisit, information);
         }
     }
 }
