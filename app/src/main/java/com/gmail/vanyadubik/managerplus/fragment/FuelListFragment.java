@@ -12,17 +12,11 @@ import android.widget.ListView;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.FuelDetailActivity;
-import com.gmail.vanyadubik.managerplus.activity.VisitDetailActivity;
 import com.gmail.vanyadubik.managerplus.adapter.FuelListAdapter;
-import com.gmail.vanyadubik.managerplus.adapter.WaybillListAdapter;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.model.db.document.Fuel_Document;
-import com.gmail.vanyadubik.managerplus.model.db.document.Visit_Document;
-import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
-import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.documents.FuelList;
-import com.gmail.vanyadubik.managerplus.model.documents.VisitList;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 
 import java.util.ArrayList;
@@ -64,6 +58,13 @@ public class FuelListFragment extends Fragment implements FragmentBecameVisibleI
 
         listView = (ListView) view.findViewById(R.id.fuellist_listview);
 
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
         list = new ArrayList<>();
 
         List<Fuel_Document> fuellist = dataRepository.getAllFuel();
@@ -79,10 +80,7 @@ public class FuelListFragment extends Fragment implements FragmentBecameVisibleI
 
         FuelListAdapter adapter = new FuelListAdapter(getActivity(), list);
         listView.setAdapter(adapter);
-
-        return view;
     }
-
 
     @Override
     public void onDestroy() {
