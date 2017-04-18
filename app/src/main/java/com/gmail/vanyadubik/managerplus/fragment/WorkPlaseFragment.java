@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.gmail.vanyadubik.managerplus.R;
+import com.gmail.vanyadubik.managerplus.activity.AddedPhotosActivity;
 import com.gmail.vanyadubik.managerplus.activity.MapTrackerActivity;
 import com.gmail.vanyadubik.managerplus.adapter.VisitListAdapter;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
@@ -98,6 +99,14 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
                 inCar = inCar ? false : true;
                 dataRepository.insertInCar(LocalDateTime.now().toDate(), inCar);
                 setDrawableInCar();
+            }
+        });
+
+        Button photoButton = (Button) view.findViewById(R.id.waybill_foto_button);
+        photoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(), AddedPhotosActivity.class));
             }
         });
 
