@@ -59,11 +59,13 @@ import javax.inject.Inject;
 import static com.gmail.vanyadubik.managerplus.R.id.map;
 import static com.gmail.vanyadubik.managerplus.common.Consts.DIVISION_ZOOM_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_TIME_MAP_ANIMATE_CAMERA;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_ZOOM_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SPEED_MAP_SET_ZOOM;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_LOCATION_MAP;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_MAP_ANIMATE_CAMERA;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_ZOOM_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TILT_CAMERA_MAP;
@@ -390,6 +392,7 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
             LatLng latLng = new LatLng(lastCurrentLocation.getLatitude(), lastCurrentLocation.getLongitude());
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLng);
+            markerOptions.anchor(0.5f, 0.5f);
 //            markerOptions.rotation(
 //                    lastCurrentLocation!=null && oldCurrentLocation != null ?
 //                            lastCurrentLocation.bearingTo(oldCurrentLocation) : 0);
@@ -422,11 +425,18 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
             float targetBearing = secondLocation.bearingTo(firstLocation);
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(secondLocation.getLatitude(),
-                            secondLocation.getLongitude())).bearing(targetBearing + 530)
-                    .tilt(TILT_CAMERA_MAP).zoom(MIN_ZOOM_MAP).build();
+                            secondLocation.getLongitude()))
+                    .bearing(targetBearing + 530)
+                    .tilt(TILT_CAMERA_MAP)
+                    .zoom(lastCurrentLocation.getSpeed() < MIN_SPEED_MAP_SET_ZOOM  ?
+                            MIN_ZOOM_MAP : MAX_ZOOM_MAP)
+                    .build();
 
             mMap.animateCamera(
-                    CameraUpdateFactory.newCameraPosition(cameraPosition), 5000,
+                    CameraUpdateFactory.newCameraPosition(cameraPosition),
+                    lastCurrentLocation.getSpeed() < MIN_SPEED_MAP_SET_ZOOM ?
+                            MIN_TIME_MAP_ANIMATE_CAMERA :
+                            MAX_TIME_MAP_ANIMATE_CAMERA,
                     null);
         }
 
@@ -524,7 +534,7 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
 
             br.close();
         }catch(Exception e){
-            Log.d("Exception while downloading url", e.toString());
+            Log.d(TAGLOG, e.toString());
         }finally{
             iStream.close();
             urlConnection.disconnect();
@@ -539,7 +549,7 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
             try{
                 data = downloadUrl(url[0]);
             }catch(Exception e){
-                Log.d("Background Task",e.toString());
+                Log.d(TAGLOG,e.toString());
             }
             return data;
         }
