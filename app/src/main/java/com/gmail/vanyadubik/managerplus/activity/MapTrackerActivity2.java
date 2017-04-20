@@ -5,7 +5,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -16,17 +15,13 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.gps.DirectionsJSONParser;
 import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
+import com.gmail.vanyadubik.managerplus.service.gps.GoogleLocationService;
+import com.gmail.vanyadubik.managerplus.service.gps.LocationUpdateListener;
 import com.gmail.vanyadubik.managerplus.utils.GPSTaskUtils;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -73,8 +68,7 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.TILT_CAMERA_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.WIDTH_POLYLINE_MAP;
 
-public class MapTrackerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback {
+public class MapTrackerActivity2 extends AppCompatActivity implements OnMapReadyCallback {
 
     @Inject
     DataRepository dataRepository;
@@ -83,8 +77,7 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
 
     private GoogleMap mMap;
     private SupportMapFragment locationMapFragment;
-    private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
+    private GoogleLocationService googleLocationService;
     private Location lastCurrentLocation, locationCheckNavigation, oldCurrentLocation;
     private Marker mCurrLocationMarker, mOtherLocationMarker;
     private Polyline polylineTrack;
@@ -100,13 +93,39 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
         setContentView(R.layout.activity_map);
         getSupportActionBar().setTitle(getResources().getString(R.string.map_track_route));
 
-        ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
+       // ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
+        googleLocationService = new GoogleLocationService(getApplicationContext(),
+                TYPE_PRIORITY_CONNECTION_GPS, MIN_TIME_LOCATION_MAP,
+                MIN_TIME_LOCATION_MAP, MIN_DISTANCE_LOCATION_MAP, new LocationUpdateListener() {
+            @Override
+            public void canReceiveLocationUpdates() {
+            }
+
+            @Override
+            public void cannotReceiveLocationUpdates() {
+            }
+
+            @Override
+            public void updateLocation(Location location) {
+                if ( gpsTaskUtils.isBetterLocation(location, lastCurrentLocation,
+                        MIN_TIME_LOCATION_MAP, MAX_COEFFICIENT_CURRENCY_LOCATION) ) {
+
+                    oldCurrentLocation = lastCurrentLocation;
+
+                    lastCurrentLocation = location;
+                }
+                insertMarker();
+
+                setOtherTracks();
+            }
+
+            @Override
+            public void updateLocationName(String localityName, Location location) {
+
+               // googleLocationService.stopLocationUpdates();
+            }
+        });
 
         moveMarker = true;
         polylineNavigation = new ArrayList<>();
@@ -219,47 +238,6 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
     }
 
     @Override
-    public void onLocationChanged(Location location) {
-
-        if ( gpsTaskUtils.isBetterLocation(location, lastCurrentLocation,
-                MIN_TIME_LOCATION_MAP, MAX_COEFFICIENT_CURRENCY_LOCATION) ) {
-
-            oldCurrentLocation = lastCurrentLocation;
-
-            lastCurrentLocation = location;
-        }
-        insertMarker();
-
-        setOtherTracks();
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        mLocationRequest = LocationRequest.create();
-        mLocationRequest.setPriority(TYPE_PRIORITY_CONNECTION_GPS);
-        mLocationRequest.setInterval(MIN_TIME_LOCATION_MAP);
-        //mLocationRequest.setFastestInterval(MIN_TIME_LOCATION_MAP);
-        mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_LOCATION_MAP);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    @Override
     public void onMapReady(GoogleMap googleMap) {
         if (mMap != null) {
             return;
@@ -302,6 +280,8 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
     protected void onResume() {
         super.onResume();
 
+        googleLocationService.startUpdates();
+
         waybill = dataRepository.getLastWaybill();
 
         if (waybill!=null) {
@@ -321,39 +301,29 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        mGoogleApiClient.connect();
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(mGoogleApiClient == null){
+        if(googleLocationService == null){
             return;
         }
-        if (mGoogleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-            mGoogleApiClient.disconnect();
-        }
+        googleLocationService.stopLocationUpdates();
+        googleLocationService.closeGoogleApi();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if(mGoogleApiClient == null){
+        if(googleLocationService == null){
             return;
         }
-        if (mGoogleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-            mGoogleApiClient.disconnect();
-        }
+        googleLocationService.stopLocationUpdates();
+        googleLocationService.closeGoogleApi();
     }
 
     private void setUpMap() {
 
 //        if (Build.VERSION.SDK_INT < 21) {
-        locationMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
+            locationMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
 //        } else {
 //            locationMapFragment = (SupportMapFragment)
 //                    this.getChildFragmentManager().findFragmentById(map);

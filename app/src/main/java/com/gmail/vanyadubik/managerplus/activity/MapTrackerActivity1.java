@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.gps.DirectionsJSONParser;
 import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
@@ -73,7 +72,7 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.TILT_CAMERA_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.WIDTH_POLYLINE_MAP;
 
-public class MapTrackerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
+public class MapTrackerActivity1 extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback {
 
     @Inject
@@ -100,7 +99,7 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
         setContentView(R.layout.activity_map);
         getSupportActionBar().setTitle(getResources().getString(R.string.map_track_route));
 
-        ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
+       // ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -238,7 +237,7 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(TYPE_PRIORITY_CONNECTION_GPS);
         mLocationRequest.setInterval(MIN_TIME_LOCATION_MAP);
-        //mLocationRequest.setFastestInterval(MIN_TIME_LOCATION_MAP);
+        mLocationRequest.setFastestInterval(MIN_TIME_LOCATION_MAP);
         mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_LOCATION_MAP);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED
@@ -353,7 +352,7 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
     private void setUpMap() {
 
 //        if (Build.VERSION.SDK_INT < 21) {
-        locationMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
+            locationMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
 //        } else {
 //            locationMapFragment = (SupportMapFragment)
 //                    this.getChildFragmentManager().findFragmentById(map);
