@@ -189,7 +189,7 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
             return false;
         }
 
-        if (location.getAccuracy() - currentBestLocation.getAccuracy() > 5 &&
+        if (location.getAccuracy() - currentBestLocation.getAccuracy() > 5 ||
                 location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION) {
             return false;
         }

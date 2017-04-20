@@ -37,21 +37,21 @@ public class GPSTaskUtils {
             return false;
         }
 
-        if (location.getAccuracy() - currentBestLocation.getAccuracy() > 5 &&
+        Toast.makeText(context,
+                new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+                        .format(location.getTime())
+                        + " location is - \nLat: " + location.getLatitude()
+                        + "\nLong: " + location.getLongitude()
+                        + "\nSpeed: " + location.getSpeed()
+                        + "\nDistance: " + location.distanceTo(currentBestLocation)
+                        + "\nTime: " + String.valueOf((location.getTime() - currentBestLocation.getTime())/1000)
+                        + "\nAccuracy: " + location.getAccuracy(),
+                Toast.LENGTH_LONG).show();
+
+        if (location.getAccuracy() - currentBestLocation.getAccuracy() > 5 ||
                 location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION) {
             return false;
         }
-
-        Toast.makeText(context,
-                        new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-                                .format(location.getTime())
-                                + " location is - \nLat: " + location.getLatitude()
-                                + "\nLong: " + location.getLongitude()
-                                + "\nSpeed: " + location.getSpeed()
-                                + "\nDistance: " + location.distanceTo(currentBestLocation)
-                                + "\nTime: " + String.valueOf((location.getTime() - currentBestLocation.getTime())/1000)
-                                + "\nAccuracy: " + location.getAccuracy(),
-                        Toast.LENGTH_LONG).show();
 
         // Check whether the new location fix is newer or older
         long timeDelta = location.getTime() - currentBestLocation.getTime();
