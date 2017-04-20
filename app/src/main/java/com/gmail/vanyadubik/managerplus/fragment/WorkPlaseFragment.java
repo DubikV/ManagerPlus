@@ -96,7 +96,7 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
         usingCarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                inCar = inCar ? false : true;
+                inCar = inCar == null || inCar ? false : true;
                 dataRepository.insertInCar(LocalDateTime.now().toDate(), inCar);
                 setDrawableInCar();
             }
