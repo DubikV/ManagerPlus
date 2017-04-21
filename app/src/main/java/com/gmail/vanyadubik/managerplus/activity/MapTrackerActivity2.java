@@ -52,7 +52,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.R.id.map;
-import static com.gmail.vanyadubik.managerplus.common.Consts.DIVISION_ZOOM_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_TIME_MAP_ANIMATE_CAMERA;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_ZOOM_MAP;
@@ -132,33 +131,33 @@ public class MapTrackerActivity2 extends AppCompatActivity implements OnMapReady
 
         setUpMap();
 
-        FloatingActionButton zoomUpButton = (FloatingActionButton)
-                findViewById(R.id.zoom_up);
-        zoomUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAGLOG, "Press button 'zoomUpButton'");
-                if (mMap != null) {
-                    mMap.animateCamera(CameraUpdateFactory
-                            .zoomTo(mMap.getCameraPosition().zoom + DIVISION_ZOOM_MAP));
-                }
-
-            }
-        });
-
-        FloatingActionButton zoomDownButton = (FloatingActionButton)
-                findViewById(R.id.zoom_down);
-        zoomDownButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAGLOG, "Press button 'zoomDownButton'");
-                if (mMap != null) {
-                    mMap.animateCamera(CameraUpdateFactory
-                            .zoomTo(mMap.getCameraPosition().zoom - DIVISION_ZOOM_MAP));
-                }
-
-            }
-        });
+//        FloatingActionButton zoomUpButton = (FloatingActionButton)
+//                findViewById(R.id.zoom_up);
+//        zoomUpButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.d(TAGLOG, "Press button 'zoomUpButton'");
+//                if (mMap != null) {
+//                    mMap.animateCamera(CameraUpdateFactory
+//                            .zoomTo(mMap.getCameraPosition().zoom + DIVISION_ZOOM_MAP));
+//                }
+//
+//            }
+//        });
+//
+//        FloatingActionButton zoomDownButton = (FloatingActionButton)
+//                findViewById(R.id.zoom_down);
+//        zoomDownButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.d(TAGLOG, "Press button 'zoomDownButton'");
+//                if (mMap != null) {
+//                    mMap.animateCamera(CameraUpdateFactory
+//                            .zoomTo(mMap.getCameraPosition().zoom - DIVISION_ZOOM_MAP));
+//                }
+//
+//            }
+//        });
 
         FloatingActionButton sateliteButton = (FloatingActionButton)
                 findViewById(R.id.satelite);

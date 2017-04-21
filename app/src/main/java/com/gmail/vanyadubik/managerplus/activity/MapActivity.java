@@ -2,8 +2,10 @@ package com.gmail.vanyadubik.managerplus.activity;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -17,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,11 +32,13 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -44,15 +49,14 @@ import java.util.Date;
 import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.R.id.map;
-import static com.gmail.vanyadubik.managerplus.common.Consts.DIVISION_ZOOM_MAP;
+import static com.gmail.vanyadubik.managerplus.activity.MapTrackerActivity.MAP_TTACK_ZOOM_PREF;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_ZOOM_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_LOCATION_MAP;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_MAP_ANIMATE_CAMERA;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.WIDTH_POLYLINE_MAP;
-import static com.gmail.vanyadubik.managerplus.common.Consts.ZOOM_MAP_SHOWTRACK;
 
 public class MapActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback  {
@@ -64,12 +68,14 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
     public static final String MAP_SHOW_TRACK_DATE_END = "map_activity_dateend";
     public static final String MAP_SHOW_POSITION_LAT = "map_activity_lat";
     public static final String MAP_SHOW_POSITION_LON = "map_activity_lon";
+    public static final String MAP_ZOOM_PREF = "map_zoom";
 
     @Inject
     DataRepository dataRepository;
     @Inject
     GPSTaskUtils gpsTaskUtils;
 
+    private SharedPreferences mPreferences;
     private GoogleMap mMap;
     private SupportMapFragment locationMapFragment;
     private GoogleApiClient mGoogleApiClient;
@@ -79,6 +85,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
     private Bundle extras;
     private int typeShow;
     private Boolean moveMarker;
+    private SeekBar sbZoom;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -87,6 +94,8 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
         getSupportActionBar().setTitle(getResources().getString(R.string.map_name));
 
         ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
+
+        mPreferences = getPreferences(Context.MODE_PRIVATE);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -98,33 +107,60 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
         setUpMap();
 
-        FloatingActionButton zoomUpButton = (FloatingActionButton)
-                findViewById(R.id.zoom_up);
-        zoomUpButton.setOnClickListener(new View.OnClickListener() {
+        sbZoom = (SeekBar) findViewById(R.id.sbZoom);
+
+        // Initial zoom level
+        sbZoom.setProgress(mPreferences.getInt(MAP_ZOOM_PREF, 70));
+        sbZoom.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onClick(View v) {
-                Log.d(TAGLOG, "Press button 'zoomUpButton'");
-                if (mMap != null) {
-                    mMap.animateCamera(CameraUpdateFactory
-                            .zoomTo(mMap.getCameraPosition().zoom + DIVISION_ZOOM_MAP));
-                }
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+                CameraPosition position = CameraPosition.builder(mMap.getCameraPosition())
+                        .zoom(sbZoom.getProgress() / 10.0f + 10.0f)
+                        .build();
+
+                CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+                mMap.animateCamera(update, MIN_TIME_MAP_ANIMATE_CAMERA, null);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
 
             }
         });
 
-        FloatingActionButton zoomDownButton = (FloatingActionButton)
-                findViewById(R.id.zoom_down);
-        zoomDownButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAGLOG, "Press button 'zoomDownButton'");
-                if (mMap != null) {
-                    mMap.animateCamera(CameraUpdateFactory
-                            .zoomTo(mMap.getCameraPosition().zoom - DIVISION_ZOOM_MAP));
-                }
-
-            }
-        });
+//        FloatingActionButton zoomUpButton = (FloatingActionButton)
+//                findViewById(R.id.zoom_up);
+//        zoomUpButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.d(TAGLOG, "Press button 'zoomUpButton'");
+//                if (mMap != null) {
+//                    mMap.animateCamera(CameraUpdateFactory
+//                            .zoomTo(mMap.getCameraPosition().zoom + DIVISION_ZOOM_MAP));
+//                }
+//
+//            }
+//        });
+//
+//        FloatingActionButton zoomDownButton = (FloatingActionButton)
+//                findViewById(R.id.zoom_down);
+//        zoomDownButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.d(TAGLOG, "Press button 'zoomDownButton'");
+//                if (mMap != null) {
+//                    mMap.animateCamera(CameraUpdateFactory
+//                            .zoomTo(mMap.getCameraPosition().zoom - DIVISION_ZOOM_MAP));
+//                }
+//
+//            }
+//        });
 
         FloatingActionButton sateliteButton = (FloatingActionButton)
                 findViewById(R.id.satelite);
@@ -304,7 +340,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
             mMap.moveCamera(CameraUpdateFactory.newLatLng(
                     new LatLng(location.getLatitude(), location.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(
-                    typeShow == MAP_TYPE_SHOW_TRACK ? ZOOM_MAP_SHOWTRACK : MAX_ZOOM_MAP));
+                    sbZoom.getProgress() / 10.0f + 10.0f));
         }
 
     }
@@ -440,6 +476,8 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
+
+        mPreferences.edit().putInt(MAP_ZOOM_PREF, sbZoom.getProgress()).apply();
     }
 
     private void initData(){

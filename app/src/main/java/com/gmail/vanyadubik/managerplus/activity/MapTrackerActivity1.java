@@ -112,33 +112,33 @@ public class MapTrackerActivity1 extends AppCompatActivity implements GoogleApiC
 
         setUpMap();
 
-        FloatingActionButton zoomUpButton = (FloatingActionButton)
-                findViewById(R.id.zoom_up);
-        zoomUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAGLOG, "Press button 'zoomUpButton'");
-                if (mMap != null) {
-                    mMap.animateCamera(CameraUpdateFactory
-                            .zoomTo(mMap.getCameraPosition().zoom + DIVISION_ZOOM_MAP));
-                }
-
-            }
-        });
-
-        FloatingActionButton zoomDownButton = (FloatingActionButton)
-                findViewById(R.id.zoom_down);
-        zoomDownButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAGLOG, "Press button 'zoomDownButton'");
-                if (mMap != null) {
-                    mMap.animateCamera(CameraUpdateFactory
-                            .zoomTo(mMap.getCameraPosition().zoom - DIVISION_ZOOM_MAP));
-                }
-
-            }
-        });
+//        FloatingActionButton zoomUpButton = (FloatingActionButton)
+//                findViewById(R.id.zoom_up);
+//        zoomUpButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.d(TAGLOG, "Press button 'zoomUpButton'");
+//                if (mMap != null) {
+//                    mMap.animateCamera(CameraUpdateFactory
+//                            .zoomTo(mMap.getCameraPosition().zoom + DIVISION_ZOOM_MAP));
+//                }
+//
+//            }
+//        });
+//
+//        FloatingActionButton zoomDownButton = (FloatingActionButton)
+//                findViewById(R.id.zoom_down);
+//        zoomDownButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.d(TAGLOG, "Press button 'zoomDownButton'");
+//                if (mMap != null) {
+//                    mMap.animateCamera(CameraUpdateFactory
+//                            .zoomTo(mMap.getCameraPosition().zoom - DIVISION_ZOOM_MAP));
+//                }
+//
+//            }
+//        });
 
         FloatingActionButton sateliteButton = (FloatingActionButton)
                 findViewById(R.id.satelite);
