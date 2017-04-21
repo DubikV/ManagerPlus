@@ -1,6 +1,8 @@
 package com.gmail.vanyadubik.managerplus.activity;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -14,6 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.SeekBar;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
@@ -27,6 +30,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -57,16 +61,15 @@ import java.util.List;
 import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.R.id.map;
-import static com.gmail.vanyadubik.managerplus.common.Consts.DIVISION_ZOOM_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_TIME_MAP_ANIMATE_CAMERA;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_ZOOM_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SPEED_MAP_SET_ZOOM;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_LOCATION_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_MAP_ANIMATE_CAMERA;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_ZOOM_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TILT_CAMERA_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
@@ -75,11 +78,14 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.WIDTH_POLYLINE_MAP;
 public class MapTrackerActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback {
 
+    public static final String MAP_TTACK_ZOOM_PREF = "map_track_zoom";
+
     @Inject
     DataRepository dataRepository;
     @Inject
     GPSTaskUtils gpsTaskUtils;
 
+    private SharedPreferences mPreferences;
     private GoogleMap mMap;
     private SupportMapFragment locationMapFragment;
     private GoogleApiClient mGoogleApiClient;
@@ -92,6 +98,7 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
     private Boolean moveMarker;
     private Waybill_Document waybill;
     private List<MarkerMap> markerMaps;
+    private SeekBar sbZoom;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,6 +107,8 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
         getSupportActionBar().setTitle(getResources().getString(R.string.map_track_route));
 
         ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
+
+        mPreferences = getPreferences(Context.MODE_PRIVATE);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -112,33 +121,60 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
 
         setUpMap();
 
-        FloatingActionButton zoomUpButton = (FloatingActionButton)
-                findViewById(R.id.zoom_up);
-        zoomUpButton.setOnClickListener(new View.OnClickListener() {
+        sbZoom = (SeekBar) findViewById(R.id.sbZoom);
+
+        // Initial zoom level
+        sbZoom.setProgress(mPreferences.getInt(MAP_TTACK_ZOOM_PREF, 70));
+        sbZoom.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onClick(View v) {
-                Log.d(TAGLOG, "Press button 'zoomUpButton'");
-                if (mMap != null) {
-                    mMap.animateCamera(CameraUpdateFactory
-                            .zoomTo(mMap.getCameraPosition().zoom + DIVISION_ZOOM_MAP));
-                }
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+                CameraPosition position = CameraPosition.builder(mMap.getCameraPosition())
+                        .zoom(sbZoom.getProgress() / 10.0f + 10.0f)
+                        .build();
+
+                CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+                mMap.animateCamera(update, MIN_TIME_MAP_ANIMATE_CAMERA, null);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
 
             }
         });
 
-        FloatingActionButton zoomDownButton = (FloatingActionButton)
-                findViewById(R.id.zoom_down);
-        zoomDownButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAGLOG, "Press button 'zoomDownButton'");
-                if (mMap != null) {
-                    mMap.animateCamera(CameraUpdateFactory
-                            .zoomTo(mMap.getCameraPosition().zoom - DIVISION_ZOOM_MAP));
-                }
-
-            }
-        });
+//        FloatingActionButton zoomUpButton = (FloatingActionButton)
+//                findViewById(R.id.zoom_up);
+//        zoomUpButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.d(TAGLOG, "Press button 'zoomUpButton'");
+//                if (mMap != null) {
+//                    mMap.animateCamera(CameraUpdateFactory
+//                            .zoomTo(mMap.getCameraPosition().zoom + DIVISION_ZOOM_MAP));
+//                }
+//
+//            }
+//        });
+//
+//        FloatingActionButton zoomDownButton = (FloatingActionButton)
+//                findViewById(R.id.zoom_down);
+//        zoomDownButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.d(TAGLOG, "Press button 'zoomDownButton'");
+//                if (mMap != null) {
+//                    mMap.animateCamera(CameraUpdateFactory
+//                            .zoomTo(mMap.getCameraPosition().zoom - DIVISION_ZOOM_MAP));
+//                }
+//
+//            }
+//        });
 
         FloatingActionButton sateliteButton = (FloatingActionButton)
                 findViewById(R.id.satelite);
@@ -219,6 +255,7 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
 
     @Override
     public void onLocationChanged(Location location) {
+
         if ( gpsTaskUtils.isBetterLocation(location, lastCurrentLocation,
                 MIN_TIME_LOCATION_MAP, MAX_COEFFICIENT_CURRENCY_LOCATION) ) {
 
@@ -236,7 +273,7 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(TYPE_PRIORITY_CONNECTION_GPS);
         mLocationRequest.setInterval(MIN_TIME_LOCATION_MAP);
-        mLocationRequest.setFastestInterval(MIN_TIME_LOCATION_MAP);
+        //mLocationRequest.setFastestInterval(MIN_TIME_LOCATION_MAP);
         mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_LOCATION_MAP);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED
@@ -269,6 +306,13 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
             public void onMapLongClick(LatLng latLng) {
                 current_position.setImageDrawable(getResources().getDrawable(R.drawable.ic_location_search));
                 moveMarker = false;
+            }
+        });
+
+        mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+            @Override
+            public void onCameraMove() {
+                setWidthPolylines();
             }
         });
 
@@ -324,6 +368,7 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
             return;
         }
         if (mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
     }
@@ -335,14 +380,17 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
             return;
         }
         if (mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
+
+        mPreferences.edit().putInt(MAP_TTACK_ZOOM_PREF, sbZoom.getProgress()).apply();
     }
 
     private void setUpMap() {
 
 //        if (Build.VERSION.SDK_INT < 21) {
-            locationMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
+        locationMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
 //        } else {
 //            locationMapFragment = (SupportMapFragment)
 //                    this.getChildFragmentManager().findFragmentById(map);
@@ -396,15 +444,16 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
 //            markerOptions.rotation(
 //                    lastCurrentLocation!=null && oldCurrentLocation != null ?
 //                            lastCurrentLocation.bearingTo(oldCurrentLocation) : 0);
-            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker));//BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker));
             mCurrLocationMarker = mMap.addMarker(markerOptions);
 
             if(moveMarker) {
                 //move map camera
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(
-                        lastCurrentLocation.getSpeed() < MIN_SPEED_MAP_SET_ZOOM  ?
-                                MIN_ZOOM_MAP : MAX_ZOOM_MAP));
+                        sbZoom.getProgress() / 10.0f + 10.0f));
+//                        lastCurrentLocation.getSpeed() < MIN_SPEED_MAP_SET_ZOOM  ?
+//                                MIN_ZOOM_MAP : MAX_ZOOM_MAP));
             }
 
             setCameraPosition(oldCurrentLocation, lastCurrentLocation);
@@ -428,8 +477,9 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
                             secondLocation.getLongitude()))
                     .bearing(targetBearing + 530)
                     .tilt(TILT_CAMERA_MAP)
-                    .zoom(lastCurrentLocation.getSpeed() < MIN_SPEED_MAP_SET_ZOOM  ?
-                            MIN_ZOOM_MAP : MAX_ZOOM_MAP)
+                    .zoom(sbZoom.getProgress() / 10.0f + 10.0f)
+//                            lastCurrentLocation.getSpeed() < MIN_SPEED_MAP_SET_ZOOM  ?
+//                            MIN_ZOOM_MAP : MAX_ZOOM_MAP)
                     .build();
 
             mMap.animateCamera(
@@ -438,6 +488,16 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
                             MIN_TIME_MAP_ANIMATE_CAMERA :
                             MAX_TIME_MAP_ANIMATE_CAMERA,
                     null);
+        }
+
+    }
+
+    private void setWidthPolylines() {
+
+        if (polylineTrack!=null) {
+
+            polylineTrack.setWidth(
+                    (float)(MIN_DISTANCE_WRITE_TRACK * mMap.getCameraPosition().zoom)/MAX_ZOOM_MAP);
         }
 
     }
@@ -471,7 +531,7 @@ public class MapTrackerActivity extends AppCompatActivity implements GoogleApiCl
             locationCheckNavigation = lastCurrentLocation;
         }else {
             if (lastCurrentLocation.distanceTo(locationCheckNavigation)
-                    < MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION) {
+                    < MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION && polylineNavigation.size() > 0) {
                 return;
             }
         }

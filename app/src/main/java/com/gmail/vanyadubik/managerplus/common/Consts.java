@@ -41,11 +41,12 @@ public class Consts {
     public static final long MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION = 100;// meters
     public static final double  MIN_SPEED_MAP_SET_ZOOM = 3.0; //
     public static final float  MIN_ZOOM_MAP = 18; //18
-    public static final float  MAX_ZOOM_MAP = 20; //21
-    public static final float  TILT_CAMERA_MAP = 50; //67
+    public static final float  MAX_ZOOM_MAP = 18; //21
+    public static final float  TILT_CAMERA_MAP = 0; //67
     public static final float  DIVISION_ZOOM_MAP = 1.0f; //0.5f
     public static final int  MIN_TIME_MAP_ANIMATE_CAMERA = 1000;
     public static final int  MAX_TIME_MAP_ANIMATE_CAMERA = 2000;
+    public static final float  ZOOM_MAP_SHOWTRACK = 12; //21
 
     // notifications
     public static final int DEFAULT_NOTIFICATION_GPS_TRACER_ID = 101;
