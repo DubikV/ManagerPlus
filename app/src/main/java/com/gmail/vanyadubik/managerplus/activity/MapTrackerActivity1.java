@@ -1,6 +1,8 @@
 package com.gmail.vanyadubik.managerplus.activity;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -14,8 +16,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.gmail.vanyadubik.managerplus.R;
+import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.gps.DirectionsJSONParser;
 import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
@@ -26,6 +31,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -56,30 +62,28 @@ import java.util.List;
 import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.R.id.map;
-import static com.gmail.vanyadubik.managerplus.common.Consts.DIVISION_ZOOM_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_TIME_MAP_ANIMATE_CAMERA;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_ZOOM_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SPEED_MAP_SET_ZOOM;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_LOCATION_MAP;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_MAP_ANIMATE_CAMERA;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_ZOOM_MAP;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_ZOOM_TITLE_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TILT_CAMERA_MAP;
+import static com.gmail.vanyadubik.managerplus.common.Consts.TIME_MAP_ANIMATE_CAMERA;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.WIDTH_POLYLINE_MAP;
 
 public class MapTrackerActivity1 extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback {
 
+    public static final String MAP_TTACK_ZOOM_PREF = "map_track_zoom";
+
     @Inject
     DataRepository dataRepository;
     @Inject
     GPSTaskUtils gpsTaskUtils;
 
+    private SharedPreferences mPreferences;
     private GoogleMap mMap;
     private SupportMapFragment locationMapFragment;
     private GoogleApiClient mGoogleApiClient;
@@ -92,6 +96,8 @@ public class MapTrackerActivity1 extends AppCompatActivity implements GoogleApiC
     private Boolean moveMarker;
     private Waybill_Document waybill;
     private List<MarkerMap> markerMaps;
+    private SeekBar sbZoom;
+    private TextView sbZoomProgress;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -99,7 +105,9 @@ public class MapTrackerActivity1 extends AppCompatActivity implements GoogleApiC
         setContentView(R.layout.activity_map);
         getSupportActionBar().setTitle(getResources().getString(R.string.map_track_route));
 
-       // ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
+        //((ManagerPlusAplication) getApplication()).getComponent().inject(this);
+
+        mPreferences = getPreferences(Context.MODE_PRIVATE);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -108,37 +116,42 @@ public class MapTrackerActivity1 extends AppCompatActivity implements GoogleApiC
                 .build();
 
         moveMarker = true;
-        polylineNavigation = new ArrayList<>();
-
         setUpMap();
 
-//        FloatingActionButton zoomUpButton = (FloatingActionButton)
-//                findViewById(R.id.zoom_up);
-//        zoomUpButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d(TAGLOG, "Press button 'zoomUpButton'");
-//                if (mMap != null) {
-//                    mMap.animateCamera(CameraUpdateFactory
-//                            .zoomTo(mMap.getCameraPosition().zoom + DIVISION_ZOOM_MAP));
-//                }
-//
-//            }
-//        });
-//
-//        FloatingActionButton zoomDownButton = (FloatingActionButton)
-//                findViewById(R.id.zoom_down);
-//        zoomDownButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d(TAGLOG, "Press button 'zoomDownButton'");
-//                if (mMap != null) {
-//                    mMap.animateCamera(CameraUpdateFactory
-//                            .zoomTo(mMap.getCameraPosition().zoom - DIVISION_ZOOM_MAP));
-//                }
-//
-//            }
-//        });
+        sbZoomProgress = (TextView) findViewById(R.id.sbZoom_progress);
+        sbZoom = (SeekBar) findViewById(R.id.sbZoom);
+
+        // Initial zoom level
+        sbZoom.setProgress(mPreferences.getInt(MAP_TTACK_ZOOM_PREF, 70));
+
+        sbZoomProgress.setText(sbZoom.getProgress() + "%");
+
+        sbZoom.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int progresValue = 0;
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                progresValue = progress;
+                sbZoomProgress.setText(progress + "%");
+
+                CameraPosition position = CameraPosition.builder(mMap.getCameraPosition())
+                        .tilt(progress > MIN_ZOOM_TITLE_MAP ? TILT_CAMERA_MAP : 0)
+                        .zoom(sbZoom.getProgress() / 10.0f + 10.0f)
+                        .build();
+
+                CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+                mMap.animateCamera(update, TIME_MAP_ANIMATE_CAMERA, null);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                sbZoomProgress.setText(progresValue + "%");
+            }
+        });
 
         FloatingActionButton sateliteButton = (FloatingActionButton)
                 findViewById(R.id.satelite);
@@ -193,7 +206,8 @@ public class MapTrackerActivity1 extends AppCompatActivity implements GoogleApiC
                 Log.d(TAGLOG, "Press button 'current_position'");
                 moveMarker = true;
                 current_position.setImageDrawable(getResources().getDrawable(R.drawable.ic_location));
-                insertMarker();
+
+                setCameraPosition();
             }
         });
 
@@ -227,17 +241,21 @@ public class MapTrackerActivity1 extends AppCompatActivity implements GoogleApiC
 
             lastCurrentLocation = location;
         }
-        insertMarker();
+
+        setCameraPosition();
+
+        setPolylineTrack();
 
         setOtherTracks();
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(TYPE_PRIORITY_CONNECTION_GPS);
         mLocationRequest.setInterval(MIN_TIME_LOCATION_MAP);
-        mLocationRequest.setFastestInterval(MIN_TIME_LOCATION_MAP);
+        //mLocationRequest.setFastestInterval(MIN_TIME_LOCATION_MAP);
         mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_LOCATION_MAP);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED
@@ -245,7 +263,13 @@ public class MapTrackerActivity1 extends AppCompatActivity implements GoogleApiC
                 PackageManager.PERMISSION_GRANTED) {
             return;
         }
+
+        lastCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+
+        insertMarker();
     }
 
     @Override
@@ -295,6 +319,8 @@ public class MapTrackerActivity1 extends AppCompatActivity implements GoogleApiC
 
         setOtherMarkers();
 
+        setPolylineTrack();
+
     }
 
     @Override
@@ -316,7 +342,7 @@ public class MapTrackerActivity1 extends AppCompatActivity implements GoogleApiC
 
         }
 
-        insertMarker();
+        setCameraPosition();
     }
 
     @Override
@@ -347,12 +373,14 @@ public class MapTrackerActivity1 extends AppCompatActivity implements GoogleApiC
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
+
+        mPreferences.edit().putInt(MAP_TTACK_ZOOM_PREF, sbZoom.getProgress()).apply();
     }
 
     private void setUpMap() {
 
 //        if (Build.VERSION.SDK_INT < 21) {
-            locationMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
+        locationMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
 //        } else {
 //            locationMapFragment = (SupportMapFragment)
 //                    this.getChildFragmentManager().findFragmentById(map);
@@ -403,9 +431,7 @@ public class MapTrackerActivity1 extends AppCompatActivity implements GoogleApiC
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLng);
             markerOptions.anchor(0.5f, 0.5f);
-//            markerOptions.rotation(
-//                    lastCurrentLocation!=null && oldCurrentLocation != null ?
-//                            lastCurrentLocation.bearingTo(oldCurrentLocation) : 0);
+          //  markerOptions.rotation(270);
             markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker));
             mCurrLocationMarker = mMap.addMarker(markerOptions);
 
@@ -413,51 +439,9 @@ public class MapTrackerActivity1 extends AppCompatActivity implements GoogleApiC
                 //move map camera
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(
-                        lastCurrentLocation.getSpeed() < MIN_SPEED_MAP_SET_ZOOM  ?
-                                MIN_ZOOM_MAP : MAX_ZOOM_MAP));
+                        sbZoom.getProgress() / 10.0f + 10.0f));
             }
 
-            setCameraPosition(oldCurrentLocation, lastCurrentLocation);
-        }
-
-        setPolylineTrack();
-
-    }
-
-    private void setCameraPosition(Location firstLocation, Location secondLocation) {
-
-        if (moveMarker) {
-
-            if (firstLocation == null || secondLocation == null) {
-                return;
-            }
-
-            float targetBearing = secondLocation.bearingTo(firstLocation);
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(secondLocation.getLatitude(),
-                            secondLocation.getLongitude()))
-                    .bearing(targetBearing + 530)
-                    .tilt(TILT_CAMERA_MAP)
-                    .zoom(lastCurrentLocation.getSpeed() < MIN_SPEED_MAP_SET_ZOOM  ?
-                            MIN_ZOOM_MAP : MAX_ZOOM_MAP)
-                    .build();
-
-            mMap.animateCamera(
-                    CameraUpdateFactory.newCameraPosition(cameraPosition),
-                    lastCurrentLocation.getSpeed() < MIN_SPEED_MAP_SET_ZOOM ?
-                            MIN_TIME_MAP_ANIMATE_CAMERA :
-                            MAX_TIME_MAP_ANIMATE_CAMERA,
-                    null);
-        }
-
-    }
-
-    private void setWidthPolylines() {
-
-        if (polylineTrack!=null) {
-
-            polylineTrack.setWidth(
-                    (float)(MIN_DISTANCE_WRITE_TRACK * mMap.getCameraPosition().zoom)/MAX_ZOOM_MAP);
         }
 
     }
@@ -485,6 +469,55 @@ public class MapTrackerActivity1 extends AppCompatActivity implements GoogleApiC
         }
     }
 
+
+    private void setCameraPosition() {
+
+        if (lastCurrentLocation == null) {
+            return;
+        }
+
+        if (moveMarker) {
+
+            if (mCurrLocationMarker == null) {
+                insertMarker();
+            }
+
+            LatLng position = new LatLng(lastCurrentLocation.getLatitude(),
+                    lastCurrentLocation.getLongitude());
+
+            mCurrLocationMarker.setPosition(position);
+
+            float targetBearing = (float) 0.0;
+
+            if (oldCurrentLocation != null && lastCurrentLocation != null) {
+                targetBearing = lastCurrentLocation.bearingTo(oldCurrentLocation);
+            }
+
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(position)
+                    .bearing(targetBearing + 530)
+                    .tilt(sbZoom.getProgress() > MIN_ZOOM_TITLE_MAP ? TILT_CAMERA_MAP : 0)
+                    .zoom(sbZoom.getProgress() / 10.0f + 10.0f)
+                    .build();
+
+            mMap.animateCamera(
+                    CameraUpdateFactory.newCameraPosition(cameraPosition),
+                    TIME_MAP_ANIMATE_CAMERA,
+                    null);
+        }
+
+    }
+
+    private void setWidthPolylines() {
+
+        if (polylineTrack!=null) {
+
+            polylineTrack.setWidth(
+                    (float)(WIDTH_POLYLINE_MAP * sbZoom.getProgress())/100);
+        }
+
+    }
+
     private void setOtherTracks(){
 
         if(locationCheckNavigation==null) {
@@ -496,27 +529,24 @@ public class MapTrackerActivity1 extends AppCompatActivity implements GoogleApiC
             }
         }
 
-        if (polylineNavigation!=null){
-            for (Polyline polyline : polylineNavigation){
-                polyline.remove();
-            }
-            polylineNavigation.clear();
-        }
-
         if (mMap != null && lastCurrentLocation !=null && markerMaps != null) {
 
             LatLng oldPoint = new LatLng(lastCurrentLocation.getLatitude(), lastCurrentLocation.getLongitude());
-            for (MarkerMap markerMap : markerMaps) {
 
+            if (polylineNavigation == null){
+                int i = 0;
+                for (MarkerMap markerMap : markerMaps) {
+                    String url = getDirectionsUrl(oldPoint, markerMap.getLatLng());
+                    DownloadTask downloadTask = new DownloadTask();
+                    downloadTask.execute(new ParamDownloadTask(i ,url));
+                    oldPoint = markerMap.getLatLng();
+                    i++;
+                }
+            }else {
+                MarkerMap markerMap = markerMaps.get(0);
                 String url = getDirectionsUrl(oldPoint, markerMap.getLatLng());
-
                 DownloadTask downloadTask = new DownloadTask();
-
-                // Start downloading json data from Google Directions API
-                downloadTask.execute(url);
-
-                //new GetDirection(oldPoint, markerMap.getLatLng()).execute();
-                oldPoint = markerMap.getLatLng();
+                downloadTask.execute(new ParamDownloadTask(0 ,url));
             }
         }
 
@@ -562,46 +592,48 @@ public class MapTrackerActivity1 extends AppCompatActivity implements GoogleApiC
         return data;
     }
 
-    private class DownloadTask extends AsyncTask<String, Void, String> {
+    private class DownloadTask extends AsyncTask<ParamDownloadTask, Void, ParamDownloadTask> {
         @Override
-        protected String doInBackground(String... url) {
-            String data = "";
+        protected ParamDownloadTask doInBackground(ParamDownloadTask... param) {
+            ParamDownloadTask paramData = param[0];
             try{
-                data = downloadUrl(url[0]);
+                String data = downloadUrl(paramData.getData());
+                paramData.setData(data);
             }catch(Exception e){
                 Log.d(TAGLOG,e.toString());
             }
-            return data;
+            return paramData;
         }
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(ParamDownloadTask result) {
             super.onPostExecute(result);
             ParserTask parserTask = new ParserTask();
             parserTask.execute(result);
         }
     }
 
-    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String,String>>> >{
+    private class ParserTask extends AsyncTask<ParamDownloadTask, Integer, ParamParserTask >{
 
         @Override
-        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
+        protected ParamParserTask doInBackground(ParamDownloadTask... data) {
 
-            JSONObject jObject;
-            List<List<HashMap<String, String>>> routes = null;
+            ParamDownloadTask jsonData = data[0];
+            ParamParserTask routesData = new ParamParserTask(jsonData.getId(), null);
             try{
-                jObject = new JSONObject(jsonData[0]);
+                JSONObject jObject = new JSONObject(jsonData.getData());
                 DirectionsJSONParser parser = new DirectionsJSONParser();
-                routes = parser.parse(jObject);
+                routesData.setData(parser.parse(jObject));
             }catch(Exception e){
                 e.printStackTrace();
             }
-            return routes;
+            return routesData;
         }
 
         @Override
-        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
+        protected void onPostExecute(ParamParserTask data) {
             ArrayList<LatLng> points = null;
             PolylineOptions lineOptions = null;
+            List<List<HashMap<String,String>>> result = data.getData();
 
             if(result == null){
                 return;
@@ -627,8 +659,25 @@ public class MapTrackerActivity1 extends AppCompatActivity implements GoogleApiC
                 lineOptions.addAll(points);
             }
 
+            if(polylineNavigation==null) {
+                polylineNavigation = new ArrayList<>();
+            }
+
             if(lineOptions != null) {
-                polylineNavigation.add(mMap.addPolyline(lineOptions));
+                try{
+                    Polyline polyline = polylineNavigation.get(data.getId());
+                    if(polyline!=null) {
+                        polyline.remove();
+                    }
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+                try{
+                    polylineNavigation.set(data.getId(), mMap.addPolyline(lineOptions));
+                }catch(Exception e){
+                    e.printStackTrace();
+                    polylineNavigation.add(mMap.addPolyline(lineOptions));
+                }
             }
 
 //            if(points!=null) {
@@ -644,6 +693,50 @@ public class MapTrackerActivity1 extends AppCompatActivity implements GoogleApiC
 //
 //                setCameraPosition(firstLocation, secondLocation);
 //            }
+        }
+    }
+
+    protected class ParamDownloadTask{
+        private int id;
+        private String data;
+
+        public ParamDownloadTask(int id, String data) {
+            this.id = id;
+            this.data = data;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getData() {
+            return data;
+        }
+
+        public void setData(String data) {
+            this.data = data;
+        }
+    }
+
+    private class ParamParserTask{
+        private int id;
+        private List<List<HashMap<String,String>>> data;
+
+        public ParamParserTask(int id, List<List<HashMap<String, String>>> data) {
+            this.id = id;
+            this.data = data;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public List<List<HashMap<String, String>>> getData() {
+            return data;
+        }
+
+        public void setData(List<List<HashMap<String, String>>> data) {
+            this.data = data;
         }
     }
 

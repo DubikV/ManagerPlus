@@ -29,9 +29,7 @@ public class LocationService extends Service {
 
     //get current location os user
     private void updateLocation(Context context) {
-        googleLocationService = new GoogleLocationService(context,
-                TYPE_PRIORITY_CONNECTION_GPS, MIN_TIME_WRITE_TRACK,
-                MIN_TIME_WRITE_TRACK, MIN_DISTANCE_WRITE_TRACK, new LocationUpdateListener() {
+        googleLocationService = new GoogleLocationService(context, new LocationUpdateListener() {
             @Override
             public void canReceiveLocationUpdates() {
             }
@@ -48,11 +46,15 @@ public class LocationService extends Service {
             }
 
             @Override
-            public void updateLocationName(String localityName, Location location) {
+            public void startLocation(Location location) {
 
-                googleLocationService.stopLocationUpdates();
             }
+
         });
+        googleLocationService.setTypePriorityConnection(TYPE_PRIORITY_CONNECTION_GPS);
+        googleLocationService.setTimeInterval(MIN_TIME_WRITE_TRACK);
+        googleLocationService.setFastesInterval(MIN_TIME_WRITE_TRACK);
+        googleLocationService.setDistance(MIN_DISTANCE_WRITE_TRACK);
         googleLocationService.startUpdates();
     }
 

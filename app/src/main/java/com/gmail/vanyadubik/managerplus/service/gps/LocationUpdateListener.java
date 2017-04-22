@@ -21,8 +21,8 @@ public interface LocationUpdateListener{
     void updateLocation(Location location);
 
     /**
-     * Called when GoogleLocationServices detects that the device has moved to a new location.
-     * @param localityName The name of the locality (somewhere below street but above area).
+     * Called whenever the start location
+     * @param location
      */
-    void updateLocationName(String localityName, Location location);
+    void startLocation(Location location);
 }

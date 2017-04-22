@@ -26,9 +26,10 @@
 
     <!--Map-->
     <dimen name="seekbar_outer_circle_size">50dp</dimen>
-    <dimen name="seekbar_outer_circle_marging">25dp</dimen>
-    <dimen name="inner_outer_circle_size">15dp</dimen>
+    <dimen name="seekbar_inner_circle_size">15dp</dimen>
+    <dimen name="seekbar_marging">25dp</dimen>
     <dimen name="seekbar_padding">25dp</dimen>
+    <dimen name="text_size_map">26dp</dimen>
 
     <!--Base button-->
     <dimen name="base_button_height">70dp</dimen>

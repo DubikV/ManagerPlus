@@ -74,27 +74,28 @@
         app:fabSize="normal"
         app:srcCompat="@drawable/ic_satelite"/>
 
-    <!--<SeekBar-->
-        <!--android:id="@+id/sbZoom"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:max="100"-->
-        <!--android:layout_alignBottom="@+id/current_position"-->
-        <!--android:layout_alignTop="@+id/current_position"-->
-        <!--android:layout_toEndOf="@+id/current_position"-->
-        <!--android:layout_toStartOf="@+id/traffic"-->
-        <!--android:layout_marginStart="@dimen/marging_button_map"-->
-        <!--android:layout_marginEnd="@dimen/marging_button_map"/>-->
+    <TextView
+        android:id="@+id/sbZoom_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/sbZoom"
+        android:layout_alignStart="@+id/sbZoom"
+        android:layout_below="@+id/satelite"
+        android:layout_marginTop="@dimen/seekbar_marging"
+        android:gravity="center_horizontal"
+        android:text="100%"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/text_size_map" />
 
-    <com.gmail.vanyadubik.managerplus.ui.VerticalSeekBar
+    <com.gmail.vanyadubik.managerplus.ui.VerticalSeekBar_Reverse
         android:id="@+id/sbZoom"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_above="@+id/traffic"
         android:layout_alignEnd="@+id/traffic"
-        android:layout_below="@+id/satelite"
-        android:layout_marginBottom="@dimen/seekbar_outer_circle_marging"
-        android:layout_marginTop="@dimen/seekbar_outer_circle_marging"
+        android:layout_below="@+id/sbZoom_progress"
+        android:layout_marginBottom="@dimen/seekbar_marging"
+        android:layout_marginTop="@dimen/seekbar_marging"
         android:elevation="1dp"
         android:max="100"
         android:padding="@dimen/marging_button_map"
@@ -104,7 +105,7 @@
         android:paddingStart="@dimen/seekbar_padding"
         android:thumb="@drawable/thumb_image">
 
-    </com.gmail.vanyadubik.managerplus.ui.VerticalSeekBar>
+    </com.gmail.vanyadubik.managerplus.ui.VerticalSeekBar_Reverse>
 
 
 </RelativeLayout>

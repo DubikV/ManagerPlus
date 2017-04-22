@@ -1,23 +1,23 @@
 package com.gmail.vanyadubik.managerplus.ui;
 
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.support.v7.widget.AppCompatSeekBar;
 
-public class VerticalSeekBar extends AppCompatSeekBar {
+public class VerticalSeekBar_Reverse extends AppCompatSeekBar {
 
-    public VerticalSeekBar(Context context) {
+    public VerticalSeekBar_Reverse(Context context) {
         super(context);
     }
 
-    public VerticalSeekBar(Context context, AttributeSet attrs, int defStyle) {
+    public VerticalSeekBar_Reverse(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
-    public VerticalSeekBar(Context context, AttributeSet attrs) {
+    public VerticalSeekBar_Reverse(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -26,20 +26,14 @@ public class VerticalSeekBar extends AppCompatSeekBar {
     }
 
     @Override
-    public synchronized void setProgress(int progress)  // it is necessary for calling setProgress on click of a button
-    {
-        super.setProgress(progress);
-        onSizeChanged(getWidth(), getHeight(), 0, 0);
-    }
-    @Override
     protected synchronized void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(heightMeasureSpec, widthMeasureSpec);
         setMeasuredDimension(getMeasuredHeight(), getMeasuredWidth());
     }
 
     protected void onDraw(Canvas c) {
-        c.rotate(-90);
-        c.translate(-getHeight(), 0);
+        c.rotate(90);
+        c.translate(0, -getWidth());
 
         super.onDraw(c);
     }
@@ -54,7 +48,10 @@ public class VerticalSeekBar extends AppCompatSeekBar {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE:
             case MotionEvent.ACTION_UP:
-                setProgress(getMax() - (int) (getMax() * event.getY() / getHeight()));
+                int i=0;
+                i=getMax() - (int) (getMax() * event.getY() / getHeight());
+                setProgress(100-i);
+                Log.i("Progress",getProgress()+"");
                 onSizeChanged(getWidth(), getHeight(), 0, 0);
                 break;
 
@@ -63,4 +60,5 @@ public class VerticalSeekBar extends AppCompatSeekBar {
         }
         return true;
     }
+
 }

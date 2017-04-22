@@ -26,8 +26,6 @@ import android.widget.Toast;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
-import com.gmail.vanyadubik.managerplus.service.gps.GoogleLocationService;
-import com.gmail.vanyadubik.managerplus.service.gps.LocationUpdateListener;
 import com.gmail.vanyadubik.managerplus.utils.GPSTaskUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -55,14 +53,15 @@ import static com.gmail.vanyadubik.managerplus.activity.MapTrackerActivity.MAP_T
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_LOCATION_MAP;
-import static com.gmail.vanyadubik.managerplus.common.Consts.TIME_MAP_ANIMATE_CAMERA;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_ZOOM_TITLE_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TILT_CAMERA_MAP;
+import static com.gmail.vanyadubik.managerplus.common.Consts.TIME_MAP_ANIMATE_CAMERA;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.WIDTH_POLYLINE_MAP;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback  {
+public class MapActivity1 extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback  {
     public static final String MAP_TYPE = "map_type";
     public static final int MAP_TYPE_SHOW_TRACK = 1;
     public static final int MAP_TYPE_GET_LOCATION = 2;
@@ -81,7 +80,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private SharedPreferences mPreferences;
     private GoogleMap mMap;
     private SupportMapFragment locationMapFragment;
-    private GoogleLocationService googleLocationService;
+    private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private Location lastCurrentLocation;
     private Marker mCurrLocationMarker;
@@ -97,39 +96,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_map);
         getSupportActionBar().setTitle(getResources().getString(R.string.map_name));
 
-        ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
+        //((ManagerPlusAplication) getApplication()).getComponent().inject(this);
 
         mPreferences = getPreferences(Context.MODE_PRIVATE);
 
-        googleLocationService = new GoogleLocationService(this, new LocationUpdateListener() {
-            @Override
-            public void canReceiveLocationUpdates() {
-            }
-
-            @Override
-            public void cannotReceiveLocationUpdates() {
-            }
-
-            @Override
-            public void updateLocation(Location location) {
-                if ( gpsTaskUtils.isBetterLocation(location, lastCurrentLocation,
-                        MIN_TIME_LOCATION_MAP, MAX_COEFFICIENT_CURRENCY_LOCATION) ) {
-                    lastCurrentLocation = location;
-                }
-                insertMarker(lastCurrentLocation);
-            }
-
-            @Override
-            public void startLocation(Location location) {
-                initData();
-            }
-
-        });
-        googleLocationService.setTypePriorityConnection(TYPE_PRIORITY_CONNECTION_GPS);
-        googleLocationService.setTimeInterval(MIN_TIME_LOCATION_MAP);
-        // googleLocationService.setFastesInterval(MIN_TIME_LOCATION_MAP);
-        googleLocationService.setDistance(MIN_DISTANCE_LOCATION_MAP);
-        googleLocationService.startUpdates();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
 
         typeShow = 0;
 
@@ -292,8 +267,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onResume() {
         super.onResume();
 
-        googleLocationService.startLocationUpdates();
-
         extras = getIntent().getExtras();
 
         if (extras != null) {
@@ -421,21 +394,74 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        mLocationRequest = LocationRequest.create();
+        mLocationRequest.setPriority(TYPE_PRIORITY_CONNECTION_GPS);
+        mLocationRequest.setInterval(MIN_TIME_LOCATION_MAP);
+       // mLocationRequest.setFastestInterval(MIN_TIME_LOCATION_MAP);
+        mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_LOCATION_MAP);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        lastCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+
+        initData();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if ( gpsTaskUtils.isBetterLocation(location, lastCurrentLocation,
+                MIN_TIME_LOCATION_MAP, MAX_COEFFICIENT_CURRENCY_LOCATION) ) {
+            lastCurrentLocation = location;
+        }
+        insertMarker(lastCurrentLocation);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (googleLocationService != null) {
-            googleLocationService.stopLocationUpdates();
+        if(mGoogleApiClient == null){
+            return;
         }
-        googleLocationService.startGoogleApi();
+        if (mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            mGoogleApiClient.disconnect();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (googleLocationService != null) {
-            googleLocationService.stopLocationUpdates();
+        if(mGoogleApiClient == null){
+            return;
+        }
+        if (mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            mGoogleApiClient.disconnect();
         }
 
         mPreferences.edit().putInt(MAP_ZOOM_PREF, sbZoom.getProgress()).apply();

@@ -18,6 +18,7 @@ import com.google.android.gms.location.LocationServices;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
@@ -34,15 +35,26 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
     private static long timeInterval, fastesInterval, distance;
 
 
-    public GoogleLocationService(Context mContext, int typePriorityConnection, long timeInterval, long fastesInterval,
-                                    long distance, LocationUpdateListener locationUpdateListener) {
+    public GoogleLocationService(Context mContext, LocationUpdateListener locationUpdateListener) {
         this.locationUpdateListener = locationUpdateListener;
         this.mContext = mContext;
-        this.typePriorityConnection = typePriorityConnection;
-        this.timeInterval = timeInterval;
-        this.fastesInterval = fastesInterval;
-        this.distance = distance;
         buildGoogleApiClient();
+    }
+
+    public void setTypePriorityConnection(int typePriorityConnection) {
+        this.typePriorityConnection = typePriorityConnection;
+    }
+
+    public void setTimeInterval(long timeInterval) {
+        this.timeInterval = timeInterval;
+    }
+
+    public void setFastesInterval(long fastesInterval) {
+        this.fastesInterval = fastesInterval;
+    }
+
+    public void setDistance(long distance) {
+        this.distance = distance;
     }
 
     private void buildGoogleApiClient() {
@@ -56,9 +68,6 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
     }
 
     private void createLocationRequest() {
-//        mLocationRequest = new LocationRequest();
-//        mLocationRequest.setInterval(MIN_TIME_WRITE_TRACK);
-//        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(typePriorityConnection == 0 ?
                 LocationRequest.PRIORITY_HIGH_ACCURACY : typePriorityConnection);
@@ -94,7 +103,7 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
         @Override
         public void onLocationChanged(Location location) {
             if (location.hasAccuracy()) {
-                if (location.getAccuracy() < 30) {
+                if (location.getAccuracy() < MAX_COEFFICIENT_CURRENCY_LOCATION) {
                     locationUpdateListener.updateLocation(location);
                 }
             }
@@ -152,7 +161,10 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
     }
 
     //start location updates
-    private void startLocationUpdates() {
+    public void startLocationUpdates() {
+
+        locationUpdateListener.startLocation(LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient));
 
         if (ActivityCompat.checkSelfPermission(mContext, ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED &&
