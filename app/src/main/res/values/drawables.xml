@@ -11,8 +11,6 @@
     <item name="ic_location_search" type="drawable">@drawable/ic_location_search</item>
     <item name="ic_satelite" type="drawable">@drawable/ic_satelite</item>
     <item name="ic_traffic" type="drawable">@drawable/ic_traffic</item>
-    <item name="ic_zoom_up" type="drawable">@drawable/ic_zoom_up</item>
-    <item name="ic_zoom_down" type="drawable">@drawable/ic_zoom_down</item>
     <item name="ic_sync" type="drawable">@drawable/ic_sync</item>
     <item name="ic_camera" type="drawable">@drawable/ic_camera</item>
     <item name="ic_fuel" type="drawable">@drawable/ic_fuel</item>

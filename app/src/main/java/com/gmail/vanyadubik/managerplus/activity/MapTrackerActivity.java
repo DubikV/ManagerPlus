@@ -377,7 +377,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
 
         PolylineOptions pOptions = dataRepository.getBuildTrackLatLng(
                 new PolylineOptions()
-                        .width(WIDTH_POLYLINE_MAP)
+                        .width((float)(WIDTH_POLYLINE_MAP * mMap.getCameraPosition().zoom)/mMap.getMaxZoomLevel())
                         .color(getResources().getColor(R.color.colorPrimary))
                         .geodesic(true),
                 waybill.getDateStart(),
@@ -482,12 +482,19 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
 
     private void setWidthPolylines() {
 
+        float polyWidth = (float)(WIDTH_POLYLINE_MAP * mMap.getCameraPosition().zoom)/mMap.getMaxZoomLevel();
+
         if (polylineTrack!=null) {
 
-            polylineTrack.setWidth(
-                    (float)(WIDTH_POLYLINE_MAP * sbZoom.getProgress())/100);
+            polylineTrack.setWidth(polyWidth);
         }
 
+        if (polylineNavigation!=null) {
+            for(Polyline polyline : polylineNavigation){
+                polyline.setWidth(polyWidth);
+            }
+
+        }
     }
 
     private void setOtherTracks(){
@@ -613,7 +620,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
             for(int i=0;i<result.size();i++){
                 points = new ArrayList<LatLng>();
                 lineOptions = new PolylineOptions()
-                        .width(WIDTH_POLYLINE_MAP)
+                        .width((float)(WIDTH_POLYLINE_MAP * mMap.getCameraPosition().zoom)/mMap.getMaxZoomLevel())
                         .color(getResources().getColor(R.color.colorBlue))
                         .geodesic(true);
 

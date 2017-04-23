@@ -35,7 +35,7 @@ public class Consts {
     public static final int TYPE_PRIORITY_CONNECTION_GPS = LocationRequest.PRIORITY_HIGH_ACCURACY;
 
     // Map
-    public static final int WIDTH_POLYLINE_MAP = 15;
+    public static final int WIDTH_POLYLINE_MAP = 20;
     public static final long MIN_DISTANCE_LOCATION_MAP = 20; // 10 meters
     public static final long MIN_TIME_LOCATION_MAP = 10; // seconds
     public static final long MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION = 100;// meters
