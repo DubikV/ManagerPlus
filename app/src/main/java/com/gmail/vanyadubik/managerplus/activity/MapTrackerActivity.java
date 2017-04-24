@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -18,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
@@ -31,7 +31,6 @@ import com.gmail.vanyadubik.managerplus.utils.GPSTaskUtils;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
@@ -108,11 +107,13 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
 
         googleLocationService = new GoogleLocationService(this, new LocationUpdateListener() {
             @Override
-            public void canReceiveLocationUpdates() {
+            public void canReceiveLocationUpdates(String exception) {
+                Toast.makeText(getApplicationContext(), exception, Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void cannotReceiveLocationUpdates() {
+            public void cannotReceiveLocationUpdates(String exception) {
+                Toast.makeText(getApplicationContext(), exception, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -166,7 +167,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
 
                 CameraPosition position = CameraPosition.builder(mMap.getCameraPosition())
                         .tilt(progress > MIN_ZOOM_TITLE_MAP ? TILT_CAMERA_MAP : 0)
-                        .zoom(sbZoom.getProgress() / 10.0f + 10.0f)
+                        .zoom(sbZoom.getProgress()*mMap.getMaxZoomLevel()/sbZoom.getMax())//sbZoom.getProgress() / 10.0f + 10.0f)
                         .build();
 
                 CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
@@ -411,7 +412,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
                 //move map camera
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(
-                        sbZoom.getProgress() / 10.0f + 10.0f));
+                        sbZoom.getProgress()*mMap.getMaxZoomLevel()/sbZoom.getMax()));//sbZoom.getProgress() / 10.0f + 10.0f));
             }
 
         }
@@ -469,7 +470,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
                     .target(position)
                     .bearing(targetBearing + 530)
                     .tilt(sbZoom.getProgress() > MIN_ZOOM_TITLE_MAP ? TILT_CAMERA_MAP : 0)
-                    .zoom(sbZoom.getProgress() / 10.0f + 10.0f)
+                    .zoom(sbZoom.getProgress()*mMap.getMaxZoomLevel()/sbZoom.getMax())//sbZoom.getProgress() / 10.0f + 10.0f)
                     .build();
 
             mMap.animateCamera(

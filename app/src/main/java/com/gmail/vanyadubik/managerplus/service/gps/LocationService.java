@@ -30,12 +30,16 @@ public class LocationService extends Service {
     //get current location os user
     private void updateLocation(Context context) {
         googleLocationService = new GoogleLocationService(context, new LocationUpdateListener() {
+
+
             @Override
-            public void canReceiveLocationUpdates() {
+            public void canReceiveLocationUpdates(String exception) {
+
             }
 
             @Override
-            public void cannotReceiveLocationUpdates() {
+            public void cannotReceiveLocationUpdates(String exception) {
+
             }
 
             @Override

@@ -97,7 +97,7 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
                 Log.i(TAGLOG_GPS, "Google play service not updated");
 
             }
-            locationUpdateListener.cannotReceiveLocationUpdates();
+            locationUpdateListener.cannotReceiveLocationUpdates("Google play service not updated");
         }
 
         @Override
@@ -143,14 +143,14 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
      */
         if (servicesConnected(mContext)) {
             if (locationEnabled(mContext)) {
-                locationUpdateListener.canReceiveLocationUpdates();
+                locationUpdateListener.canReceiveLocationUpdates("Unable to get your location.Please turn on your device Gps");
                 startLocationUpdates();
             } else {
-                locationUpdateListener.cannotReceiveLocationUpdates();
+                locationUpdateListener.cannotReceiveLocationUpdates("Unable to get your location.Please turn on your device Gps");
                 Log.e(TAGLOG_GPS, "Unable to get your location.Please turn on your device Gps");
             }
         } else {
-            locationUpdateListener.cannotReceiveLocationUpdates();
+            locationUpdateListener.cannotReceiveLocationUpdates("Google play service not available");
             Log.e(TAGLOG_GPS, "Google play service not available");
         }
     }

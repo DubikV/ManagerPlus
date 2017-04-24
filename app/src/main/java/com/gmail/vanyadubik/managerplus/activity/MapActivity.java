@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -29,11 +28,6 @@ import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.gps.GoogleLocationService;
 import com.gmail.vanyadubik.managerplus.service.gps.LocationUpdateListener;
 import com.gmail.vanyadubik.managerplus.utils.GPSTaskUtils;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -55,10 +49,10 @@ import static com.gmail.vanyadubik.managerplus.activity.MapTrackerActivity.MAP_T
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_LOCATION_MAP;
-import static com.gmail.vanyadubik.managerplus.common.Consts.TIME_MAP_ANIMATE_CAMERA;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_ZOOM_TITLE_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TILT_CAMERA_MAP;
+import static com.gmail.vanyadubik.managerplus.common.Consts.TIME_MAP_ANIMATE_CAMERA;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.WIDTH_POLYLINE_MAP;
 
@@ -82,7 +76,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private SupportMapFragment locationMapFragment;
     private GoogleLocationService googleLocationService;
-    private LocationRequest mLocationRequest;
     private Location lastCurrentLocation;
     private Marker mCurrLocationMarker;
     private Bundle extras;
@@ -103,11 +96,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         googleLocationService = new GoogleLocationService(this, new LocationUpdateListener() {
             @Override
-            public void canReceiveLocationUpdates() {
+            public void canReceiveLocationUpdates(String exception) {
+                Toast.makeText(getApplicationContext(), exception, Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void cannotReceiveLocationUpdates() {
+            public void cannotReceiveLocationUpdates(String exception) {
+                Toast.makeText(getApplicationContext(), exception, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -152,7 +147,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                 CameraPosition position = CameraPosition.builder(mMap.getCameraPosition())
                         .tilt(progress > MIN_ZOOM_TITLE_MAP ? TILT_CAMERA_MAP : 0)
-                        .zoom(sbZoom.getProgress() / 10.0f + 10.0f)
+                        .zoom(sbZoom.getProgress()*mMap.getMaxZoomLevel()/sbZoom.getMax())
                         .build();
 
                 CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
@@ -350,7 +345,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             //move map camera
             mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(
-                    sbZoom.getProgress() / 10.0f + 10.0f));
+                    sbZoom.getProgress()*mMap.getMaxZoomLevel()/sbZoom.getMax()));
         }
 
     }
