@@ -7,7 +7,7 @@ public interface LocationUpdateListener{
     /**
      * Called immediately the service starts if the service can obtain location
      */
-    void canReceiveLocationUpdates(String exception);
+    void canReceiveLocationUpdates();
 
     /**
      * Called immediately the service tries to start if it cannot obtain location - eg the user has disabled wireless and

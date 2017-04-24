@@ -23,6 +23,7 @@ import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.ClientContract;
 import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
+import com.gmail.vanyadubik.managerplus.utils.PhoneUtils;
 
 import org.joda.time.LocalDateTime;
 
@@ -40,6 +41,8 @@ public class ClientDetailActivity extends AppCompatActivity {
 
     @Inject
     DataRepository dataRepository;
+    @Inject
+    PhoneUtils phoneUtils;
 
     private Client_Element client;
     private EditText mDetailNameView, mDetailAdressView, mDetailPhoneView, mLatView, mLongView;
@@ -153,6 +156,7 @@ public class ClientDetailActivity extends AppCompatActivity {
                 saveData();
                 return true;
             case R.id.action_call:
+                phoneUtils.call(this, client.getPhone());
                 return true;
             case R.id.action_foto:
                 return true;

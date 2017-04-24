@@ -33,7 +33,7 @@ public class LocationService extends Service {
 
 
             @Override
-            public void canReceiveLocationUpdates(String exception) {
+            public void canReceiveLocationUpdates() {
 
             }
 

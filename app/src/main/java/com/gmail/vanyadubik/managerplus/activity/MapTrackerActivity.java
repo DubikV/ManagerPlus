@@ -108,8 +108,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
 
         googleLocationService = new GoogleLocationService(this, new LocationUpdateListener() {
             @Override
-            public void canReceiveLocationUpdates(String exception) {
-                Toast.makeText(getApplicationContext(), exception, Toast.LENGTH_SHORT).show();
+            public void canReceiveLocationUpdates() {
             }
 
             @Override
@@ -517,7 +516,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
             locationCheckNavigation = lastCurrentLocation;
         }else {
             if (lastCurrentLocation.distanceTo(locationCheckNavigation)
-                    < MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION && polylineNavigation.size() > 0) {
+                    < MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION && polylineNavigation!=null) {
                 return;
             }
         }

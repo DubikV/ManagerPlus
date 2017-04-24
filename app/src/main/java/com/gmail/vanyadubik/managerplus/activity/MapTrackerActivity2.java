@@ -107,8 +107,7 @@ public class MapTrackerActivity2 extends AppCompatActivity implements OnMapReady
 
         googleLocationService = new GoogleLocationService(this, new LocationUpdateListener() {
             @Override
-            public void canReceiveLocationUpdates(String exception) {
-                Toast.makeText(getApplicationContext(), exception, Toast.LENGTH_SHORT).show();
+            public void canReceiveLocationUpdates() {
             }
 
             @Override

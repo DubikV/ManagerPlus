@@ -40,6 +40,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.inject.Inject;
@@ -96,8 +97,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         googleLocationService = new GoogleLocationService(this, new LocationUpdateListener() {
             @Override
-            public void canReceiveLocationUpdates(String exception) {
-                Toast.makeText(getApplicationContext(), exception, Toast.LENGTH_SHORT).show();
+            public void canReceiveLocationUpdates() {
             }
 
             @Override
@@ -107,6 +107,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             @Override
             public void updateLocation(Location location) {
+
+                Toast.makeText(getApplicationContext(),
+                        new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+                                .format(location.getTime())
+                                + " location is - \nLat: " + location.getLatitude()
+                                + "\nLong: " + location.getLongitude()
+                                + "\nSpeed: " + location.getSpeed()
+                                + "\nDistance: " + location.distanceTo(lastCurrentLocation)
+                                + "\nTime: " + String.valueOf((location.getTime() - lastCurrentLocation.getTime())/1000)
+                                + "\nAccuracy: " + location.getAccuracy(),
+                        Toast.LENGTH_LONG).show();
+
                 if ( gpsTaskUtils.isBetterLocation(location, lastCurrentLocation,
                         MIN_TIME_LOCATION_MAP, MAX_COEFFICIENT_CURRENCY_LOCATION) ) {
                     lastCurrentLocation = location;

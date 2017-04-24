@@ -102,11 +102,7 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
 
         @Override
         public void onLocationChanged(Location location) {
-//            if (location.hasAccuracy()) {
-//                if (location.getAccuracy() < MAX_COEFFICIENT_CURRENCY_LOCATION) {
-                    locationUpdateListener.updateLocation(location);
-//                }
-//            }
+            locationUpdateListener.updateLocation(location);
         }
 
     private static boolean locationEnabled(Context context) {
@@ -143,7 +139,7 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
      */
         if (servicesConnected(mContext)) {
             if (locationEnabled(mContext)) {
-                locationUpdateListener.canReceiveLocationUpdates("Unable to get your location.Please turn on your device Gps");
+                locationUpdateListener.canReceiveLocationUpdates();
                 startLocationUpdates();
             } else {
                 locationUpdateListener.cannotReceiveLocationUpdates("Unable to get your location.Please turn on your device Gps");

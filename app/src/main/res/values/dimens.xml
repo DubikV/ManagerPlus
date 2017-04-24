@@ -42,4 +42,8 @@
     <dimen name="design_fab_image_size" tools:override="true">25dp</dimen>
     <dimen name="design_fab_size_normal">40dp</dimen>
 
+    <!--Gallery-->
+    <dimen name="cover_width">120dp</dimen>
+    <dimen name="cover_height">180dp</dimen>
+
 </resources>

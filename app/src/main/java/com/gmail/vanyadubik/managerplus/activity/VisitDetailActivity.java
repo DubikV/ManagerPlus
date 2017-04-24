@@ -27,6 +27,7 @@ import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.model.db.document.Visit_Document;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
+import com.gmail.vanyadubik.managerplus.utils.PhoneUtils;
 
 import org.joda.time.LocalDateTime;
 import java.text.SimpleDateFormat;
@@ -42,6 +43,8 @@ public class VisitDetailActivity extends AppCompatActivity {
 
     @Inject
     DataRepository dataRepository;
+    @Inject
+    PhoneUtils phoneUtils;
 
     private Visit_Document visit;
     private Client_Element client;
@@ -152,6 +155,7 @@ public class VisitDetailActivity extends AppCompatActivity {
                 saveData();
                 return true;
             case R.id.action_call:
+                phoneUtils.call(this, client.getPhone());
                 return true;
             case R.id.action_foto:
                 return true;
