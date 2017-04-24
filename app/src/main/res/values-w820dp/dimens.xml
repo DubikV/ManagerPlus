@@ -24,6 +24,13 @@
     <dimen name="textsize_table_item">20dp</dimen>
     <dimen name="textsize_cap_visitstoday">15dp</dimen>
 
+    <!--Map-->
+    <dimen name="seekbar_outer_circle_size">50dp</dimen>
+    <dimen name="seekbar_inner_circle_size">15dp</dimen>
+    <dimen name="seekbar_marging">25dp</dimen>
+    <dimen name="seekbar_padding">25dp</dimen>
+    <dimen name="text_size_map">26dp</dimen>
+
     <!--Base button-->
     <dimen name="base_button_height">70dp</dimen>
     <dimen name="base_button_textsize">20dp</dimen>

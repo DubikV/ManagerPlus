@@ -6,8 +6,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.provider.Settings;
+import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
+
+import java.text.SimpleDateFormat;
+
+import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 
 public class GPSTaskUtils {
 
@@ -24,8 +29,27 @@ public class GPSTaskUtils {
             return true;
         }
 
-        if (!isLocationAccurate(location) ||
-                location.getAccuracy() > maxCoefficient ) {
+//        if (!isLocationAccurate(location) ||
+//                location.getAccuracy() > maxCoefficient ) {
+//            return false;
+//        }
+        if (!isLocationAccurate(location)) {
+            return false;
+        }
+
+        Toast.makeText(context,
+                new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+                        .format(location.getTime())
+                        + " location is - \nLat: " + location.getLatitude()
+                        + "\nLong: " + location.getLongitude()
+                        + "\nSpeed: " + location.getSpeed()
+                        + "\nDistance: " + location.distanceTo(currentBestLocation)
+                        + "\nTime: " + String.valueOf((location.getTime() - currentBestLocation.getTime())/1000)
+                        + "\nAccuracy: " + location.getAccuracy(),
+                Toast.LENGTH_LONG).show();
+
+        if (location.getAccuracy() - currentBestLocation.getAccuracy() > 5 ||
+                location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION) {
             return false;
         }
 
@@ -119,5 +143,73 @@ public class GPSTaskUtils {
         float dist = (float) (earthRadius * c);
 
         return dist;
+    }
+
+    public class KalmanLatLong {
+        private final float MinAccuracy = 1;
+
+        private float Q_metres_per_second;
+        private long TimeStamp_milliseconds;
+        private double lat;
+        private double lng;
+        private float variance; // P matrix.  Negative means object uninitialised.  NB: units irrelevant, as long as same units used throughout
+
+        public KalmanLatLong(float Q_metres_per_second) {
+            this.Q_metres_per_second = Q_metres_per_second;
+            variance = -1;
+        }
+
+        public long get_TimeStamp() {
+            return TimeStamp_milliseconds;
+        }
+        public double get_lat() {
+            return lat;
+        }
+        public double get_lng() {
+            return lng;
+        }
+        public float get_accuracy() {
+            return (float)Math.sqrt(variance);
+        }
+
+        public void SetState(double lat, double lng, float accuracy, long TimeStamp_milliseconds) {
+            this.lat = lat;
+            this.lng = lng;
+            variance = accuracy * accuracy;
+            this.TimeStamp_milliseconds = TimeStamp_milliseconds;
+        }
+
+        public void Process(double lat_measurement, double lng_measurement, float accuracy, long TimeStamp_milliseconds) {
+            if (accuracy < MinAccuracy) accuracy = MinAccuracy;
+            if (variance < 0) {
+                // if variance < 0, object is unitialised, so initialise with current values
+                this.TimeStamp_milliseconds = TimeStamp_milliseconds;
+
+                lat = lat_measurement;
+                lng = lng_measurement;
+                variance = accuracy*accuracy;
+
+            } else {
+                // else apply Kalman filter methodology
+
+                long TimeInc_milliseconds = TimeStamp_milliseconds - this.TimeStamp_milliseconds;
+
+                if (TimeInc_milliseconds > 0) {
+                    // time has moved on, so the uncertainty in the current position increases
+                    variance += TimeInc_milliseconds * Q_metres_per_second * Q_metres_per_second / 1000;
+                    this.TimeStamp_milliseconds = TimeStamp_milliseconds;
+                    // TO DO: USE VELOCITY INFORMATION HERE TO GET A BETTER ESTIMATE OF CURRENT POSITION
+                }
+
+                // Kalman gain matrix K = Covarariance * Inverse(Covariance + MeasurementVariance)
+                // NB: because K is dimensionless, it doesn't matter that variance has different units to lat and lng
+                float K = variance / (variance + accuracy * accuracy);
+                // apply K
+                lat += K * (lat_measurement - lat);
+                lng += K * (lng_measurement - lng);
+                // new Covarariance  matrix is (IdentityMatrix - K) * Covarariance
+                variance = (1 - K) * variance;
+            }
+        }
     }
 }

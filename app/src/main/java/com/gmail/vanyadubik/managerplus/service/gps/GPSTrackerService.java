@@ -42,7 +42,6 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATIO
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_SYNC_TRACER_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SPEED_WRITE_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
@@ -99,6 +98,7 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
         super.onDestroy();
 
         if (mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
         mNotificationManager.cancel(DEFAULT_NOTIFICATION_GPS_TRACER_ID);
@@ -185,9 +185,12 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
             return true;
         }
 
-        if (!isLocationAccurate(location) ||
-                location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION ||
-                location.getSpeed() < MIN_SPEED_WRITE_LOCATION) {
+        if (!isLocationAccurate(location)) {
+            return false;
+        }
+
+        if (location.getAccuracy() - currentBestLocation.getAccuracy() > 5 ||
+                location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION) {
             return false;
         }
 
@@ -247,7 +250,7 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(TYPE_PRIORITY_CONNECTION_GPS);
         mLocationRequest.setInterval(MIN_TIME_WRITE_TRACK);
-        mLocationRequest.setFastestInterval(MIN_TIME_WRITE_TRACK);
+        //mLocationRequest.setFastestInterval(MIN_TIME_WRITE_TRACK);
         mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_WRITE_TRACK);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED

@@ -2,12 +2,13 @@ package com.gmail.vanyadubik.managerplus.activity;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -17,45 +18,45 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
+import com.gmail.vanyadubik.managerplus.service.gps.GoogleLocationService;
+import com.gmail.vanyadubik.managerplus.service.gps.LocationUpdateListener;
 import com.gmail.vanyadubik.managerplus.utils.GPSTaskUtils;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import java.text.DecimalFormat;
 import java.util.Date;
 
 import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.R.id.map;
-import static com.gmail.vanyadubik.managerplus.common.Consts.DIVISION_ZOOM_MAP;
+import static com.gmail.vanyadubik.managerplus.activity.MapTrackerActivity.MAP_TTACK_ZOOM_PREF;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_ZOOM_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_LOCATION_MAP;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_ZOOM_TITLE_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
+import static com.gmail.vanyadubik.managerplus.common.Consts.TILT_CAMERA_MAP;
+import static com.gmail.vanyadubik.managerplus.common.Consts.TIME_MAP_ANIMATE_CAMERA;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.WIDTH_POLYLINE_MAP;
 
-public class MapActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback  {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback  {
     public static final String MAP_TYPE = "map_type";
     public static final int MAP_TYPE_SHOW_TRACK = 1;
     public static final int MAP_TYPE_GET_LOCATION = 2;
@@ -64,21 +65,24 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
     public static final String MAP_SHOW_TRACK_DATE_END = "map_activity_dateend";
     public static final String MAP_SHOW_POSITION_LAT = "map_activity_lat";
     public static final String MAP_SHOW_POSITION_LON = "map_activity_lon";
+    public static final String MAP_ZOOM_PREF = "map_zoom";
 
     @Inject
     DataRepository dataRepository;
     @Inject
     GPSTaskUtils gpsTaskUtils;
 
+    private SharedPreferences mPreferences;
     private GoogleMap mMap;
     private SupportMapFragment locationMapFragment;
-    private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
+    private GoogleLocationService googleLocationService;
     private Location lastCurrentLocation;
     private Marker mCurrLocationMarker;
     private Bundle extras;
     private int typeShow;
     private Boolean moveMarker;
+    private SeekBar sbZoom;
+    private TextView sbZoomProgress;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -88,41 +92,76 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
         ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
+        mPreferences = getPreferences(Context.MODE_PRIVATE);
+
+        googleLocationService = new GoogleLocationService(this, new LocationUpdateListener() {
+            @Override
+            public void canReceiveLocationUpdates(String exception) {
+                Toast.makeText(getApplicationContext(), exception, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void cannotReceiveLocationUpdates(String exception) {
+                Toast.makeText(getApplicationContext(), exception, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void updateLocation(Location location) {
+                if ( gpsTaskUtils.isBetterLocation(location, lastCurrentLocation,
+                        MIN_TIME_LOCATION_MAP, MAX_COEFFICIENT_CURRENCY_LOCATION) ) {
+                    lastCurrentLocation = location;
+                }
+                insertMarker(lastCurrentLocation);
+            }
+
+            @Override
+            public void startLocation(Location location) {
+                initData();
+            }
+
+        });
+        googleLocationService.setTypePriorityConnection(TYPE_PRIORITY_CONNECTION_GPS);
+        googleLocationService.setTimeInterval(MIN_TIME_LOCATION_MAP);
+        // googleLocationService.setFastesInterval(MIN_TIME_LOCATION_MAP);
+        googleLocationService.setDistance(MIN_DISTANCE_LOCATION_MAP);
+        googleLocationService.startUpdates();
 
         typeShow = 0;
 
         setUpMap();
 
-        FloatingActionButton zoomUpButton = (FloatingActionButton)
-                findViewById(R.id.zoom_up);
-        zoomUpButton.setOnClickListener(new View.OnClickListener() {
+        sbZoomProgress = (TextView) findViewById(R.id.sbZoom_progress);
+        sbZoom = (SeekBar) findViewById(R.id.sbZoom);
+
+        // Initial zoom level
+        sbZoom.setProgress(mPreferences.getInt(MAP_TTACK_ZOOM_PREF, 70));
+
+        sbZoomProgress.setText(sbZoom.getProgress() + "%");
+
+        sbZoom.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int progresValue = 0;
             @Override
-            public void onClick(View v) {
-                Log.d(TAGLOG, "Press button 'zoomUpButton'");
-                if (mMap != null) {
-                    mMap.animateCamera(CameraUpdateFactory
-                            .zoomTo(mMap.getCameraPosition().zoom + DIVISION_ZOOM_MAP));
-                }
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                progresValue = progress;
+                sbZoomProgress.setText(progress + "%");
+
+                CameraPosition position = CameraPosition.builder(mMap.getCameraPosition())
+                        .tilt(progress > MIN_ZOOM_TITLE_MAP ? TILT_CAMERA_MAP : 0)
+                        .zoom(sbZoom.getProgress()*mMap.getMaxZoomLevel()/sbZoom.getMax())
+                        .build();
+
+                CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+                mMap.animateCamera(update, TIME_MAP_ANIMATE_CAMERA, null);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
 
             }
-        });
 
-        FloatingActionButton zoomDownButton = (FloatingActionButton)
-                findViewById(R.id.zoom_down);
-        zoomDownButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Log.d(TAGLOG, "Press button 'zoomDownButton'");
-                if (mMap != null) {
-                    mMap.animateCamera(CameraUpdateFactory
-                            .zoomTo(mMap.getCameraPosition().zoom - DIVISION_ZOOM_MAP));
-                }
-
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                sbZoomProgress.setText(progresValue + "%");
             }
         });
 
@@ -230,30 +269,6 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
         mMap.setIndoorEnabled(true);
         mMap.setBuildingsEnabled(true);
 
-        switch (typeShow) {
-            case MAP_TYPE_SHOW_TRACK:
-                moveMarker = false;
-                getSupportActionBar().setTitle(getResources().getString(R.string.map_track_route));
-                Date dateStart = new Date(Long.valueOf(extras.getString(MAP_SHOW_TRACK_DATE_START)));
-                Date dateEnd = new Date(Long.valueOf(extras.getString(MAP_SHOW_TRACK_DATE_END)));
-                showTrack(dateStart, dateEnd);
-                return;
-            case MAP_TYPE_GET_LOCATION:
-                getSupportActionBar().setTitle(getResources().getString(R.string.map_select_location));
-                moveMarker = true;
-                insertMarker(lastCurrentLocation);
-                moveMarker = false;
-                return;
-            case MAP_TYPE_SHOW_POSITION:
-                getSupportActionBar().setTitle(getResources().getString(R.string.map_you_position));
-                moveMarker = true;
-                insertMarker(lastCurrentLocation);
-                return;
-            default:
-                moveMarker = true;
-                insertMarker(lastCurrentLocation);
-        }
-
     }
 
     private void setUpMap() {
@@ -272,6 +287,8 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
     protected void onResume() {
         super.onResume();
 
+        googleLocationService.startLocationUpdates();
+
         extras = getIntent().getExtras();
 
         if (extras != null) {
@@ -281,6 +298,10 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
                     getResources().getString(R.string.map_not_init_param),
                     Toast.LENGTH_LONG).show();
             finish();
+        }
+
+        if(typeShow == MAP_TYPE_SHOW_TRACK){
+            return;
         }
 
         String lat = extras.getString(MAP_SHOW_POSITION_LAT);
@@ -312,18 +333,19 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
             mCurrLocationMarker.remove();
         }
 
+        LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+
         MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(
-                new LatLng(location.getLatitude(), location.getLongitude()));
+        markerOptions.position(position);
         markerOptions.title(getResources().getString(R.string.map_you_position));
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         mCurrLocationMarker = mMap.addMarker(markerOptions);
 
         if(moveMarker) {
             //move map camera
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(
-                    new LatLng(location.getLatitude(), location.getLongitude())));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(MAX_ZOOM_MAP));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(
+                    sbZoom.getProgress()*mMap.getMaxZoomLevel()/sbZoom.getMax()));
         }
 
     }
@@ -343,12 +365,9 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
             if(pOptions.getPoints().size()>0) {
                 LatLng firstloc = pOptions.getPoints().get(0);
                 if (firstloc != null) {
-                    moveMarker = true;
-                    Location location = new Location("service Provider");
-                    location.setLatitude(firstloc.latitude);
-                    location.setLongitude(firstloc.longitude);
-                    insertMarker(location);
-                    moveMarker = false;
+                    lastCurrentLocation = new Location("service Provider");
+                    lastCurrentLocation.setLatitude(firstloc.latitude);
+                    lastCurrentLocation.setLongitude(firstloc.longitude);
                 }
             }
 
@@ -397,66 +416,52 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
     }
 
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        mLocationRequest = LocationRequest.create();
-        mLocationRequest.setPriority(TYPE_PRIORITY_CONNECTION_GPS);
-        mLocationRequest.setInterval(MIN_TIME_LOCATION_MAP);
-        mLocationRequest.setFastestInterval(MIN_TIME_LOCATION_MAP);
-        mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_LOCATION_MAP);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        if ( gpsTaskUtils.isBetterLocation(location, lastCurrentLocation,
-                MIN_TIME_LOCATION_MAP, MAX_COEFFICIENT_CURRENCY_LOCATION) ) {
-            lastCurrentLocation = location;
-        }
-        insertMarker(lastCurrentLocation);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mGoogleApiClient.connect();
-    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(mGoogleApiClient == null){
-            return;
+        if (googleLocationService != null) {
+            googleLocationService.stopLocationUpdates();
         }
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
+        googleLocationService.startGoogleApi();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if(mGoogleApiClient == null){
-            return;
+        if (googleLocationService != null) {
+            googleLocationService.stopLocationUpdates();
         }
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
+
+        mPreferences.edit().putInt(MAP_ZOOM_PREF, sbZoom.getProgress()).apply();
+    }
+
+    private void initData(){
+        switch (typeShow) {
+            case MAP_TYPE_SHOW_TRACK:
+                moveMarker = false;
+                getSupportActionBar().setTitle(getResources().getString(R.string.map_track_route));
+                Date dateStart = new Date(Long.valueOf(extras.getString(MAP_SHOW_TRACK_DATE_START)));
+                Date dateEnd = new Date(Long.valueOf(extras.getString(MAP_SHOW_TRACK_DATE_END)));
+                showTrack(dateStart, dateEnd);
+                moveMarker = true;
+                insertMarker(lastCurrentLocation);
+                moveMarker = false;
+                return;
+            case MAP_TYPE_GET_LOCATION:
+                getSupportActionBar().setTitle(getResources().getString(R.string.map_select_location));
+                moveMarker = true;
+                insertMarker(lastCurrentLocation);
+                moveMarker = false;
+                return;
+            case MAP_TYPE_SHOW_POSITION:
+                getSupportActionBar().setTitle(getResources().getString(R.string.map_you_position));
+                moveMarker = true;
+                insertMarker(lastCurrentLocation);
+                return;
+            default:
+                moveMarker = true;
+                insertMarker(lastCurrentLocation);
         }
     }
 }
