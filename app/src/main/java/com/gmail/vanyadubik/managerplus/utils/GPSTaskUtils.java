@@ -6,11 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.provider.Settings;
-import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
-
-import java.text.SimpleDateFormat;
 
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 
@@ -36,17 +33,6 @@ public class GPSTaskUtils {
         if (!isLocationAccurate(location)) {
             return false;
         }
-
-        Toast.makeText(context,
-                new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-                        .format(location.getTime())
-                        + " location is - \nLat: " + location.getLatitude()
-                        + "\nLong: " + location.getLongitude()
-                        + "\nSpeed: " + location.getSpeed()
-                        + "\nDistance: " + location.distanceTo(currentBestLocation)
-                        + "\nTime: " + String.valueOf((location.getTime() - currentBestLocation.getTime())/1000)
-                        + "\nAccuracy: " + location.getAccuracy(),
-                Toast.LENGTH_LONG).show();
 
         if (location.getAccuracy() - currentBestLocation.getAccuracy() > 5 ||
                 location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION) {

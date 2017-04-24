@@ -18,7 +18,6 @@ import com.google.android.gms.location.LocationServices;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
@@ -58,12 +57,12 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
     }
 
     private void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(mContext)
+        mGoogleApiClient = new GoogleApiClient.Builder(this.mContext)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-        createLocationRequest();
+
         mGoogleApiClient.connect();
     }
 
@@ -82,6 +81,7 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
 
         @Override
         public void onConnected(Bundle bundle) {
+            createLocationRequest();
             startLocationUpdates();
         }
 
@@ -102,11 +102,11 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
 
         @Override
         public void onLocationChanged(Location location) {
-            if (location.hasAccuracy()) {
-                if (location.getAccuracy() < MAX_COEFFICIENT_CURRENCY_LOCATION) {
+//            if (location.hasAccuracy()) {
+//                if (location.getAccuracy() < MAX_COEFFICIENT_CURRENCY_LOCATION) {
                     locationUpdateListener.updateLocation(location);
-                }
-            }
+//                }
+//            }
         }
 
     private static boolean locationEnabled(Context context) {

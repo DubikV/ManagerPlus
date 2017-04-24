@@ -20,7 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.gps.DirectionsJSONParser;
 import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
@@ -72,7 +71,7 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.TIME_MAP_ANIMATE_CA
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.WIDTH_POLYLINE_MAP;
 
-public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapTrackerActivity2 extends AppCompatActivity implements OnMapReadyCallback {
 
     public static final String MAP_TTACK_ZOOM_PREF = "map_track_zoom";
 
@@ -102,7 +101,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
         setContentView(R.layout.activity_map);
         getSupportActionBar().setTitle(getResources().getString(R.string.map_track_route));
 
-        ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
+        //((ManagerPlusAplication) getApplication()).getComponent().inject(this);
 
         mPreferences = getPreferences(Context.MODE_PRIVATE);
 
