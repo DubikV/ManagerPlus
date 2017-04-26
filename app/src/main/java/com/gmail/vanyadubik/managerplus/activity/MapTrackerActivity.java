@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -21,12 +20,14 @@ import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
-import com.gmail.vanyadubik.managerplus.gps.DirectionsJSONParser;
 import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.gps.GoogleLocationService;
 import com.gmail.vanyadubik.managerplus.service.gps.LocationUpdateListener;
+import com.gmail.vanyadubik.managerplus.service.navigationtrack.NavigationTrack;
+import com.gmail.vanyadubik.managerplus.service.navigationtrack.NavigationUpdateListener;
+import com.gmail.vanyadubik.managerplus.service.navigationtrack.ParamNavigationTrack;
 import com.gmail.vanyadubik.managerplus.utils.GPSTaskUtils;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -44,18 +45,10 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.ui.IconGenerator;
 
 import org.joda.time.LocalDateTime;
-import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -525,154 +518,30 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
 
         if (mMap != null && lastCurrentLocation !=null && markerMaps != null) {
 
-            LatLng oldPoint = new LatLng(lastCurrentLocation.getLatitude(), lastCurrentLocation.getLongitude());
+            NavigationTrack navigationTrack = new NavigationTrack(this, new NavigationUpdateListener() {
+                @Override
+                public void updateNavogationTrack(PolylineOptions lineOptions, int idTrack) {
 
-            if (polylineNavigation == null){
-                int i = 0;
-                for (MarkerMap markerMap : markerMaps) {
-                    String url = getDirectionsUrl(oldPoint, markerMap.getLatLng());
-                    DownloadTask downloadTask = new DownloadTask();
-                    downloadTask.execute(new ParamDownloadTask(i ,url));
-                    oldPoint = markerMap.getLatLng();
-                    i++;
-                }
-            }else {
-                MarkerMap markerMap = markerMaps.get(0);
-                String url = getDirectionsUrl(oldPoint, markerMap.getLatLng());
-                DownloadTask downloadTask = new DownloadTask();
-                downloadTask.execute(new ParamDownloadTask(0 ,url));
-            }
-        }
-
-        locationCheckNavigation = lastCurrentLocation;
-    }
-
-    private String getDirectionsUrl(LatLng origin,LatLng dest){
-
-        String str_origin = "origin="+origin.latitude+","+origin.longitude;
-        String str_dest = "destination="+dest.latitude+","+dest.longitude;
-        String sensor = "sensor=false";
-        String parameters = str_origin+"&"+str_dest+"&"+sensor;
-        String output = "json";
-        String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
-
-        return url;
-    }
-
-    private String downloadUrl(String strUrl) throws IOException {
-        String data = "";
-        InputStream iStream = null;
-        HttpURLConnection urlConnection = null;
-        try{
-            URL url = new URL(strUrl);
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.connect();
-            iStream = urlConnection.getInputStream();
-            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
-            StringBuffer sb  = new StringBuffer();
-            String line = "";
-            while( ( line = br.readLine())  != null){
-                sb.append(line);
-            }
-            data = sb.toString();
-
-            br.close();
-        }catch(Exception e){
-            Log.d(TAGLOG, e.toString());
-        }finally{
-            iStream.close();
-            urlConnection.disconnect();
-        }
-        return data;
-    }
-
-    private class DownloadTask extends AsyncTask<ParamDownloadTask, Void, ParamDownloadTask> {
-        @Override
-        protected ParamDownloadTask doInBackground(ParamDownloadTask... param) {
-            ParamDownloadTask paramData = param[0];
-            try{
-                String data = downloadUrl(paramData.getData());
-                paramData.setData(data);
-            }catch(Exception e){
-                Log.d(TAGLOG,e.toString());
-            }
-            return paramData;
-        }
-        @Override
-        protected void onPostExecute(ParamDownloadTask result) {
-            super.onPostExecute(result);
-            ParserTask parserTask = new ParserTask();
-            parserTask.execute(result);
-        }
-    }
-
-    private class ParserTask extends AsyncTask<ParamDownloadTask, Integer, ParamParserTask >{
-
-        @Override
-        protected ParamParserTask doInBackground(ParamDownloadTask... data) {
-
-            ParamDownloadTask jsonData = data[0];
-            ParamParserTask routesData = new ParamParserTask(jsonData.getId(), null);
-            try{
-                JSONObject jObject = new JSONObject(jsonData.getData());
-                DirectionsJSONParser parser = new DirectionsJSONParser();
-                routesData.setData(parser.parse(jObject));
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-            return routesData;
-        }
-
-        @Override
-        protected void onPostExecute(ParamParserTask data) {
-            ArrayList<LatLng> points = null;
-            PolylineOptions lineOptions = null;
-            List<List<HashMap<String,String>>> result = data.getData();
-
-            if(result == null){
-                return;
-            }
-            for(int i=0;i<result.size();i++){
-                points = new ArrayList<LatLng>();
-                lineOptions = new PolylineOptions()
-                        .width((float)(WIDTH_POLYLINE_MAP * mMap.getCameraPosition().zoom)/mMap.getMaxZoomLevel())
-                        .color(getResources().getColor(R.color.colorBlue))
-                        .geodesic(true);
-
-                List<HashMap<String, String>> path = result.get(i);
-
-                for(int j=0;j<path.size();j++){
-                    HashMap<String,String> point = path.get(j);
-
-                    double lat = Double.parseDouble(point.get("lat"));
-                    double lng = Double.parseDouble(point.get("lng"));
-                    LatLng position = new LatLng(lat, lng);
-
-                    points.add(position);
-                }
-                lineOptions.addAll(points);
-            }
-
-            if(polylineNavigation==null) {
-                polylineNavigation = new ArrayList<>();
-            }
-
-            if(lineOptions != null) {
-                try{
-                    Polyline polyline = polylineNavigation.get(data.getId());
-                    if(polyline!=null) {
-                        polyline.remove();
+                    if (polylineNavigation == null) {
+                        polylineNavigation = new ArrayList<>();
                     }
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-                try{
-                    polylineNavigation.set(data.getId(), mMap.addPolyline(lineOptions));
-                }catch(Exception e){
-                    e.printStackTrace();
-                    polylineNavigation.add(mMap.addPolyline(lineOptions));
-                }
-            }
+
+                    if (lineOptions != null) {
+                        try {
+                            Polyline polyline = polylineNavigation.get(idTrack);
+                            if (polyline != null) {
+                                polyline.remove();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            polylineNavigation.set(idTrack, mMap.addPolyline(lineOptions));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            polylineNavigation.add(mMap.addPolyline(lineOptions));
+                        }
+                    }
 
 //            if(points!=null) {
 //                LatLng firstLatLng = points.get(0);
@@ -687,52 +556,31 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
 //
 //                setCameraPosition(firstLocation, secondLocation);
 //            }
+
+                }
+
+            });
+
+            LatLng oldPoint = new LatLng(lastCurrentLocation.getLatitude(), lastCurrentLocation.getLongitude());
+
+            if (polylineNavigation == null){
+                int i = 0;
+                for (MarkerMap markerMap : markerMaps) {
+                    navigationTrack.startReceivingTrack(new ParamNavigationTrack(i,
+                            (float)(WIDTH_POLYLINE_MAP * mMap.getCameraPosition().zoom)/mMap.getMaxZoomLevel(),
+                            oldPoint, markerMap.getLatLng()));
+                    oldPoint = markerMap.getLatLng();
+                    i++;
+                }
+            }else {
+                MarkerMap markerMap = markerMaps.get(0);
+                navigationTrack.startReceivingTrack(new ParamNavigationTrack(0,
+                        (float)(WIDTH_POLYLINE_MAP * mMap.getCameraPosition().zoom)/mMap.getMaxZoomLevel(),
+                        oldPoint, markerMap.getLatLng()));
+            }
         }
+
+        locationCheckNavigation = lastCurrentLocation;
     }
-
-    protected class ParamDownloadTask{
-        private int id;
-        private String data;
-
-        public ParamDownloadTask(int id, String data) {
-            this.id = id;
-            this.data = data;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public String getData() {
-            return data;
-        }
-
-        public void setData(String data) {
-            this.data = data;
-        }
-    }
-
-    private class ParamParserTask{
-        private int id;
-        private List<List<HashMap<String,String>>> data;
-
-        public ParamParserTask(int id, List<List<HashMap<String, String>>> data) {
-            this.id = id;
-            this.data = data;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public List<List<HashMap<String, String>>> getData() {
-            return data;
-        }
-
-        public void setData(List<List<HashMap<String, String>>> data) {
-            this.data = data;
-        }
-    }
-
 
 }
