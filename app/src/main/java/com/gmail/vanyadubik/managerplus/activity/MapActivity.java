@@ -114,9 +114,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                 + " location is - \nLat: " + location.getLatitude()
                                 + "\nLong: " + location.getLongitude()
                                 + "\nSpeed: " + location.getSpeed()
-                                + "\nDistance: " + location.distanceTo(lastCurrentLocation)
-                                + "\nTime: " + String.valueOf((location.getTime() - lastCurrentLocation.getTime())/1000)
-                                + "\nAccuracy: " + location.getAccuracy(),
+                                + "\nAccuracy: " + location.getAccuracy()
+                                + "\nTime: " + (lastCurrentLocation!=null ?
+                                String.valueOf((location.getTime() - lastCurrentLocation.getTime())/1000) : "0")
+                                + "\nDistance: " + (lastCurrentLocation!=null ?
+                                String.valueOf(location.distanceTo(lastCurrentLocation)) : "0"),
                         Toast.LENGTH_LONG).show();
 
                 if ( gpsTaskUtils.isBetterLocation(location, lastCurrentLocation,

@@ -15,14 +15,14 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.activity.AddedPhotosActivity;
+import com.gmail.vanyadubik.managerplus.activity.GalleryActivity;
 import com.gmail.vanyadubik.managerplus.activity.MapTrackerActivity;
 import com.gmail.vanyadubik.managerplus.adapter.VisitListAdapter;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
-import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.db.document.Visit_Document;
 import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
+import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.documents.VisitList;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 
@@ -106,7 +106,7 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getContext(), AddedPhotosActivity.class));
+                startActivity(new Intent(getContext(), GalleryActivity.class));
             }
         });
 

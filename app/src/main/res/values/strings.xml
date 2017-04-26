@@ -135,4 +135,7 @@
     <string name="client_phone">Телефон</string>
     <string name="client_adress">Адреса</string>
 
+    <!--Gallery-->
+    <string name="added_foto">Добавлені фото</string>
+
 </resources>

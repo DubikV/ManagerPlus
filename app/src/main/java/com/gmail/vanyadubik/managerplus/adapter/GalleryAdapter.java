@@ -1,31 +1,27 @@
 package com.gmail.vanyadubik.managerplus.adapter;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.gmail.vanyadubik.managerplus.R;
-import com.google.android.gms.games.GameEntity;
+import com.gmail.vanyadubik.managerplus.model.PhotoItem;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class GalleryAdapter extends BaseAdapter {
-	
-	private ArrayList<GameEntity> mData = new ArrayList<>(0);
+
+	private List<PhotoItem> mData = new ArrayList<>();
 	private Context mContext;
 
-	public GalleryAdapter(Context context) {
+	public GalleryAdapter(Context context, List<PhotoItem> data) {
 		mContext = context;
+        mData = data;
 	}
-	
-	public void setData(ArrayList<GameEntity> data) {
-		mData = data;
-	}
-	
+
 	@Override
 	public int getCount() {
 		return mData.size();
@@ -44,30 +40,13 @@ public class GalleryAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 
-        View rowView = convertView;
+        ImageView i = new ImageView(mContext);
 
-        if (rowView == null) {
-            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            rowView = inflater.inflate(R.layout.item_gallery, null);
+        Picasso.with(mContext)
+                .load(mData.get(position).getFile())
+                //.placeholder(R.drawable.shape_camera)
+                .into(i);
 
-            ViewHolder viewHolder = new ViewHolder();
-            viewHolder.text = (TextView) rowView.findViewById(R.id.label);
-            viewHolder.image = (ImageView) rowView
-                    .findViewById(R.id.image);
-            rowView.setTag(viewHolder);
-        }
-
-        ViewHolder holder = (ViewHolder) rowView.getTag();
-
-//        holder.image.setImageResource(mData.get(position).imageResId);
-//        holder.text.setText(mData.get(position).titleResId);
-
-		return rowView;
+        return i;
 	}
-
-
-    static class ViewHolder {
-        public TextView text;
-        public ImageView image;
-    }
 }

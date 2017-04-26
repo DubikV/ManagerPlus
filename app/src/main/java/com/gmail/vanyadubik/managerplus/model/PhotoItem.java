@@ -2,15 +2,13 @@ package com.gmail.vanyadubik.managerplus.model;
 
 import java.io.File;
 
-public class DocumentItem {
+public class PhotoItem {
     private String title;
     private File file;
-    private boolean exist;
 
-    public DocumentItem(String title, File file, boolean isExist) {
+    public PhotoItem(String title, File file) {
         this.title = title;
         this.file = file;
-        this.exist = isExist;
     }
 
     public String getTitle() {
@@ -19,9 +17,5 @@ public class DocumentItem {
 
     public File getFile() {
         return file;
-    }
-
-    public boolean isExist() {
-        return exist;
     }
 }

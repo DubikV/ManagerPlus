@@ -92,7 +92,7 @@
             android:name=".activity.FuelDetailActivity">
         </activity>
         <activity
-            android:name=".activity.AddedPhotosActivity">
+            android:name=".activity.GalleryActivity">
         </activity>
     </application>
 
