@@ -15,7 +15,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.activity.GalleryActivity;
+import com.gmail.vanyadubik.managerplus.activity.AddedPhotosActivity;
 import com.gmail.vanyadubik.managerplus.activity.MapTrackerActivity;
 import com.gmail.vanyadubik.managerplus.adapter.VisitListAdapter;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
@@ -106,7 +106,7 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getContext(), GalleryActivity.class));
+                startActivity(new Intent(getContext(), AddedPhotosActivity.class));
             }
         });
 

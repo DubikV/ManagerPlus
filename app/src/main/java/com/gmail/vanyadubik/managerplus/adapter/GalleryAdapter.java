@@ -1,11 +1,16 @@
 package com.gmail.vanyadubik.managerplus.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
+import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.model.PhotoItem;
 import com.squareup.picasso.Picasso;
 
@@ -40,13 +45,34 @@ public class GalleryAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 
-        ImageView i = new ImageView(mContext);
+        View row = convertView;
 
-        Picasso.with(mContext)
-                .load(mData.get(position).getFile())
-                //.placeholder(R.drawable.shape_camera)
-                .into(i);
+        ViewHolder holder;
 
-        return i;
+        if (row == null) {
+            LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
+            row = inflater.inflate(R.layout.gallery_item, parent, false);
+            row.setLayoutParams(new GridView.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT, 350));
+            holder = new ViewHolder();
+            holder.openView = (ImageView) row.findViewById(R.id.gallery_open_image);
+            holder.imageView = (ImageView) row.findViewById(R.id.gallery_imageView);
+            holder.imageView.setScaleType(ImageView.ScaleType.CENTER);
+            row.setTag(holder);
+        } else {
+            holder = (ViewHolder) row.getTag();
+        }
+
+        PhotoItem item = mData.get(position);
+        Picasso.with(mContext).load(item.getFile())
+                .placeholder(mContext.getResources().getDrawable(android.R.drawable.ic_menu_gallery))
+                .into(holder.imageView);
+
+        return row;
 	}
+
+    static class ViewHolder {
+        ImageView openView;
+        ImageView imageView;
+    }
 }

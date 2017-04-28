@@ -11,7 +11,7 @@
     <string name="action_return">Назад</string>
     <string name="action_foto">Фото</string>
     <string name="action_phone_call">Подзвонити</string>
-    <string name="action_map">Rfhnf</string>
+    <string name="action_map">Карта</string>
 
     <string name="item_waybill">Дорожній лист</string>
     <string name="nav_service">Сервіс</string>
@@ -137,5 +137,7 @@
 
     <!--Gallery-->
     <string name="added_foto">Добавлені фото</string>
-
+    <string name="all_foto_in_device">Всі фотографії на пристрої</string>
+    <string name="selected_photo">Вибрано фото</string>
+    <string name="action_get_photo">Вибрати дане фото?</string>
 </resources>

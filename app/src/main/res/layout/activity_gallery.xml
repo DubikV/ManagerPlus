@@ -1,35 +1,19 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/background_activity"
-                tools:context="com.gmail.vanyadubik.managerplus.activity.GalleryActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:background="@drawable/background_activity">
 
-
-    <ImageView
-        android:id="@+id/gallery_imageView"
+    <GridView
+        android:id="@+id/all_photo_gridview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="@dimen/gallery_image_marging_bottom"
-        android:layout_marginEnd="@dimen/gallery_image_marging"
-        android:layout_marginStart="@dimen/gallery_image_marging"
-        android:layout_marginTop="@dimen/gallery_image_marging"/>
-
-    <TextSwitcher
-        android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/gallery_imageView"
-        android:layout_margin="@dimen/gallery_image_marging"
-        android:padding="@dimen/gallery_text_view_padding"
-        android:foregroundGravity="center"/>
-
-    <Gallery
-        android:id="@+id/gallery"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/title"
+        android:gravity="center"
+        android:horizontalSpacing="2dp"
+        android:numColumns="2"
+        android:padding="2dp"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="2dp"
         android:layout_margin="@dimen/gallery_image_marging"/>
 
-</RelativeLayout>
+</LinearLayout>

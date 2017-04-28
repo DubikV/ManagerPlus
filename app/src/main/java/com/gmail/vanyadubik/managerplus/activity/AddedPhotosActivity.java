@@ -1,126 +1,139 @@
 package com.gmail.vanyadubik.managerplus.activity;
 
-
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.LinearGradient;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Shader;
-import android.graphics.drawable.BitmapDrawable;
+import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.AdapterView;
+import android.widget.Gallery;
 import android.widget.ImageView;
+import android.widget.TextSwitcher;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.photo.CoverFlow;
+import com.gmail.vanyadubik.managerplus.adapter.GalleryAdapter;
+import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
+import com.gmail.vanyadubik.managerplus.model.PhotoItem;
+import com.gmail.vanyadubik.managerplus.repository.DataRepository;
+import com.squareup.picasso.Picasso;
 
-import java.io.FileInputStream;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import static android.R.attr.path;
+import static com.gmail.vanyadubik.managerplus.R.id.imageView;
 
 public class AddedPhotosActivity extends AppCompatActivity {
 
+    private static final int CAPTURE_CAMERA_ACTIVITY_REQ = 999;
+    private static final int CAPTURE_ALL_IMAGE_ACTIVITY_REQ = 998;
+
+    private static final String GALLERY_NAME_OBJECT = "gallery_name_object";
+    private static final String GALLERY_EXTERNALID_OBJECT = "gallery_externatlid_object";
+    public static final String PATH_SELECTED_PHOTO = "path_selected_photo";
+
+    @Inject
+    DataRepository dataRepository;
+
+    private ImageView selectedImage;
+    private Gallery gallery;
+    private GalleryAdapter mAdapter;
+    private TextSwitcher mTitle;
+    private List<PhotoItem> mData;
+
+
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_added_foto);
+        getSupportActionBar().setTitle(getResources().getString(R.string.added_foto));
 
-        CoverFlow coverFlow;
-        coverFlow = new CoverFlow(this);
-        coverFlow.setAdapter(new ImageAdapter(this));
-        ImageAdapter coverImageAdapter =  new ImageAdapter(this);
-        coverImageAdapter.createReflectedImages();
-        coverFlow.setAdapter(coverImageAdapter);
-        coverFlow.setSpacing(-25);
-        coverFlow.setSelection(4, true);
-        coverFlow.setAnimationDuration(1000);
-        setContentView(coverFlow);
-    }
-    public class ImageAdapter extends BaseAdapter {
-        int mGalleryItemBackground;
-        private Context mContext;
-        private FileInputStream fis;
+        ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
 
-        private Integer[] mImageIds = {
-                R.drawable.ic_map,
-                R.drawable.ic_arrow_back,
-                R.drawable.ic_calendar_grey,
-                R.drawable.ic_close_dark,
-                R.drawable.ic_calendar_grey,
-                R.drawable.ic_calendar,
-                R.drawable.ic_arrow_back,
-                R.drawable.ic_calendar
-        };
+        gallery = (Gallery) findViewById(R.id.gallery);
+        selectedImage = (ImageView)findViewById(imageView);
+        gallery.setSpacing(1);
 
-        private ImageView[] mImages;
+        mTitle = (TextSwitcher) findViewById(R.id.title);
 
-        public ImageAdapter(Context c) {
-            mContext = c;
-            mImages = new ImageView[mImageIds.length];
-        }
-        public boolean createReflectedImages() {
-            final int reflectionGap = 4;
-            int index = 0;
-            for (int imageId : mImageIds) {
-                Bitmap originalImage = BitmapFactory.decodeResource(getResources(),
-                        imageId);
-                int width = originalImage.getWidth();
-                int height = originalImage.getHeight();
-                Matrix matrix = new Matrix();
-                matrix.preScale(1, -1);
-                Bitmap reflectionImage = Bitmap.createBitmap(originalImage, 0, height/2, width, height/2, matrix, false);
-                Bitmap bitmapWithReflection = Bitmap.createBitmap(width
-                        , (height + height/2), Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(bitmapWithReflection);
-                canvas.drawBitmap(originalImage, 0, 0, null);
-                Paint deafaultPaint = new Paint();
-                canvas.drawRect(0, height, width, height + reflectionGap, deafaultPaint);
-                canvas.drawBitmap(reflectionImage,0, height + reflectionGap, null);
+        gallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 
-                Paint paint = new Paint();
-                LinearGradient shader = new LinearGradient(0, originalImage.getHeight(), 0,
-                        bitmapWithReflection.getHeight() + reflectionGap, 0x70ffffff, 0x00ffffff,
-                        Shader.TileMode.CLAMP);
-                paint.setShader(shader);
-                paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
-                canvas.drawRect(0, height, width,
-                        bitmapWithReflection.getHeight() + reflectionGap, paint);
-                ImageView imageView = new ImageView(mContext);
-                imageView.setImageBitmap(bitmapWithReflection);
-                imageView.setLayoutParams(new CoverFlow.LayoutParams(120, 180));
-                imageView.setScaleType(ImageView.ScaleType.MATRIX);
-                mImages[index++] = imageView;
+                PhotoItem photoItem = mData.get(position);
+
+                Picasso.with(AddedPhotosActivity.this)
+                        .load(photoItem.getFile())
+                        //.placeholder(R.drawable.shape_camera)
+                        .into(selectedImage);
+                mTitle.setText(photoItem.getTitle());
             }
+        });
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.added_photo_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_foto) {
+            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, path);
+            startActivityForResult(cameraIntent, CAPTURE_CAMERA_ACTIVITY_REQ);
             return true;
         }
 
-        public int getCount() {
-            return mImageIds.length;
-        }
-        public Object getItem(int position) {
-            return position;
-        }
-        public long getItemId(int position) {
-            return position;
+        if (id == R.id.action_add_image) {
+            Intent intent = new Intent(this, GalleryActivity.class);
+            startActivityForResult(intent, 1);
+            return true;
         }
 
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ImageView i = new ImageView(mContext);
-            i.setImageResource(mImageIds[position]);
-            i.setLayoutParams(new CoverFlow.LayoutParams(130, 130));
-            i.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            BitmapDrawable drawable = (BitmapDrawable) i.getDrawable();
-            drawable.setAntiAlias(true);
-            return i;
-        }
+        return super.onOptionsItemSelected(item);
+    }
 
-        public float getScale(boolean focused, int offset) {
-            return Math.max(0, 1.0f / (float)Math.pow(2, Math.abs(offset)));
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+//        mAdapter = new GalleryAdapter(GalleryActivity.this, mData);
+//        gallery.setAdapter(mAdapter);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CAPTURE_CAMERA_ACTIVITY_REQ) {
+            if (resultCode == RESULT_OK) {
+//                Uri photoUri = data == null ? path : data.getData();
+//                Log.d("DOCUMENT_CAPTURE", "Image saved successfully to " + photoUri.getPath());
+//                Picasso.with(this).load(photoUri).placeholder(R.drawable.shape_camera).into(imageView);
+            } else if (resultCode == RESULT_CANCELED) {
+                Log.d("CAMERA_CAPTURE", "Cancelled");
+            }
+        }
+        if (requestCode == CAPTURE_ALL_IMAGE_ACTIVITY_REQ) {
+            if (resultCode == RESULT_OK) {
+
+                String pathSelectedPhoto = data.getStringExtra(PATH_SELECTED_PHOTO);
+                
+//                Uri photoUri = data == null ? path : data.getData();
+//                Log.d("DOCUMENT_CAPTURE", "Image saved successfully to " + photoUri.getPath());
+//                Picasso.with(this).load(photoUri).placeholder(R.drawable.shape_camera).into(imageView);
+            } else if (resultCode == RESULT_CANCELED) {
+                Log.d("ALL_DOCUMENT_CAPTURE", "Cancelled");
+            }
         }
     }
 }

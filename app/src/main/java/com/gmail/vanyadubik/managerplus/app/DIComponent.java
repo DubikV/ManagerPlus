@@ -1,5 +1,6 @@
 package com.gmail.vanyadubik.managerplus.app;
 
+import com.gmail.vanyadubik.managerplus.activity.AddedPhotosActivity;
 import com.gmail.vanyadubik.managerplus.activity.ClientDetailActivity;
 import com.gmail.vanyadubik.managerplus.activity.FuelDetailActivity;
 import com.gmail.vanyadubik.managerplus.activity.GalleryActivity;
@@ -57,6 +58,8 @@ public interface DIComponent {
     void inject(ClientListFragment clientListFragment);
 
     void inject(FuelDetailActivity fuelDetailActivity);
+
+    void inject(AddedPhotosActivity addedPhotosActivity);
 
     void inject(GalleryActivity galleryActivity);
 
