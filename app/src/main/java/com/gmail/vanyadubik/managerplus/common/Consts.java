@@ -25,6 +25,8 @@ public class Consts {
     public final static String PASSWORD = "mPassword";
     public final static String SERVER = "mServer";
     public final static String MIN_TIME_SYNK_TRACK_NAME = "minTimeSyncTrack";
+    public final static String DEVELOP_MODE = "developMode";
+    public final static String MIN_CURRENT_ACCURACY = "min_current_accuracy";
 
     // GPS
     public static final long MIN_DISTANCE_WRITE_TRACK = 20; //15 meters

@@ -3,10 +3,13 @@ package com.gmail.vanyadubik.managerplus.utils;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.gmail.vanyadubik.managerplus.R;
+
+import java.util.List;
 
 public class ActivityUtils {
 
@@ -40,6 +43,29 @@ public class ActivityUtils {
         Button button3 = (Button) alert.findViewById(android.R.id.button3);
         button3.setTextSize(context.getResources().getDimension(R.dimen.text_size_medium));
         // TODO: (end stub) ------------------
+    }
+
+    public void setVisiblyElements(List<View> views, Boolean  visible){
+        int visibileEl = View.VISIBLE;
+        if(visible){
+            visibileEl = View.VISIBLE;
+        }else{
+            visibileEl = View.GONE;
+        }
+        for(View view : views){
+           view.setVisibility(visibileEl);
+        }
+    }
+
+    public void setVisiblyElement(View view, Boolean  visible){
+        int visibileEl = View.VISIBLE;
+        if(visible){
+            visibileEl = View.VISIBLE;
+        }else{
+            visibileEl = View.GONE;
+        }
+
+        view.setVisibility(visibileEl);
     }
 
 }

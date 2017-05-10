@@ -127,7 +127,7 @@ public class AddedPhotosActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
 
                 String pathSelectedPhoto = data.getStringExtra(PATH_SELECTED_PHOTO);
-                
+
 //                Uri photoUri = data == null ? path : data.getData();
 //                Log.d("DOCUMENT_CAPTURE", "Image saved successfully to " + photoUri.getPath());
 //                Picasso.with(this).load(photoUri).placeholder(R.drawable.shape_camera).into(imageView);

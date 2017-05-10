@@ -7,6 +7,7 @@ import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.model.db.document.Visit_Document;
 import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.Date;
@@ -15,6 +16,8 @@ import java.util.List;
 public interface DataRepository {
 
     List<LocationPoint> getTrack(Date dateFrom, Date dateBy);
+
+    List<LatLng> getTrackLatLng(Date dateFrom, Date dateBy);
 
     PolylineOptions getBuildTrackLatLng(PolylineOptions pOptionsDate, Date dateFrom, Date dateBy);
 

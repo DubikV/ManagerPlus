@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -28,6 +29,7 @@ import com.gmail.vanyadubik.managerplus.service.gps.LocationUpdateListener;
 import com.gmail.vanyadubik.managerplus.service.navigationtrack.NavigationTrack;
 import com.gmail.vanyadubik.managerplus.service.navigationtrack.NavigationUpdateListener;
 import com.gmail.vanyadubik.managerplus.service.navigationtrack.ParamNavigationTrack;
+import com.gmail.vanyadubik.managerplus.utils.ActivityUtils;
 import com.gmail.vanyadubik.managerplus.utils.GPSTaskUtils;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -54,6 +56,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.R.id.map;
+import static com.gmail.vanyadubik.managerplus.common.Consts.DEVELOP_MODE;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION;
@@ -73,6 +76,8 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
     DataRepository dataRepository;
     @Inject
     GPSTaskUtils gpsTaskUtils;
+    @Inject
+    ActivityUtils activityUtils;
 
     private SharedPreferences mPreferences;
     private GoogleMap mMap;
@@ -81,13 +86,15 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
     private Location lastCurrentLocation, locationCheckNavigation, oldCurrentLocation;
     private Marker mCurrLocationMarker, mOtherLocationMarker;
     private Polyline polylineTrack;
+    private PolylineOptions polylineOptionsTrack;
     private List<Polyline> polylineNavigation;
     private FloatingActionButton current_position;
     private Boolean moveMarker;
     private Waybill_Document waybill;
     private List<MarkerMap> markerMaps;
     private SeekBar sbZoom;
-    private TextView sbZoomProgress;
+    private TextView sbZoomProgress, messageMap;
+    private Boolean developeMode;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -98,6 +105,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
         ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
 
         mPreferences = getPreferences(Context.MODE_PRIVATE);
+        developeMode = Boolean.valueOf(dataRepository.getUserSetting(DEVELOP_MODE));
 
         googleLocationService = new GoogleLocationService(this, new LocationUpdateListener() {
             @Override
@@ -112,18 +120,31 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
             @Override
             public void updateLocation(Location location) {
 
-                Toast.makeText(getApplicationContext(),
-                        new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-                                .format(location.getTime())
-                                + " location is - \nLat: " + location.getLatitude()
-                                + "\nLong: " + location.getLongitude()
-                                + "\nSpeed: " + location.getSpeed()
-                                + "\nAccuracy: " + location.getAccuracy()
-                                + "\nTime: " + (lastCurrentLocation!=null ?
-                                String.valueOf((location.getTime() - lastCurrentLocation.getTime())/1000) : "0")
-                                + "\nDistance: " + (lastCurrentLocation!=null ?
-                                String.valueOf(location.distanceTo(lastCurrentLocation)) : "0"),
-                        Toast.LENGTH_LONG).show();
+                if(developeMode) {
+                    String textMessage = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+                            .format(location.getTime())
+                            + "\nlocation is - "+location.getProvider()
+                            +"\nLat: " + location.getLatitude() + " Long: " + location.getLongitude()
+                            + "\nAccuracy: " + location.getAccuracy()+ " Speed: " + location.getSpeed()
+                            + "\nTime: " + (lastCurrentLocation != null ?
+                            String.valueOf((location.getTime() - lastCurrentLocation.getTime()) / 1000) : "0")
+                            + " Distance: " + (lastCurrentLocation != null ?
+                            String.valueOf(location.distanceTo(lastCurrentLocation)) : "0");
+
+//                    Toast.makeText(getApplicationContext(),
+//                            new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+//                                    .format(location.getTime())
+//                                    + " location is - \nLat: " + location.getLatitude()
+//                                    + "\nLong: " + location.getLongitude()
+//                                    + "\nSpeed: " + location.getSpeed()
+//                                    + "\nAccuracy: " + location.getAccuracy()
+//                                    + "\nTime: " + (lastCurrentLocation != null ?
+//                                    String.valueOf((location.getTime() - lastCurrentLocation.getTime()) / 1000) : "0")
+//                                    + "\nDistance: " + (lastCurrentLocation != null ?
+//                                    String.valueOf(location.distanceTo(lastCurrentLocation)) : "0"),
+//                            Toast.LENGTH_SHORT).show();
+                    messageMap.setText(textMessage);
+                }
 
                 if ( gpsTaskUtils.isBetterLocation(location, lastCurrentLocation,
                         MIN_TIME_LOCATION_MAP, MAX_COEFFICIENT_CURRENCY_LOCATION) ) {
@@ -192,6 +213,8 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
             }
         });
 
+        messageMap = (TextView) findViewById(R.id.mesaage_map_textView);
+        activityUtils.setVisiblyElement(messageMap, developeMode);
         FloatingActionButton sateliteButton = (FloatingActionButton)
                 findViewById(R.id.satelite);
         sateliteButton.setOnClickListener(new View.OnClickListener() {
@@ -308,6 +331,14 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
         mMap.setBuildingsEnabled(true);
         //mMap.setMyLocationEnabled(true);
 
+        polylineOptionsTrack = new PolylineOptions()
+                .width((float)(WIDTH_POLYLINE_MAP * mMap.getCameraPosition().zoom)/mMap.getMaxZoomLevel())
+                .color(getResources().getColor(R.color.colorPrimary))
+                .geodesic(true);
+
+        DownloadTrack downloadTask = new DownloadTrack();
+        downloadTask.execute(waybill.getDateStart());
+
         setOtherMarkers();
 
         setPolylineTrack();
@@ -369,8 +400,6 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
 
         locationMapFragment.getView().setClickable(true);
 
-
-
     }
 
     private void setPolylineTrack() {
@@ -379,24 +408,30 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
             return;
         }
 
-        if (polylineTrack!=null){
-            polylineTrack.remove();
+//        if (polylineTrack!=null){
+//            polylineTrack.remove();
+//        }
+//
+//        PolylineOptions pOptions = dataRepository.getBuildTrackLatLng(
+//                new PolylineOptions()
+//                        .width((float)(WIDTH_POLYLINE_MAP * mMap.getCameraPosition().zoom)/mMap.getMaxZoomLevel())
+//                        .color(getResources().getColor(R.color.colorPrimary))
+//                        .geodesic(true),
+//                waybill.getDateStart(),
+//                waybill.getDateEnd().getTime() <1000 ?
+//                        LocalDateTime.now().toDate() : waybill.getDateEnd());
+//
+//        if(pOptions!=null && mMap != null) {
+//
+//            polylineTrack = mMap.addPolyline(pOptions);
+//
+//        }
+        if(oldCurrentLocation==null){
+            return;
         }
 
-        PolylineOptions pOptions = dataRepository.getBuildTrackLatLng(
-                new PolylineOptions()
-                        .width((float)(WIDTH_POLYLINE_MAP * mMap.getCameraPosition().zoom)/mMap.getMaxZoomLevel())
-                        .color(getResources().getColor(R.color.colorPrimary))
-                        .geodesic(true),
-                waybill.getDateStart(),
-                waybill.getDateEnd().getTime() <1000 ?
-                        LocalDateTime.now().toDate() : waybill.getDateEnd());
-
-        if(pOptions!=null && mMap != null) {
-
-            polylineTrack = mMap.addPolyline(pOptions);
-
-        }
+        DownloadTrack downloadTask = new DownloadTrack();
+        downloadTask.execute(new Date(oldCurrentLocation.getTime()));
     }
 
     private void insertMarker() {
@@ -543,20 +578,6 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
                         }
                     }
 
-//            if(points!=null) {
-//                LatLng firstLatLng = points.get(0);
-//                Location firstLocation = new Location("service Provider");
-//                firstLocation.setLatitude(firstLatLng.latitude);
-//                firstLocation.setLongitude(firstLatLng.longitude);
-//
-//                LatLng secondLatLng = points.get(0);
-//                Location secondLocation = new Location("service Provider");
-//                secondLocation.setLatitude(secondLatLng.latitude);
-//                secondLocation.setLongitude(secondLatLng.longitude);
-//
-//                setCameraPosition(firstLocation, secondLocation);
-//            }
-
                 }
 
             });
@@ -581,6 +602,35 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
         }
 
         locationCheckNavigation = lastCurrentLocation;
+    }
+
+    private class DownloadTrack extends AsyncTask<Date, Void, List<LatLng>> {
+
+        @Override
+        protected List<LatLng> doInBackground(Date... param) {
+
+            Date dateStart = param[0];
+
+            List<LatLng> track = dataRepository.getTrackLatLng(dateStart,
+                    waybill.getDateEnd().getTime() <1000 ?
+                            LocalDateTime.now().toDate() : waybill.getDateEnd());
+            return track;
+        }
+
+        @Override
+        protected void onPostExecute(List<LatLng> result) {
+            super.onPostExecute(result);
+            if(polylineOptionsTrack != null) {
+                if (polylineTrack != null) {
+                    polylineTrack.remove();
+                }
+                if (result != null && mMap != null) {
+                    polylineOptionsTrack.addAll(result);
+                    polylineTrack = mMap.addPolyline(polylineOptionsTrack);
+                }
+            }
+            setWidthPolylines();
+        }
     }
 
 }

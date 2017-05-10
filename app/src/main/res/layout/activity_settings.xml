@@ -125,6 +125,49 @@
 
             </LinearLayout>
 
+            <Switch
+                android:id="@+id/using_develop_mode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:textOff="@string/questions_answer_no"
+                android:textOn="@string/questions_answer_yes"
+                android:text="@string/using_develop_mode"
+                android:textSize="@dimen/text_size_medium"
+                android:textColor="@color/zxing_result_view"
+                android:layout_alignParentRight="true"
+                android:button="@null"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp"/>
+
+            <LinearLayout
+                android:id="@+id/min_current_accuracy_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:paddingLeft="20dp">
+
+                <TextView
+                    android:id="@+id/min_current_accuracy_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/min_current_accuracy"
+                    android:textColor="@color/zxing_result_view"
+                    android:textSize="@dimen/text_size_medium"
+                    android:layout_weight="1"/>
+
+                <EditText
+                    android:id="@+id/min_current_accuracy_edit_taxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="3"
+                    android:background="@color/colorWhite"/>
+
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 

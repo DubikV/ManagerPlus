@@ -65,6 +65,29 @@ public class DataRepositoryImpl implements DataRepository{
     }
 
     @Override
+    public List<LatLng> getTrackLatLng(Date dateFrom, Date dateBy) {
+        try (Cursor cursor = contentResolver.query(
+                TrackListContract.CONTENT_URI,
+                TrackListContract.PROJECTION_ALL,
+                TrackListContract.DATE + ">=" + dateFrom.getTime() + " AND "
+                        + TrackListContract.DATE + "<=" + dateBy.getTime(),
+                new String[]{},
+                TrackListContract.DEFAULT_SORT_ORDER)) {
+
+            if (cursor == null) {
+                return null;
+            }
+
+            List<LatLng> result = new ArrayList<>();
+            while (cursor.moveToNext())
+                result.add(new LatLng(
+                        cursor.getDouble(cursor.getColumnIndex(TrackListContract.LATITUDE)),
+                        cursor.getDouble(cursor.getColumnIndex(TrackListContract.LONGITUDE))));
+            return result;
+        }
+    }
+
+    @Override
     public PolylineOptions getBuildTrackLatLng(PolylineOptions pOptions, Date dateFrom, Date dateBy) {
         try (Cursor cursor = contentResolver.query(
                 TrackListContract.CONTENT_URI,

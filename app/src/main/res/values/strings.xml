@@ -24,8 +24,10 @@
     <string name="prompt_server_adress">Адреса серверу</string>
     <string name="action_sign_in_short">Увійти</string>
     <string name="using_track_sync_service">Використ. автоматичну вигрузку треку</string>
+    <string name="using_develop_mode">Використ. режим розробника</string>
     <string name="min_timetrack_sync_service">Період повтору :</string>
     <string name="error_field_required">Це поле є обов\'язковим</string>
+    <string name="min_current_accuracy">Мінімальна точність для GPS</string>
 
     <!-- GPS -->
     <string name="gps_is_setting">Налаштування місцезнаходження</string>

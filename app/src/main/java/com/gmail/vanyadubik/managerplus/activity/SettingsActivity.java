@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
@@ -15,6 +16,7 @@ import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.model.ParameterInfo;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
+import com.gmail.vanyadubik.managerplus.utils.ActivityUtils;
 import com.gmail.vanyadubik.managerplus.utils.PropertyUtils;
 
 import java.io.IOException;
@@ -22,7 +24,10 @@ import java.util.Properties;
 
 import javax.inject.Inject;
 
+import static com.gmail.vanyadubik.managerplus.common.Consts.DEVELOP_MODE;
 import static com.gmail.vanyadubik.managerplus.common.Consts.LOGIN;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_CURRENT_ACCURACY;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_SYNK_TRACK_NAME;
 import static com.gmail.vanyadubik.managerplus.common.Consts.PASSWORD;
 import static com.gmail.vanyadubik.managerplus.common.Consts.SERVER;
@@ -30,10 +35,12 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.SERVER;
 public class SettingsActivity extends AppCompatActivity {
     @Inject
     DataRepository dataRepository;
+    @Inject
+    ActivityUtils activityUtils;
 
-    private EditText mLoginView, mAddressView, mPasswordView, mTimeSyncView;
-    private View signInButton, returnButton, minTimeTrackSyncLayout;
-    private Switch using_auto_sync_trackSwitch;
+    private EditText mLoginView, mAddressView, mPasswordView, mTimeSyncView, minCurrentAccuracyGPSText;
+    private View signInButton, returnButton, minTimeTrackSyncLayout, minCurrentAccuracyGPSL;
+    private Switch using_auto_sync_trackSwitch, using_develop_modeSwitch;
 
 
     @Override
@@ -48,7 +55,9 @@ public class SettingsActivity extends AppCompatActivity {
         mLoginView = (EditText) findViewById(R.id.login);
         mPasswordView = (EditText) findViewById(R.id.password);
         mTimeSyncView = (EditText) findViewById(R.id.min_timetrack_sync_service_edit_text);
+        minCurrentAccuracyGPSText = (EditText) findViewById(R.id.min_current_accuracy_edit_taxt);
         minTimeTrackSyncLayout = (LinearLayout) findViewById(R.id.min_timetrack_sync_layout);
+        minCurrentAccuracyGPSL = (LinearLayout) findViewById(R.id.min_current_accuracy_layout);
 
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -81,10 +90,18 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         using_auto_sync_trackSwitch = (Switch) findViewById(R.id.using_track_sync_service);
-        using_auto_sync_trackSwitch.setOnClickListener(new View.OnClickListener() {
+        using_auto_sync_trackSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                setVisibilityElements();
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                activityUtils.setVisiblyElement(minTimeTrackSyncLayout, isChecked);
+            }
+        });
+
+        using_develop_modeSwitch = (Switch) findViewById(R.id.using_develop_mode);
+        using_develop_modeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                activityUtils.setVisiblyElement(minCurrentAccuracyGPSL, isChecked);
             }
         });
     }
@@ -100,7 +117,6 @@ public class SettingsActivity extends AppCompatActivity {
     private void initData() {
 
         //getSupportActionBar().setTitle(getString(R.string.item_settings));
-
 
         String adressServer = dataRepository.getUserSetting(SERVER);
         if (adressServer == null || adressServer.isEmpty()) {
@@ -121,9 +137,16 @@ public class SettingsActivity extends AppCompatActivity {
         if(minTime!=null&&!minTime.isEmpty()){
             mTimeSyncView.setText(minTime);
             using_auto_sync_trackSwitch.setChecked(true);
+            activityUtils.setVisiblyElement(minTimeTrackSyncLayout, true);
         }
 
-        setVisibilityElements();
+        if(Boolean.valueOf(dataRepository.getUserSetting(DEVELOP_MODE))){
+            minCurrentAccuracyGPSL.setVisibility(View.VISIBLE);
+            using_develop_modeSwitch.setChecked(true);
+            activityUtils.setVisiblyElement(minCurrentAccuracyGPSL, true);
+            mPasswordView.setText(dataRepository.getUserSetting(MIN_CURRENT_ACCURACY));
+        }
+
     }
 
     private void attemptData() {
@@ -183,14 +206,19 @@ public class SettingsActivity extends AppCompatActivity {
             dataRepository.insertUserSetting(new ParameterInfo(MIN_TIME_SYNK_TRACK_NAME,
                     String.valueOf(mTimeSyncView.getText())));
         }
-        finish();
-    }
 
-    private void setVisibilityElements() {
-        if (using_auto_sync_trackSwitch.isChecked()) {
-            minTimeTrackSyncLayout.setVisibility(View.VISIBLE);
-        } else {
-            minTimeTrackSyncLayout.setVisibility(View.GONE);
+
+        dataRepository.insertUserSetting(
+                new ParameterInfo(DEVELOP_MODE, String.valueOf(using_develop_modeSwitch.isChecked())));
+        String minCurrentAccText = minCurrentAccuracyGPSText.getText().toString();
+        int minAccurancy = minCurrentAccText == null || minCurrentAccText.isEmpty() ? 0 :
+                Integer.valueOf(minCurrentAccText);
+        if(using_develop_modeSwitch.isChecked() &&
+                minAccurancy > MAX_COEFFICIENT_CURRENCY_LOCATION) {
+            dataRepository.insertUserSetting(
+                    new ParameterInfo(MIN_CURRENT_ACCURACY, String.valueOf(minAccurancy)));
         }
+
+        finish();
     }
 }

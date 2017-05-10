@@ -90,6 +90,7 @@ public class GPSTaskUtils {
         }
     }
 
+
     public void showSettingsAlert(){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
 
