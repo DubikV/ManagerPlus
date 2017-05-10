@@ -32,7 +32,8 @@ public class Consts {
     public static final long MIN_DISTANCE_WRITE_TRACK = 20; //15 meters
     public static final long MIN_TIME_WRITE_TRACK = 10; // 5seconds
     public static final long MIN_TIME_SYNK_TRACK = 15*60; // seconds
-    public static final double  MAX_COEFFICIENT_CURRENCY_LOCATION = 20.0; //100.0
+    public static final double  MAX_COEFFICIENT_CURRENCY_LOCATION = 40.0; //100.0
+    public static final int MAX_DELTA_COEFFICIENT_CURRENCY_LOCATION = 15;
     public static final double  MIN_SPEED_WRITE_LOCATION = 0.005; //
     public static final int TYPE_PRIORITY_CONNECTION_GPS = LocationRequest.PRIORITY_HIGH_ACCURACY;
 
@@ -41,12 +42,8 @@ public class Consts {
     public static final long MIN_DISTANCE_LOCATION_MAP = 20; // 10 meters
     public static final long MIN_TIME_LOCATION_MAP = 10; // seconds
     public static final long MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION = 100;// meters
-    public static final double  MIN_SPEED_MAP_SET_ZOOM = 3.0; //
-    public static final float  MIN_ZOOM_MAP = 18; //18
-    public static final float  MAX_ZOOM_MAP = 18; //21
     public static final float  TILT_CAMERA_MAP = 67;
     public static final float  MIN_ZOOM_TITLE_MAP = 80;
-    public static final float  DIVISION_ZOOM_MAP = 1.0f; //0.5f
     public static final int  TIME_MAP_ANIMATE_CAMERA = 1000;
 
     // notifications

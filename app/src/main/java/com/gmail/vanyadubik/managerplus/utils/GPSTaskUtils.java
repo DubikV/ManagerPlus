@@ -10,6 +10,7 @@ import android.provider.Settings;
 import com.gmail.vanyadubik.managerplus.R;
 
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_DELTA_COEFFICIENT_CURRENCY_LOCATION;
 
 public class GPSTaskUtils {
 
@@ -34,7 +35,7 @@ public class GPSTaskUtils {
             return false;
         }
 
-        if (location.getAccuracy() - currentBestLocation.getAccuracy() > 5 ||
+        if (location.getAccuracy() - currentBestLocation.getAccuracy() > MAX_DELTA_COEFFICIENT_CURRENCY_LOCATION ||
                 location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION) {
             return false;
         }
