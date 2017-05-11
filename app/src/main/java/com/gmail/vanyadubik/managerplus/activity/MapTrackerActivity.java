@@ -337,7 +337,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
                 .geodesic(true);
 
         DownloadTrack downloadTask = new DownloadTrack();
-        downloadTask.execute(waybill.getDateStart());
+        downloadTask.execute(waybill == null ? LocalDateTime.now().toDate() : waybill.getDateStart());
 
         setOtherMarkers();
 
@@ -353,18 +353,22 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
 
         waybill = dataRepository.getLastWaybill();
 
-        if (waybill!=null) {
-            Date dateEnd = waybill.getDateEnd();
-            if (dateEnd.getTime() < 1000) {
-                dateEnd = LocalDateTime.now().toDate();
-                dateEnd.setHours(23);
-                dateEnd.setMinutes(59);
-                dateEnd.setSeconds(59);
+        if (waybill == null){
+            Toast.makeText(getApplicationContext(),
+                            "Not initialize last waybill",
+                            Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+        Date dateEnd = waybill.getDateEnd();
+        if (dateEnd.getTime() < 1000) {
+            dateEnd = LocalDateTime.now().toDate();
+            dateEnd.setHours(23);
+            dateEnd.setMinutes(59);
+            dateEnd.setSeconds(59);
             }
 
-            markerMaps = dataRepository.getBuildVisitsMarkers(waybill.getDateStart(), dateEnd);
-
-        }
+        markerMaps = dataRepository.getBuildVisitsMarkers(waybill.getDateStart(), dateEnd);
 
         setCameraPosition();
     }
