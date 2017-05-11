@@ -26,16 +26,12 @@ public class GPSTaskUtils {
             return true;
         }
 
-//        if (!isLocationAccurate(location) ||
-//                location.getAccuracy() > maxCoefficient ) {
-//            return false;
-//        }
         if (!isLocationAccurate(location)) {
             return false;
         }
 
-        if (location.getAccuracy() - currentBestLocation.getAccuracy() > 5 ||
-                location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION) {
+        if (location.getAccuracy() - currentBestLocation.getAccuracy() > (maxCoefficient/2) ||
+                location.getAccuracy() > maxCoefficient) {
             return false;
         }
 

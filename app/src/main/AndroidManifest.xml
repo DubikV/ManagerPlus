@@ -98,6 +98,9 @@
         <activity
             android:name=".activity.GalleryActivity">
         </activity>
+        <activity
+            android:name=".activity.ImageActivity">
+        </activity>
     </application>
 
 </manifest>

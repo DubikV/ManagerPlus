@@ -41,6 +41,7 @@ import javax.inject.Inject;
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_GPS_TRACER_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_SYNC_TRACER_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_CURRENT_ACCURACY;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
@@ -59,6 +60,7 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
     private LocationRequest mLocationRequest;
     private Location currentBestLocation;
     private SimpleDateFormat dateFormat;
+    private double minCurrentAccury;
 
     @Override
     public void onCreate() {
@@ -87,6 +89,13 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
 
         Log.d(TAGLOG_GPS, new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
                 .format(LocalDateTime.now(DateTimeZone.getDefault()).toDate().getTime()) + " start GPS servise");
+
+        try {
+            Double accuracy = Double.valueOf(dataRepository.getUserSetting(MIN_CURRENT_ACCURACY));
+            minCurrentAccury =  accuracy > MAX_COEFFICIENT_CURRENCY_LOCATION ? accuracy : MAX_COEFFICIENT_CURRENCY_LOCATION;
+        }catch(Exception e){
+            minCurrentAccury = MAX_COEFFICIENT_CURRENCY_LOCATION;
+        }
 
         mGoogleApiClient.connect();
 
@@ -189,8 +198,8 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
             return false;
         }
 
-        if (location.getAccuracy() - currentBestLocation.getAccuracy() > 5 ||
-                location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION) {
+        if (location.getAccuracy() - currentBestLocation.getAccuracy() > (minCurrentAccury/2) ||
+                location.getAccuracy() > minCurrentAccury) {
             return false;
         }
 

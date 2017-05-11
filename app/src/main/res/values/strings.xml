@@ -142,4 +142,5 @@
     <string name="all_foto_in_device">Всі фотографії на пристрої</string>
     <string name="selected_photo">Вибрано фото</string>
     <string name="action_get_photo">Вибрати дане фото?</string>
+    <string name="photo_not_found">Фото не знайдено</string>
 </resources>

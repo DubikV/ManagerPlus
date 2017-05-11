@@ -38,15 +38,9 @@ public class Consts {
 
     // Map
     public static final int WIDTH_POLYLINE_MAP = 20;
-    public static final long MIN_DISTANCE_LOCATION_MAP = 20; // 10 meters
-    public static final long MIN_TIME_LOCATION_MAP = 10; // seconds
     public static final long MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION = 100;// meters
-    public static final double  MIN_SPEED_MAP_SET_ZOOM = 3.0; //
-    public static final float  MIN_ZOOM_MAP = 18; //18
-    public static final float  MAX_ZOOM_MAP = 18; //21
     public static final float  TILT_CAMERA_MAP = 67;
     public static final float  MIN_ZOOM_TITLE_MAP = 80;
-    public static final float  DIVISION_ZOOM_MAP = 1.0f; //0.5f
     public static final int  TIME_MAP_ANIMATE_CAMERA = 1000;
 
     // notifications

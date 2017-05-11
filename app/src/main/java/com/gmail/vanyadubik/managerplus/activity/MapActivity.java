@@ -48,8 +48,8 @@ import javax.inject.Inject;
 import static com.gmail.vanyadubik.managerplus.R.id.map;
 import static com.gmail.vanyadubik.managerplus.activity.MapTrackerActivity.MAP_TTACK_ZOOM_PREF;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_LOCATION_MAP;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_ZOOM_TITLE_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TILT_CAMERA_MAP;
@@ -108,21 +108,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void updateLocation(Location location) {
 
-                Toast.makeText(getApplicationContext(),
-                        new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-                                .format(location.getTime())
-                                + " location is - \nLat: " + location.getLatitude()
-                                + "\nLong: " + location.getLongitude()
-                                + "\nSpeed: " + location.getSpeed()
-                                + "\nAccuracy: " + location.getAccuracy()
-                                + "\nTime: " + (lastCurrentLocation!=null ?
-                                String.valueOf((location.getTime() - lastCurrentLocation.getTime())/1000) : "0")
-                                + "\nDistance: " + (lastCurrentLocation!=null ?
-                                String.valueOf(location.distanceTo(lastCurrentLocation)) : "0"),
-                        Toast.LENGTH_LONG).show();
-
                 if ( gpsTaskUtils.isBetterLocation(location, lastCurrentLocation,
-                        MIN_TIME_LOCATION_MAP, MAX_COEFFICIENT_CURRENCY_LOCATION) ) {
+                        MIN_TIME_WRITE_TRACK, MAX_COEFFICIENT_CURRENCY_LOCATION) ) {
                     lastCurrentLocation = location;
                 }
                 insertMarker(lastCurrentLocation);
@@ -135,9 +122,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         });
         googleLocationService.setTypePriorityConnection(TYPE_PRIORITY_CONNECTION_GPS);
-        googleLocationService.setTimeInterval(MIN_TIME_LOCATION_MAP);
+        googleLocationService.setTimeInterval(MIN_TIME_WRITE_TRACK);
         // googleLocationService.setFastesInterval(MIN_TIME_LOCATION_MAP);
-        googleLocationService.setDistance(MIN_DISTANCE_LOCATION_MAP);
+        googleLocationService.setDistance(MIN_DISTANCE_WRITE_TRACK);
         googleLocationService.startUpdates();
 
         typeShow = 0;

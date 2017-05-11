@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -46,7 +47,7 @@ public class GalleryActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> arg0, View arg1,
                                     int position, long arg3) {
                 if (null != allImages && !allImages.isEmpty())
-                   showAskAlert(allImages.get(position).getTitle());
+                   showAskAlert(allImages.get(position).getAbsolutePath());
                 ;
 
             }
@@ -57,9 +58,10 @@ public class GalleryActivity extends AppCompatActivity {
     private ArrayList<PhotoItem> getAllShownImagesPath() {
         Uri uri;
         Cursor cursor;
-        int column_index_data, column_index_folder_name;
+        int column_index_data, column_index_name, column_index_folder_name;
         ArrayList<PhotoItem> listOfAllImages = new ArrayList<PhotoItem>();
         String absolutePathOfImage = null;
+        String nameImage = null;
         uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
         String[] projection = { MediaStore.MediaColumns.DATA,
@@ -69,12 +71,14 @@ public class GalleryActivity extends AppCompatActivity {
                 null, null);
 
         column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        column_index_name = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.TITLE);
         column_index_folder_name = cursor
                 .getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
         while (cursor.moveToNext()) {
+            nameImage           = cursor.getString(column_index_name);
             absolutePathOfImage = cursor.getString(column_index_data);
 
-            listOfAllImages.add(new PhotoItem(absolutePathOfImage, new File(absolutePathOfImage)));
+            listOfAllImages.add(new PhotoItem(nameImage, absolutePathOfImage, new File(absolutePathOfImage)));
         }
         return listOfAllImages;
     }

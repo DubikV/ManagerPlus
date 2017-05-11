@@ -58,9 +58,10 @@ import javax.inject.Inject;
 import static com.gmail.vanyadubik.managerplus.R.id.map;
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEVELOP_MODE;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_CURRENT_ACCURACY;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_LOCATION_MAP;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_ZOOM_TITLE_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TILT_CAMERA_MAP;
@@ -95,6 +96,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
     private SeekBar sbZoom;
     private TextView sbZoomProgress, messageMap;
     private Boolean developeMode;
+    private double minCurrentAccury;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -131,23 +133,12 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
                             + " Distance: " + (lastCurrentLocation != null ?
                             String.valueOf(location.distanceTo(lastCurrentLocation)) : "0");
 
-//                    Toast.makeText(getApplicationContext(),
-//                            new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-//                                    .format(location.getTime())
-//                                    + " location is - \nLat: " + location.getLatitude()
-//                                    + "\nLong: " + location.getLongitude()
-//                                    + "\nSpeed: " + location.getSpeed()
-//                                    + "\nAccuracy: " + location.getAccuracy()
-//                                    + "\nTime: " + (lastCurrentLocation != null ?
-//                                    String.valueOf((location.getTime() - lastCurrentLocation.getTime()) / 1000) : "0")
-//                                    + "\nDistance: " + (lastCurrentLocation != null ?
-//                                    String.valueOf(location.distanceTo(lastCurrentLocation)) : "0"),
-//                            Toast.LENGTH_SHORT).show();
                     messageMap.setText(textMessage);
                 }
 
                 if ( gpsTaskUtils.isBetterLocation(location, lastCurrentLocation,
-                        MIN_TIME_LOCATION_MAP, MAX_COEFFICIENT_CURRENCY_LOCATION) ) {
+                        MIN_TIME_WRITE_TRACK,
+                        minCurrentAccury > MAX_COEFFICIENT_CURRENCY_LOCATION ? minCurrentAccury : MAX_COEFFICIENT_CURRENCY_LOCATION) ) {
 
                     oldCurrentLocation = lastCurrentLocation;
 
@@ -170,9 +161,9 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
 
         });
         googleLocationService.setTypePriorityConnection(TYPE_PRIORITY_CONNECTION_GPS);
-        googleLocationService.setTimeInterval(MIN_TIME_LOCATION_MAP);
-        // googleLocationService.setFastesInterval(MIN_TIME_LOCATION_MAP);
-        googleLocationService.setDistance(MIN_DISTANCE_LOCATION_MAP);
+        googleLocationService.setTimeInterval(MIN_TIME_WRITE_TRACK);
+        // googleLocationService.setFastesInterval(MIN_SPEED_WRITE_LOCATION);
+        googleLocationService.setDistance(MIN_DISTANCE_WRITE_TRACK);
         googleLocationService.startUpdates();
 
         moveMarker = true;
@@ -360,6 +351,13 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
             finish();
             return;
         }
+
+        try {
+            minCurrentAccury = Double.valueOf(dataRepository.getUserSetting(MIN_CURRENT_ACCURACY));
+        }catch(Exception e){
+            minCurrentAccury = 0.0;
+        }
+
         Date dateEnd = waybill.getDateEnd();
         if (dateEnd.getTime() < 1000) {
             dateEnd = LocalDateTime.now().toDate();
@@ -412,24 +410,6 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
             return;
         }
 
-//        if (polylineTrack!=null){
-//            polylineTrack.remove();
-//        }
-//
-//        PolylineOptions pOptions = dataRepository.getBuildTrackLatLng(
-//                new PolylineOptions()
-//                        .width((float)(WIDTH_POLYLINE_MAP * mMap.getCameraPosition().zoom)/mMap.getMaxZoomLevel())
-//                        .color(getResources().getColor(R.color.colorPrimary))
-//                        .geodesic(true),
-//                waybill.getDateStart(),
-//                waybill.getDateEnd().getTime() <1000 ?
-//                        LocalDateTime.now().toDate() : waybill.getDateEnd());
-//
-//        if(pOptions!=null && mMap != null) {
-//
-//            polylineTrack = mMap.addPolyline(pOptions);
-//
-//        }
         if(oldCurrentLocation==null){
             return;
         }
