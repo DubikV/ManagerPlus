@@ -14,11 +14,12 @@ import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.WaybillC
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.UsingCarContrack;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.ChangingContrack;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.FuelContract;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.PhotoContract;
 
 public class MobileManagerDb extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "managerplus";
-    private static final int DB_VERSION = 25;
+    private static final int DB_VERSION = 26;
 
     public MobileManagerDb(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -119,6 +120,19 @@ public class MobileManagerDb extends SQLiteOpenHelper {
                 + FuelContract.POINT_CREATE + " integer,"
                 + "UNIQUE (" + TextUtils.join(",", FuelContract.UNIQUE_COLUMNS) + ")"
                 + ");");
+
+        db.execSQL("create table " + PhotoContract.TABLE_NAME + "("
+                + PhotoContract._ID + " integer primary key AUTOINCREMENT,"
+                + PhotoContract.EXTERNAL_ID + " text,"
+                + PhotoContract.DELETED + " numeric,"
+                + PhotoContract.INDB + " numeric,"
+                + PhotoContract.NAME + " text,"
+                + PhotoContract.HOLDERNAME + " text,"
+                + PhotoContract.HOLDERID + " text,"
+                + PhotoContract.DATE + " integer,"
+                + PhotoContract.INFO + " text,"
+                + "UNIQUE (" + TextUtils.join(",", PhotoContract.UNIQUE_COLUMNS) + ")"
+                + ");");
     }
 
     @Override
@@ -132,6 +146,7 @@ public class MobileManagerDb extends SQLiteOpenHelper {
         db.execSQL("drop table if exists " + ChangingContrack.TABLE_NAME);
         db.execSQL("drop table if exists " + UsingCarContrack.TABLE_NAME);
         db.execSQL("drop table if exists " + FuelContract.TABLE_NAME);
+        db.execSQL("drop table if exists " + PhotoContract.TABLE_NAME);
 
         onCreate(db);
 

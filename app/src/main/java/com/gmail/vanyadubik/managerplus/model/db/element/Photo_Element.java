@@ -106,7 +106,7 @@ public class Photo_Element extends Element {
             return this;
         }
 
-        public Builder createDate(String info) {
+        public Builder info(String info) {
             this.info = info;
             return this;
         }

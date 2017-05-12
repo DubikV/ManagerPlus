@@ -58,7 +58,7 @@ public class GalleryActivity extends AppCompatActivity {
     private ArrayList<PhotoItem> getAllShownImagesPath() {
         Uri uri;
         Cursor cursor;
-        int column_index_data, column_index_name, column_index_folder_name;
+        int column_index_data, column_index_folder_name;
         ArrayList<PhotoItem> listOfAllImages = new ArrayList<PhotoItem>();
         String absolutePathOfImage = null;
         String nameImage = null;
@@ -71,14 +71,16 @@ public class GalleryActivity extends AppCompatActivity {
                 null, null);
 
         column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-        column_index_name = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.TITLE);
         column_index_folder_name = cursor
                 .getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
         while (cursor.moveToNext()) {
-            nameImage           = cursor.getString(column_index_name);
             absolutePathOfImage = cursor.getString(column_index_data);
 
-            listOfAllImages.add(new PhotoItem(nameImage, absolutePathOfImage, new File(absolutePathOfImage)));
+            listOfAllImages.add(
+                    new PhotoItem(
+                            absolutePathOfImage.substring(absolutePathOfImage.lastIndexOf("/")+1),
+                            absolutePathOfImage,
+                            new File(absolutePathOfImage)));
         }
         return listOfAllImages;
     }

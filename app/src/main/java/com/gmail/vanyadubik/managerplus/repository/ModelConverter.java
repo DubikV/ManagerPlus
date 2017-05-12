@@ -3,6 +3,7 @@ package com.gmail.vanyadubik.managerplus.repository;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.PhotoContract;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.FuelContract;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.LocationPointContract;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract.ClientContract;
@@ -14,6 +15,7 @@ import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.model.db.document.Visit_Document;
 import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
+import com.gmail.vanyadubik.managerplus.model.db.element.Photo_Element;
 
 import java.util.Date;
 
@@ -78,6 +80,20 @@ public class ModelConverter {
         values.put(FuelContract.LITRES, fuelDoc.getLitres());
         values.put(FuelContract.MONEY, fuelDoc.getMoney());
         values.put(FuelContract.POINT_CREATE, fuelDoc.getCreateLP());
+        return values;
+    }
+
+    static ContentValues convertPhoto(Photo_Element photo) {
+        ContentValues values = new ContentValues();
+        values.put(PhotoContract.EXTERNAL_ID, photo.getExternalId());
+        values.put(PhotoContract.DELETED, photo.isDeleted());
+        values.put(PhotoContract.INDB, photo.isInDB());
+        values.put(PhotoContract.NAME, photo.getName());
+        values.put(PhotoContract.HOLDERNAME, photo.getHoldername());
+        values.put(PhotoContract.HOLDERID, photo.getHolderId());
+        values.put(PhotoContract.DATE, photo.getCreateDate()== null?
+                null: photo.getCreateDate().getTime());
+        values.put(PhotoContract.INFO, photo.getInfo());
         return values;
     }
 
@@ -173,6 +189,20 @@ public class ModelConverter {
                 .litres(cursor.getDouble(cursor.getColumnIndex(FuelContract.LITRES)))
                 .money(cursor.getDouble(cursor.getColumnIndex(FuelContract.MONEY)))
                 .createLP(cursor.getInt(cursor.getColumnIndex(FuelContract.POINT_CREATE)))
+                .build();
+    }
+
+    static Photo_Element buildPhoto(Cursor cursor) {
+        return Photo_Element.builder()
+                .id(cursor.getInt(cursor.getColumnIndex(PhotoContract._ID)))
+                .externalId(cursor.getString(cursor.getColumnIndex(PhotoContract.EXTERNAL_ID)))
+                .deleted(cursor.getInt(cursor.getColumnIndex(PhotoContract.DELETED))== 1)
+                .inDB(cursor.getInt(cursor.getColumnIndex(PhotoContract.INDB))== 1)
+                .name(cursor.getString(cursor.getColumnIndex(PhotoContract.NAME)))
+                .holdername(cursor.getString(cursor.getColumnIndex(PhotoContract.HOLDERNAME)))
+                .holderId(cursor.getString(cursor.getColumnIndex(PhotoContract.HOLDERID)))
+                .createDate(convertDate(cursor, PhotoContract.DATE))
+                .info(cursor.getString(cursor.getColumnIndex(PhotoContract.INFO)))
                 .build();
     }
 

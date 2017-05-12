@@ -12,6 +12,7 @@ import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.model.db.document.Visit_Document;
+import com.gmail.vanyadubik.managerplus.model.db.element.Photo_Element;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -32,8 +33,10 @@ import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.Changing
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.FuelContract;
 import static com.gmail.vanyadubik.managerplus.repository.ModelConverter.buildClient;
 import static com.gmail.vanyadubik.managerplus.repository.ModelConverter.buildFuelDoc;
+import static com.gmail.vanyadubik.managerplus.repository.ModelConverter.buildPhoto;
 import static com.gmail.vanyadubik.managerplus.repository.ModelConverter.buildVisit;
 import static com.gmail.vanyadubik.managerplus.repository.ModelConverter.convertLocationPoint;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.PhotoContract;
 
 public class DataRepositoryImpl implements DataRepository{
 
@@ -444,6 +447,24 @@ public class DataRepositoryImpl implements DataRepository{
     }
 
     @Override
+    public List<Photo_Element> getPhotoByElement(String nameElement, String idElement) {
+        try (Cursor cursor = contentResolver.query(
+                PhotoContract.CONTENT_URI,
+                PhotoContract.PROJECTION_ALL,
+                PhotoContract.HOLDERNAME + "='" + nameElement
+                        + "' AND " + PhotoContract.HOLDERID + "='" + idElement + "'",
+                new String[]{},
+                PhotoContract.DEFAULT_SORT_ORDER)) {
+
+            if (cursor == null) return null;
+            List<Photo_Element> result = new ArrayList<>();
+            while (cursor.moveToNext())
+                result.add(buildPhoto(cursor));
+            return result;
+        }
+    }
+
+    @Override
     public void insertTrackPoint(LocationPoint locationPoint) {
         ContentValues values = ModelConverter.convertTrackPoint(locationPoint);
         contentResolver.insert(TrackListContract.CONTENT_URI, values);
@@ -526,5 +547,11 @@ public class DataRepositoryImpl implements DataRepository{
     public void insertFuel(Fuel_Document fuelDoc) {
         ContentValues values = ModelConverter.convertFuelDoc(fuelDoc);
         contentResolver.insert(FuelContract.CONTENT_URI, values);
+    }
+
+    @Override
+    public void insertPhoto(Photo_Element photo) {
+        ContentValues values = ModelConverter.convertPhoto(photo);
+        contentResolver.insert(PhotoContract.CONTENT_URI, values);
     }
 }

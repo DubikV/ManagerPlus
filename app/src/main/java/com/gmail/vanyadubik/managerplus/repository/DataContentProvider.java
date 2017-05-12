@@ -24,6 +24,7 @@ import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.UserSett
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.UsingCarContrack;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.VisitContract;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.WaybillContract;
+import static  com.gmail.vanyadubik.managerplus.db.MobileManagerContract.PhotoContract;
 
 
 public class DataContentProvider extends ContentProvider{
@@ -50,6 +51,8 @@ public class DataContentProvider extends ContentProvider{
     private static final int CHANGING_ID = 16;
     private static final int FUEL_LIST = 17;
     private static final int FUEL_ID = 18;
+    private static final int PHOTO_LIST = 19;
+    private static final int PHOTO_ID = 20;
 
     public DataContentProvider() {
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
@@ -71,6 +74,8 @@ public class DataContentProvider extends ContentProvider{
         URI_MATCHER.addURI(AUTHORITY, ChangingContrack.TABLE_NAME + "/#", CHANGING_ID);
         URI_MATCHER.addURI(AUTHORITY, FuelContract.TABLE_NAME, FUEL_LIST);
         URI_MATCHER.addURI(AUTHORITY, FuelContract.TABLE_NAME + "/#", FUEL_ID);
+        URI_MATCHER.addURI(AUTHORITY, PhotoContract.TABLE_NAME, PHOTO_LIST);
+        URI_MATCHER.addURI(AUTHORITY, PhotoContract.TABLE_NAME + "/#", PHOTO_ID);
     }
     @Override
     public boolean onCreate() {
@@ -126,6 +131,10 @@ public class DataContentProvider extends ContentProvider{
                 return FuelContract.CONTENT_TYPE;
             case FUEL_ID:
                 return FuelContract.CONTENT_ITEM_TYPE;
+            case PHOTO_LIST:
+                return PhotoContract.CONTENT_TYPE;
+            case PHOTO_ID:
+                return PhotoContract.CONTENT_ITEM_TYPE;
 
             default:
                 throw new RuntimeException("Cannot identify uri " + uri.toString());
@@ -278,6 +287,9 @@ public class DataContentProvider extends ContentProvider{
             case FUEL_ID:
             case FUEL_LIST:
                 return FuelContract.TABLE_NAME;
+            case PHOTO_ID:
+            case PHOTO_LIST:
+                return PhotoContract.TABLE_NAME;
             default:
                 throw new RuntimeException("Cannot identify uri " + uri.toString());
         }
@@ -312,6 +324,9 @@ public class DataContentProvider extends ContentProvider{
             case FUEL_ID:
             case FUEL_LIST:
                 return FuelContract.UNIQUE_COLUMNS;
+            case PHOTO_ID:
+            case PHOTO_LIST:
+                return PhotoContract.UNIQUE_COLUMNS;
             default:
                 throw new RuntimeException("Cannot identify uri " + uri.toString());
         }

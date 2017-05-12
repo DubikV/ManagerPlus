@@ -137,8 +137,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
                 }
 
                 if ( gpsTaskUtils.isBetterLocation(location, lastCurrentLocation,
-                        MIN_TIME_WRITE_TRACK,
-                        minCurrentAccury > MAX_COEFFICIENT_CURRENCY_LOCATION ? minCurrentAccury : MAX_COEFFICIENT_CURRENCY_LOCATION) ) {
+                        MIN_TIME_WRITE_TRACK, minCurrentAccury) ) {
 
                     oldCurrentLocation = lastCurrentLocation;
 
@@ -327,8 +326,10 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
                 .color(getResources().getColor(R.color.colorPrimary))
                 .geodesic(true);
 
-        DownloadTrack downloadTask = new DownloadTrack();
-        downloadTask.execute(waybill == null ? LocalDateTime.now().toDate() : waybill.getDateStart());
+        if (waybill!=null) {
+            DownloadTrack downloadTask = new DownloadTrack();
+            downloadTask.execute(waybill == null ? LocalDateTime.now().toDate() : waybill.getDateStart());
+        }
 
         setOtherMarkers();
 
@@ -353,9 +354,10 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
         }
 
         try {
-            minCurrentAccury = Double.valueOf(dataRepository.getUserSetting(MIN_CURRENT_ACCURACY));
+            Double accuracy = Double.valueOf(dataRepository.getUserSetting(MIN_CURRENT_ACCURACY));
+            minCurrentAccury =  accuracy > MAX_COEFFICIENT_CURRENCY_LOCATION ? accuracy : MAX_COEFFICIENT_CURRENCY_LOCATION;
         }catch(Exception e){
-            minCurrentAccury = 0.0;
+            minCurrentAccury = MAX_COEFFICIENT_CURRENCY_LOCATION;
         }
 
         Date dateEnd = waybill.getDateEnd();
@@ -529,10 +531,10 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
         if(locationCheckNavigation==null) {
             locationCheckNavigation = lastCurrentLocation;
         }else {
-            if (lastCurrentLocation.distanceTo(locationCheckNavigation)
-                    < MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION && polylineNavigation!=null) {
-                return;
-            }
+//            if (lastCurrentLocation.distanceTo(locationCheckNavigation)
+//                    < MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION && polylineNavigation!=null) {
+//                return;
+//            }
         }
 
         if (mMap != null && lastCurrentLocation !=null && markerMaps != null) {

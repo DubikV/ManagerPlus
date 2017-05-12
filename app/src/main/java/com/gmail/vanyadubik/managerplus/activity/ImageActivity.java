@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
@@ -26,6 +27,27 @@ public class ImageActivity extends AppCompatActivity {
 
         imgDisplay = (TouchImageView) findViewById(R.id.image);
         imgDisplay.setMaxZoom(5f);
+
+        SeekBar sb = (SeekBar) findViewById(R.id.seekBar);
+        sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+                float scale =  ((progress / 10.0f)+1);
+                imgDisplay.setScaleX(scale);
+                imgDisplay.setScaleY(scale);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
 
         FloatingActionButton closeView = (FloatingActionButton) findViewById(R.id.return_image);
         closeView.setOnClickListener(new View.OnClickListener() {

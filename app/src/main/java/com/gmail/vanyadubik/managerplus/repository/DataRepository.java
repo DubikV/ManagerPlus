@@ -6,6 +6,7 @@ import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.model.db.document.Visit_Document;
 import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
+import com.gmail.vanyadubik.managerplus.model.db.element.Photo_Element;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -57,6 +58,8 @@ public interface DataRepository {
 
     Fuel_Document getFuel(String externalId);
 
+    List<Photo_Element> getPhotoByElement(String nameElement, String idElement);
+
     void insertTrackPoint(LocationPoint locationPoint);
 
     void SetTrackListUloadedLocationTrack(Date dateFrom, Date dateBy);
@@ -76,5 +79,7 @@ public interface DataRepository {
     void insertChangedElement(String nameElement, String externalID);
 
     void insertFuel(Fuel_Document fuelDoc);
+
+    void insertPhoto(Photo_Element photo);
 
 }

@@ -323,7 +323,7 @@ public class MobileManagerContract {
         public static final String EXTERNAL_ID = "external_id";
         public static final String DELETED = "deleted";
         public static final String INDB = "incdb";
-        public static final String DATE = "date_start";
+        public static final String DATE = "date";
         public static final String TYPE_FUEL = "tupe_fuel";
         public static final String TYPE_PAYMENT = "type_payment";
         public static final String LITRES = "litres";
@@ -356,6 +356,47 @@ public class MobileManagerContract {
 
         public static final String DEFAULT_SORT_ORDER = DATE + " ASC";
 
+
+    }
+
+    public static final class PhotoContract implements BaseColumns{
+
+        public static final String TABLE_NAME = "photo_list";
+
+        public static final String EXTERNAL_ID = "external_id";
+        public static final String DELETED = "deleted";
+        public static final String INDB = "incdb";
+        public static final String NAME = "name";
+        public static final String HOLDERNAME = "holder_name";
+        public static final String HOLDERID = "holder_id";
+        public static final String DATE = "date";
+        public static final String INFO = "info";
+
+        public static final Uri CONTENT_URI =
+                Uri.withAppendedPath(
+                        MobileManagerContract.CONTENT_URI,
+                        TABLE_NAME);
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE
+                        + "/vnd."
+                        + AUTHORITY + "."
+                        + TABLE_NAME;
+
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE
+                        + "/vnd."
+                        + AUTHORITY + "."
+                        + TABLE_NAME;
+
+        public static final String[] PROJECTION_ALL =
+                {_ID, EXTERNAL_ID, DELETED, INDB, NAME,
+                        HOLDERNAME, HOLDERID, DATE, INFO};
+
+        public static final String[] UNIQUE_COLUMNS =
+                {EXTERNAL_ID};
+
+        public static final String DEFAULT_SORT_ORDER = DATE + " ASC";
 
     }
 
