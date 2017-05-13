@@ -41,4 +41,11 @@
     <!--Floating action button-->
     <dimen name="design_fab_image_size" tools:override="true">40dp</dimen>
     <dimen name="design_fab_size_normal">60dp</dimen>
+
+    <!--Gallery-->
+    <dimen name="gallery_image_marging">10dp</dimen>
+    <dimen name="gallery_image_marging_bottom">160dp</dimen>
+    <dimen name="gallery_text_view_padding">20dp</dimen>
+    <dimen name="gallery_open_image_width">50dp</dimen>
+
 </resources>

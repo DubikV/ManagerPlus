@@ -12,6 +12,7 @@ public class Consts {
     public final static String TAGLOG_TASK = "ManagerPlus_Task_schedure";
 
     public static final String APPLICATION_PROPERTIES = "application.properties";
+    public final static String DIRECTORY_IMAGE = "ManagerPlusPicture";
 
     // Synchronization
     public final static int STATUS_STARTED_SYNC = 0;
@@ -29,8 +30,8 @@ public class Consts {
     public final static String MIN_CURRENT_ACCURACY = "min_current_accuracy";
 
     // GPS
-    public static final long MIN_DISTANCE_WRITE_TRACK = 30; //20 meters
-    public static final long MIN_TIME_WRITE_TRACK = 10 ; // 15seconds
+    public static final long MIN_DISTANCE_WRITE_TRACK = 50; //20 meters
+    public static final long MIN_TIME_WRITE_TRACK = 20 ; // 15seconds
     public static final long MIN_TIME_SYNK_TRACK = 15*60; // seconds
     public static final double  MAX_COEFFICIENT_CURRENCY_LOCATION = 30.0; //100.0
     public static final double  MIN_SPEED_WRITE_LOCATION = 0.005; //

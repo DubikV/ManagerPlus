@@ -89,6 +89,7 @@ public class ImageActivity extends AppCompatActivity {
 
         Picasso.with(this).load(new File(imageFullName))
                 .placeholder(getResources().getDrawable(R.drawable.ic_image))
+                .fit()
                 .into(imgDisplay);
 
         //imgDisplay.setImageResource(R.drawable.myImage);

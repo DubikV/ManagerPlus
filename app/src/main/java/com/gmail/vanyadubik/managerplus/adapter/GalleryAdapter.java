@@ -3,7 +3,6 @@ package com.gmail.vanyadubik.managerplus.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.activity.GalleryActivity;
 import com.gmail.vanyadubik.managerplus.activity.ImageActivity;
-import com.gmail.vanyadubik.managerplus.activity.StartActivity;
 import com.gmail.vanyadubik.managerplus.model.PhotoItem;
 import com.squareup.picasso.Picasso;
 
@@ -72,8 +69,10 @@ public class GalleryAdapter extends BaseAdapter {
         }
 
         final PhotoItem item = mData.get(position);
-        Picasso.with(mContext).load(item.getFile())
+        Picasso.with(mContext)
+                .load(item.getFile())
                 .placeholder(mContext.getResources().getDrawable(android.R.drawable.ic_menu_gallery))
+                .fit()
                 .into(holder.imageView);
 
         holder.openView.setOnClickListener(new View.OnClickListener() {
