@@ -371,6 +371,8 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
         markerMaps = dataRepository.getBuildVisitsMarkers(waybill.getDateStart(), dateEnd);
 
         setCameraPosition();
+
+        setOtherTracks();
     }
 
     @Override
@@ -531,10 +533,10 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
         if(locationCheckNavigation==null) {
             locationCheckNavigation = lastCurrentLocation;
         }else {
-//            if (lastCurrentLocation.distanceTo(locationCheckNavigation)
-//                    < MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION && polylineNavigation!=null) {
-//                return;
-//            }
+            if (lastCurrentLocation.distanceTo(locationCheckNavigation)
+                    < MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION && polylineNavigation!=null) {
+                return;
+            }
         }
 
         if (mMap != null && lastCurrentLocation !=null && markerMaps != null) {
