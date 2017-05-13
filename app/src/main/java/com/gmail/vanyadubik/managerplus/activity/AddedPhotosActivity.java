@@ -135,5 +135,15 @@ public class AddedPhotosActivity extends AppCompatActivity {
                 Log.d("ALL_DOCUMENT_CAPTURE", "Cancelled");
             }
         }
+
+//        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQ) {
+//            if (resultCode == RESULT_OK) {
+//                Uri photoUri = data == null ? path : data.getData();
+//                Log.d("DOCUMENT_CAPTURE", "Image saved successfully to " + photoUri.getPath());
+//                Picasso.with(this).load(photoUri).placeholder(R.drawable.shape_camera).into(imageView);
+//            } else if (resultCode == RESULT_CANCELED) {
+//                Log.d("DOCUMENT_CAPTURE", "Cancelled");
+//            }
+//        }
     }
 }

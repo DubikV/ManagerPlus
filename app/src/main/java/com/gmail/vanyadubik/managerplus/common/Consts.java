@@ -12,7 +12,8 @@ public class Consts {
     public final static String TAGLOG_TASK = "ManagerPlus_Task_schedure";
 
     public static final String APPLICATION_PROPERTIES = "application.properties";
-    public final static String DIRECTORY_IMAGE = "ManagerPlusPicture";
+    public final static String DIRECTORY_IMAGE = "ManagerPlusDir";
+    public final static String DIR_PICTURES = "Pictures";
 
     // Synchronization
     public final static int STATUS_STARTED_SYNC = 0;
