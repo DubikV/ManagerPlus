@@ -10,9 +10,10 @@ public class Consts {
     public final static String TAGLOG_SYNC = "ManagerPlus_Sync";
     public final static String TAGLOG_SYNC_TRACK = "ManagerPlus_Sync_Track";
     public final static String TAGLOG_TASK = "ManagerPlus_Task_schedure";
+    public final static String TAGLOG_IMAGE = "ManagerPlus_Task_image";
 
     public static final String APPLICATION_PROPERTIES = "application.properties";
-    public final static String DIRECTORY_IMAGE = "ManagerPlusDir";
+    public final static String DIRECTORY_APP = "ManagerPlusDir";
     public final static String DIR_PICTURES = "Pictures";
 
     // Synchronization

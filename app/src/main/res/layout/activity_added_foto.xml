@@ -2,7 +2,7 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/background_activity"
+                android:background="@android:color/background_light"
                 tools:context="com.gmail.vanyadubik.managerplus.activity.GalleryActivity">
 
 
@@ -14,7 +14,8 @@
         android:layout_marginBottom="@dimen/gallery_image_marging_bottom"
         android:layout_marginEnd="@dimen/gallery_image_marging"
         android:layout_marginStart="@dimen/gallery_image_marging"
-        android:layout_marginTop="@dimen/gallery_image_marging"/>
+        android:layout_marginTop="@dimen/gallery_image_marging"
+        android:clickable="true" />
 
     <TextSwitcher
         android:id="@+id/title"
@@ -22,8 +23,9 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/gallery_imageView"
         android:layout_margin="@dimen/gallery_image_marging"
+        android:foregroundGravity="center"
         android:padding="@dimen/gallery_text_view_padding"
-        android:foregroundGravity="center"/>
+        android:textColor="@color/colorPrimary" />
 
     <Gallery
         android:id="@+id/gallery"

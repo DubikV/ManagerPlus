@@ -9,6 +9,7 @@ import com.gmail.vanyadubik.managerplus.modules.ErrorUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.GPSTaskUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.NetworkUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.PhoneUtilsApiModule;
+import com.gmail.vanyadubik.managerplus.modules.PhotoFileUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.service.gps.GPSTrackerService;
 
 import net.danlew.android.joda.JodaTimeAndroid;
@@ -28,6 +29,7 @@ public class ManagerPlusAplication extends Application{
                 .errorUtilsApiModule(new ErrorUtilsApiModule(this))
                 .phoneUtilsApiModule(new PhoneUtilsApiModule(this))
                 .gPSTaskUtilsApiModule(new GPSTaskUtilsApiModule(this))
+                .photoFileUtilsApiModule(new PhotoFileUtilsApiModule(this))
                 .build();
         startService(new Intent(this, GPSTrackerService.class));
     }

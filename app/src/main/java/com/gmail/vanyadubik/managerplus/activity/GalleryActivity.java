@@ -18,25 +18,32 @@ import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.adapter.GalleryAdapter;
+import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.model.PhotoItem;
+import com.gmail.vanyadubik.managerplus.utils.PhotoFIleUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.activity.AddedPhotosActivity.PATH_SELECTED_PHOTO;
 
 public class GalleryActivity extends AppCompatActivity {
 
+    @Inject
+    PhotoFIleUtils photoFileUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
         getSupportActionBar().setTitle(getResources().getString(R.string.all_foto_in_device));
+        ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
 
         GridView gallery = (GridView) findViewById(R.id.all_photo_gridview);
 
-        final ArrayList<PhotoItem> allImages = getAllShownImagesPath();
+        final ArrayList<PhotoItem> allImages = photoFileUtils.getAllShownImagesPath();
 
 
         gallery.setAdapter(new GalleryAdapter(this, allImages));//new ImageAdapter(this, allImages));
@@ -55,35 +62,7 @@ public class GalleryActivity extends AppCompatActivity {
 
     }
 
-    private ArrayList<PhotoItem> getAllShownImagesPath() {
-        Uri uri;
-        Cursor cursor;
-        int column_index_data, column_index_folder_name;
-        ArrayList<PhotoItem> listOfAllImages = new ArrayList<PhotoItem>();
-        String absolutePathOfImage = null;
-        String nameImage = null;
-        uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
-        String[] projection = { MediaStore.MediaColumns.DATA,
-                MediaStore.Images.Media.BUCKET_DISPLAY_NAME };
-
-        cursor = getContentResolver().query(uri, projection, null,
-                null, null);
-
-        column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-        column_index_folder_name = cursor
-                .getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-        while (cursor.moveToNext()) {
-            absolutePathOfImage = cursor.getString(column_index_data);
-
-            listOfAllImages.add(
-                    new PhotoItem(
-                            absolutePathOfImage.substring(absolutePathOfImage.lastIndexOf("/")+1),
-                            absolutePathOfImage,
-                            new File(absolutePathOfImage)));
-        }
-        return listOfAllImages;
-    }
 
     public void showAskAlert(final String imageFullName){
 

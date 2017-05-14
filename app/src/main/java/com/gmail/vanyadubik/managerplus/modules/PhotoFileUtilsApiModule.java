@@ -13,13 +13,15 @@ import dagger.Provides;
 @Module
 public class PhotoFileUtilsApiModule {
 
+    private Application application;
 
     public PhotoFileUtilsApiModule(Application application) {
+        this.application = application;
     }
 
     @Provides
     @Singleton
     public PhotoFIleUtils getPhotoFileUtils() {
-        return new PhotoFIleUtils();
+        return new PhotoFIleUtils(application.getBaseContext());
     }
 }
