@@ -6,6 +6,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
 
@@ -16,15 +17,15 @@ public class ActivityUtils {
     public ActivityUtils() {
     }
 
-    public void showMessage(String textMessage, Context context) {
+    public void showMessage(String textMessage, Context mContext) {
         if (textMessage == null || textMessage.isEmpty()) {
             return;
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(context.getString(R.string.questions_title_info));
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle(mContext.getString(R.string.questions_title_info));
         builder.setMessage(textMessage);
 
-        builder.setNeutralButton(context.getString(R.string.questions_answer_ok), new DialogInterface.OnClickListener() {
+        builder.setNeutralButton(mContext.getString(R.string.questions_answer_ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -35,13 +36,13 @@ public class ActivityUtils {
 
         // TODO (start stub): to set size text in AlertDialog
         TextView textView = (TextView) alert.findViewById(android.R.id.message);
-        textView.setTextSize(context.getResources().getDimension(R.dimen.text_size_medium));
+        textView.setTextSize(mContext.getResources().getDimension(R.dimen.text_size_medium));
         Button button1 = (Button) alert.findViewById(android.R.id.button1);
-        button1.setTextSize(context.getResources().getDimension(R.dimen.text_size_medium));
+        button1.setTextSize(mContext.getResources().getDimension(R.dimen.text_size_medium));
         Button button2 = (Button) alert.findViewById(android.R.id.button2);
-        button2.setTextSize(context.getResources().getDimension(R.dimen.text_size_medium));
+        button2.setTextSize(mContext.getResources().getDimension(R.dimen.text_size_medium));
         Button button3 = (Button) alert.findViewById(android.R.id.button3);
-        button3.setTextSize(context.getResources().getDimension(R.dimen.text_size_medium));
+        button3.setTextSize(mContext.getResources().getDimension(R.dimen.text_size_medium));
         // TODO: (end stub) ------------------
     }
 
@@ -66,6 +67,14 @@ public class ActivityUtils {
         }
 
         view.setVisibility(visibileEl);
+    }
+
+    public void showShortToast(Context mContext, String message){
+        Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+    }
+
+    public void showLongToast(Context mContext, String message){
+        Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
     }
 
 }

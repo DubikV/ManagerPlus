@@ -78,7 +78,7 @@
                 android:maxLines="1"
                 android:textSize="@dimen/text_size_medium"
                 android:id="@+id/visit_detail_client"
-                android:drawableEnd="@drawable/ic_three_point"
+                android:drawableEnd="@drawable/ic_detail"
                 android:layout_weight="1"
                 android:imeOptions="actionDone"/>
 

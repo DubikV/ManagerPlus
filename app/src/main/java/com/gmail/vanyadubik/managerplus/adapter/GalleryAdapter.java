@@ -71,7 +71,7 @@ public class GalleryAdapter extends BaseAdapter {
         final PhotoItem item = mData.get(position);
         Picasso.with(mContext)
                 .load(item.getFile())
-                .placeholder(mContext.getResources().getDrawable(android.R.drawable.ic_menu_gallery))
+                .placeholder(mContext.getResources().getDrawable(R.drawable.ic_image))
                 .fit()
                 .into(holder.imageView);
 

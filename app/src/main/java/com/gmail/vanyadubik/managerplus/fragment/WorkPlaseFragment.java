@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.AddedPhotosActivity;
@@ -26,6 +27,7 @@ import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.documents.VisitList;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
+import com.gmail.vanyadubik.managerplus.utils.ActivityUtils;
 
 import org.joda.time.LocalDateTime;
 
@@ -46,6 +48,8 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
 
     @Inject
     DataRepository dataRepository;
+    @Inject
+    ActivityUtils activityUtils;
 
 
     private View view;
@@ -109,6 +113,10 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(waybill==null){
+                    activityUtils.showShortToast(getActivity(), getResources().getString(R.string.waybill_not_start));
+                    return;
+                }
                 Intent intent = new Intent(getContext(), AddedPhotosActivity.class);
                 intent.putExtra(GALLERY_NAME_OBJECT, MobileManagerContract.WaybillContract.TABLE_NAME);
                 intent.putExtra(GALLERY_EXTERNALID_OBJECT, waybill.getExternalId());

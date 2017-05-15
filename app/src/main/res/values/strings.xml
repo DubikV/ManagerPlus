@@ -112,6 +112,7 @@
     <string name="waybill_start_odometer">Одом. почат.</string>
     <string name="waybill_end_odometer">Одом. кінець</string>
     <string name="waybill_km">км</string>
+    <string name="waybill_not_start">Потрібно почати роботу</string>
 
     <!--Fuel-->
     <string name="fuel_name">Заправки</string>

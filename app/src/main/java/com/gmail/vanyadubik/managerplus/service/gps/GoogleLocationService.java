@@ -75,8 +75,8 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
                 MIN_TIME_WRITE_TRACK : timeInterval);
         mLocationRequest.setFastestInterval(fastesInterval == 0 ?
                 MIN_SPEED_WRITE_LOCATION : fastesInterval);
-        mLocationRequest.setSmallestDisplacement(distance == 0 ?
-                MIN_DISTANCE_WRITE_TRACK : distance);
+//        mLocationRequest.setSmallestDisplacement(distance == 0 ?
+//                MIN_DISTANCE_WRITE_TRACK : distance);
 
     }
 

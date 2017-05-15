@@ -261,7 +261,7 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
         mLocationRequest.setPriority(TYPE_PRIORITY_CONNECTION_GPS);
         mLocationRequest.setInterval(MIN_TIME_WRITE_TRACK);
         mLocationRequest.setFastestInterval(MIN_SPEED_WRITE_LOCATION);
-        mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_WRITE_TRACK);
+        //mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_WRITE_TRACK);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
