@@ -42,6 +42,7 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATIO
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_SYNC_TRACER_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_CURRENT_ACCURACY;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SPEED_WRITE_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
@@ -260,7 +261,7 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
         mLocationRequest.setPriority(TYPE_PRIORITY_CONNECTION_GPS);
         mLocationRequest.setInterval(MIN_TIME_WRITE_TRACK);
         mLocationRequest.setFastestInterval(MIN_SPEED_WRITE_LOCATION);
-        //mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_WRITE_TRACK);
+        mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_WRITE_TRACK);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
