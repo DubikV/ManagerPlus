@@ -32,4 +32,5 @@
     <item name="ic_send_message" type="drawable">@drawable/ic_send_message</item>
     <item name="ic_three_point" type="drawable">@drawable/ic_three_point</item>
     <item name="ic_marker" type="drawable">@drawable/ic_marker</item>
+    <item name="ic_add_image" type="drawable">@drawable/ic_add_image</item>
 </resources>

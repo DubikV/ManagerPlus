@@ -7,6 +7,7 @@ import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
 
+import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.model.PhotoItem;
 import com.squareup.picasso.Picasso;
 
@@ -42,9 +43,9 @@ public class AddedPhotoGalleryAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 
         ImageView imageView = new ImageView(mContext);
-        //imageView.setImageResource(imageIDs[position]);
         imageView.setLayoutParams(new Gallery.LayoutParams(
-                150, 200));
+                (int) mContext.getResources().getDimension(R.dimen.gallery_image_marging_bottom),
+                (int) mContext.getResources().getDimension(R.dimen.gallery_image_marging_bottom)));
 
 
         final PhotoItem item = mData.get(position);

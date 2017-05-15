@@ -11,7 +11,7 @@
         android:id="@+id/action_add_image"
         android:orderInCategory="100"
         android:title="@string/action_map"
-        android:icon="@drawable/ic_map"
+        android:icon="@drawable/ic_add_image"
         app:showAsAction="always" />
     <item
     android:id="@+id/action_return"

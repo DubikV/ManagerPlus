@@ -132,6 +132,11 @@ public class AddedPhotosActivity extends AppCompatActivity {
             return true;
         }
 
+        if (id == R.id.action_return) {
+            finish();
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -198,7 +203,7 @@ public class AddedPhotosActivity extends AppCompatActivity {
             if (mData.size()==0){
                 return;
             }
-            int selected = 1;
+            int selected = 0;
             gallery.setSelected(true);
             gallery.setSelection(selected);
             selectedPhoto = mData.get(selected);
