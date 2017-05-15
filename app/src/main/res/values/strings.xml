@@ -143,4 +143,6 @@
     <string name="selected_photo">Вибрано фото</string>
     <string name="action_get_photo">Вибрати дане фото?</string>
     <string name="photo_not_found">Фото не знайдено</string>
+    <string name="holder_photo_not_specified">Не вказаный власник фото</string>
+    <string name="added_foto_date">Дата створення</string>
 </resources>

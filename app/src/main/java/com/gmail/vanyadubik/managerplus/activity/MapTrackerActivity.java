@@ -61,6 +61,7 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CUR
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_CURRENT_ACCURACY;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SPEED_WRITE_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_ZOOM_TITLE_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
@@ -161,7 +162,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
         });
         googleLocationService.setTypePriorityConnection(TYPE_PRIORITY_CONNECTION_GPS);
         googleLocationService.setTimeInterval(MIN_TIME_WRITE_TRACK);
-        // googleLocationService.setFastesInterval(MIN_SPEED_WRITE_LOCATION);
+        googleLocationService.setFastesInterval(MIN_SPEED_WRITE_LOCATION);
         googleLocationService.setDistance(MIN_DISTANCE_WRITE_TRACK);
         googleLocationService.startUpdates();
 

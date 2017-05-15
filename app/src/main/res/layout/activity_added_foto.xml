@@ -17,7 +17,7 @@
         android:layout_marginTop="@dimen/gallery_image_marging"
         android:clickable="true" />
 
-    <TextSwitcher
+    <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,7 +25,8 @@
         android:layout_margin="@dimen/gallery_image_marging"
         android:foregroundGravity="center"
         android:padding="@dimen/gallery_text_view_padding"
-        android:textColor="@color/colorPrimary" />
+        android:textColor="@android:color/background_light"
+        android:textSize="@dimen/textsize_cap"/>
 
     <Gallery
         android:id="@+id/gallery"

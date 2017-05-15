@@ -1,6 +1,7 @@
 package com.gmail.vanyadubik.managerplus.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -11,28 +12,29 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Gallery;
 import android.widget.ImageView;
-import android.widget.TextSwitcher;
+import android.widget.TextView;
 import android.widget.Toast;
-import android.net.Uri;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.adapter.AddedPhotoAdapter;
+import com.gmail.vanyadubik.managerplus.adapter.AddedPhotoGalleryAdapter;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
-import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
 import com.gmail.vanyadubik.managerplus.model.PhotoItem;
 import com.gmail.vanyadubik.managerplus.model.db.element.Photo_Element;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.utils.PhotoFIleUtils;
 import com.squareup.picasso.Picasso;
 
+import org.joda.time.LocalDateTime;
+
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
 
-import static android.R.attr.path;
 import static com.gmail.vanyadubik.managerplus.activity.ImageActivity.IMAGE_FULL_NAME;
 import static com.gmail.vanyadubik.managerplus.activity.ImageActivity.IMAGE_NAME;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_IMAGE;
@@ -42,9 +44,10 @@ public class AddedPhotosActivity extends AppCompatActivity {
     private static final int CAPTURE_CAMERA_ACTIVITY_REQ = 999;
     private static final int CAPTURE_ALL_IMAGE_ACTIVITY_REQ = 998;
 
-    private static final String GALLERY_NAME_OBJECT = "gallery_name_object";
-    private static final String GALLERY_EXTERNALID_OBJECT = "gallery_externatlid_object";
+    public static final String GALLERY_NAME_OBJECT = "gallery_name_object";
+    public static final String GALLERY_EXTERNALID_OBJECT = "gallery_externatlid_object";
     public static final String PATH_SELECTED_PHOTO = "path_selected_photo";
+    public static final String NAME_TYPEFILE_PHOTO = ".jpg";
 
     @Inject
     DataRepository dataRepository;
@@ -53,12 +56,15 @@ public class AddedPhotosActivity extends AppCompatActivity {
 
     private ImageView selectedImage;
     private Gallery gallery;
-    private AddedPhotoAdapter mAdapter;
-    private TextSwitcher mTitle;
+    private AddedPhotoGalleryAdapter mAdapter;
+    private TextView mTitle;
     private List<PhotoItem> mData;
     private PhotoItem selectedPhoto;
     private List<Photo_Element> addedPhotos;
     private Uri path = null;
+    private String holderName, holderId;
+    private SimpleDateFormat dateFormat;
+    private File pathPictureDir;
 
 
     @Override
@@ -86,20 +92,16 @@ public class AddedPhotosActivity extends AppCompatActivity {
         gallery.setSpacing(1);
         gallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-
-                PhotoItem photoItem = mData.get(position);
-
-                Picasso.with(AddedPhotosActivity.this)
-                        .load(photoItem.getFile())
-                        .placeholder(getResources().getDrawable(android.R.drawable.ic_menu_gallery))
-                        .fit()
-                        .into(selectedImage);
-
-                mTitle.setText(photoItem.getTitle());
+                selectedPhoto = mData.get(position);
+                initSelectedPhoto();
             }
         });
-        mTitle = (TextSwitcher) findViewById(R.id.title);
+
+
+        mTitle = (TextView) findViewById(R.id.title);
         mData = new ArrayList<>();
+        dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        pathPictureDir = photoFileUtils.getPictureDir();
 
     }
 
@@ -116,8 +118,8 @@ public class AddedPhotosActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_foto) {
-            File pathDir = photoFileUtils.getPictureDir();
-            path = Uri.fromFile(new File(pathDir, File.separator + String.valueOf(UUID.randomUUID().toString()) + ".jpg"));
+
+            path = Uri.fromFile(new File(pathPictureDir, File.separator + String.valueOf(UUID.randomUUID().toString()) + NAME_TYPEFILE_PHOTO));
             Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, path);
             startActivityForResult(cameraIntent, CAPTURE_CAMERA_ACTIVITY_REQ);
@@ -139,27 +141,22 @@ public class AddedPhotosActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
 
-        String objectName = null;
-        String objectId = null;
         if (extras != null) {
-            objectName = extras.getString(GALLERY_NAME_OBJECT);
-            objectId = extras.getString(GALLERY_EXTERNALID_OBJECT);
+            holderName = extras.getString(GALLERY_NAME_OBJECT);
+            holderId = extras.getString(GALLERY_EXTERNALID_OBJECT);
         }else{
             Toast.makeText(getApplicationContext(),
                     getResources().getString(R.string.photo_not_found), Toast.LENGTH_SHORT)
                     .show();
-
-            selectedImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_image));
-           // mTitle.setText(getResources().getString(R.string.photo_not_found));
+            finish();
             return;
         }
-
-        addedPhotos = dataRepository.getPhotoByElement(objectName, objectId);
-
-        if (addedPhotos.size() == 0){
+        if(holderName == null || holderName.isEmpty() || holderId == null || holderId.isEmpty()){
             Toast.makeText(getApplicationContext(),
-                    getResources().getString(R.string.photo_not_found), Toast.LENGTH_LONG)
+                    getResources().getString(R.string.holder_photo_not_specified), Toast.LENGTH_SHORT)
                     .show();
+            finish();
+            return;
         }
 
         initData();
@@ -167,18 +164,58 @@ public class AddedPhotosActivity extends AppCompatActivity {
     }
 
     private void initData(){
-        for(Photo_Element photo_element : addedPhotos){
-            PhotoItem photoItem = initPhotoFile(photo_element);
-            if(photoItem!=null) {
-                mData.add(photoItem);
-            }else{
-                Toast.makeText(getApplicationContext(),
-                        getResources().getString(R.string.photo_not_found)+": "+photo_element.getExternalId(), Toast.LENGTH_SHORT)
-                        .show();
-            }
+
+        addedPhotos = dataRepository.getPhotoByElement(holderName, holderId);
+
+        if(addedPhotos==null){
+            Toast.makeText(getApplicationContext(),
+                    getResources().getString(R.string.photo_not_found), Toast.LENGTH_LONG)
+                    .show();
+            selectedImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_image));
+            mTitle.setText(getResources().getString(R.string.photo_not_found));
+            return;
         }
-        mAdapter = new AddedPhotoAdapter(AddedPhotosActivity.this, mData);
-        gallery.setAdapter(mAdapter);
+
+        if (addedPhotos.size() == 0){
+            Toast.makeText(getApplicationContext(),
+                    getResources().getString(R.string.photo_not_found), Toast.LENGTH_LONG)
+                    .show();
+            selectedImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_image));
+            mTitle.setText(getResources().getString(R.string.photo_not_found));
+        }else {
+            mData.clear();
+            for (Photo_Element photo_element : addedPhotos) {
+                PhotoItem photoItem = initPhotoFile(photo_element);
+                if (photoItem != null) {
+                    mData.add(photoItem);
+                } else {
+                    Toast.makeText(getApplicationContext(),
+                            getResources().getString(R.string.photo_not_found)
+                                    + ": " + photo_element.getExternalId(), Toast.LENGTH_SHORT)
+                            .show();
+                }
+            }
+            if (mData.size()==0){
+                return;
+            }
+            int selected = 1;
+            gallery.setSelected(true);
+            gallery.setSelection(selected);
+            selectedPhoto = mData.get(selected);
+            initSelectedPhoto();
+            mAdapter = new AddedPhotoGalleryAdapter(AddedPhotosActivity.this, mData);
+            gallery.setAdapter(mAdapter);
+        }
+    }
+
+    private void initSelectedPhoto(){
+        Picasso.with(AddedPhotosActivity.this)
+                .load(selectedPhoto.getFile())
+                .placeholder(getResources().getDrawable(android.R.drawable.ic_menu_gallery))
+                .fit()
+                .into(selectedImage);
+
+        mTitle.setText(selectedPhoto.getTitle());
     }
 
     private PhotoItem initPhotoFile(Photo_Element photo_element) {
@@ -187,7 +224,9 @@ public class AddedPhotosActivity extends AppCompatActivity {
             return null;
         }
         return  new PhotoItem(
-                photo_element.getName() + photo_element.getCreateDate(),
+                photo_element.getName() + "\n" +
+                        getResources().getString(R.string.added_foto_date) + ": " +
+                        dateFormat.format(photo_element.getCreateDate().getTime()),
                 filePhoto.getAbsolutePath(),
                 filePhoto);
     }
@@ -214,9 +253,19 @@ public class AddedPhotosActivity extends AppCompatActivity {
 
                 String pathSelectedPhoto = data.getStringExtra(PATH_SELECTED_PHOTO);
 
-//                Uri photoUri = data == null ? path : data.getData();
-//                Log.d("DOCUMENT_CAPTURE", "Image saved successfully to " + photoUri.getPath());
-//                Picasso.with(this).load(photoUri).placeholder(R.drawable.shape_camera).into(imageView);
+
+                File newFile = new File(pathPictureDir, File.separator + String.valueOf(UUID.randomUUID().toString()) + NAME_TYPEFILE_PHOTO);
+
+                try {
+                    if(photoFileUtils.copyFile(new File(pathSelectedPhoto), newFile)){
+                        pathPhoto = newFile.getPath();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Log.d(TAGLOG_IMAGE, "Image saved successfully to " + pathPhoto);
+
             } else if (resultCode == RESULT_CANCELED) {
                 Log.d(TAGLOG_IMAGE, "All photos cancelled");
             }
@@ -226,25 +275,17 @@ public class AddedPhotosActivity extends AppCompatActivity {
             return;
         }
 
-//        dataRepository.insertPhoto(Photo_Element.builder()
-//                .externalId(cursor.getString(cursor.getColumnIndex(MobileManagerContract.PhotoContract.EXTERNAL_ID)))
-//                .name(cursor.getString(cursor.getColumnIndex(MobileManagerContract.PhotoContract.NAME)))
-//                .holdername(cursor.getString(cursor.getColumnIndex(MobileManagerContract.PhotoContract.HOLDERNAME)))
-//                .holderId(cursor.getString(cursor.getColumnIndex(MobileManagerContract.PhotoContract.HOLDERID)))
-//                .createDate(convertDate(cursor, MobileManagerContract.PhotoContract.DATE))
-//                .info("")
-//                .build());
+        String nameFile = photoFileUtils.getNameFileFromPath(pathPhoto);
+
+        dataRepository.insertPhoto(Photo_Element.builder()
+                .externalId(nameFile.replace(NAME_TYPEFILE_PHOTO,""))
+                .name(nameFile)
+                .holdername(holderName)
+                .holderId(holderId)
+                .createDate(LocalDateTime.now().toDate())
+                .info("")
+                .build());
 
         initData();
-
-//        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQ) {
-//            if (resultCode == RESULT_OK) {
-//                Uri photoUri = data == null ? path : data.getData();
-//                Log.d("DOCUMENT_CAPTURE", "Image saved successfully to " + photoUri.getPath());
-//                Picasso.with(this).load(photoUri).placeholder(R.drawable.shape_camera).into(imageView);
-//            } else if (resultCode == RESULT_CANCELED) {
-//                Log.d("DOCUMENT_CAPTURE", "Cancelled");
-//            }
-//        }
     }
 }

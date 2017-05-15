@@ -9,13 +9,15 @@ import android.util.Log;
 import com.gmail.vanyadubik.managerplus.model.PhotoItem;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 
-import static android.os.Environment.DIRECTORY_DCIM;
 import static android.os.Environment.getExternalStoragePublicDirectory;
 import static com.gmail.vanyadubik.managerplus.common.Consts.DIRECTORY_APP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.DIR_PICTURES;
-import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_IMAGE;
 
 public class PhotoFIleUtils {
@@ -48,7 +50,7 @@ public class PhotoFIleUtils {
 
             listOfAllImages.add(
                     new PhotoItem(
-                            absolutePathOfImage.substring(absolutePathOfImage.lastIndexOf("/")+1),
+                            getNameFileFromPath(absolutePathOfImage),
                             absolutePathOfImage,
                             new File(absolutePathOfImage)));
         }
@@ -94,6 +96,31 @@ public class PhotoFIleUtils {
         }
 
         return directory;
+    }
+
+    public String getNameFileFromPath(String path){
+        return path.substring(path.lastIndexOf("/")+1);
+    }
+
+    public boolean copyFile(File sourceFile, File destFile) throws IOException {
+        if (!sourceFile.exists()) {
+            return false;
+        }
+
+        FileChannel source = null;
+        FileChannel destination = null;
+        source = new FileInputStream(sourceFile).getChannel();
+        destination = new FileOutputStream(destFile).getChannel();
+        if (destination != null && source != null) {
+            destination.transferFrom(source, 0, source.size());
+        }
+        if (source != null) {
+            source.close();
+        }
+        if (destination != null) {
+            destination.close();
+        }
+        return true;
     }
 
 }

@@ -20,6 +20,7 @@ import com.gmail.vanyadubik.managerplus.activity.MapTrackerActivity;
 import com.gmail.vanyadubik.managerplus.adapter.VisitListAdapter;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
+import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
 import com.gmail.vanyadubik.managerplus.model.db.document.Visit_Document;
 import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
@@ -36,6 +37,8 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import static com.gmail.vanyadubik.managerplus.activity.AddedPhotosActivity.GALLERY_EXTERNALID_OBJECT;
+import static com.gmail.vanyadubik.managerplus.activity.AddedPhotosActivity.GALLERY_NAME_OBJECT;
 import static com.gmail.vanyadubik.managerplus.common.Consts.CLEAR_DATE;
 
 public class WorkPlaseFragment extends Fragment implements FragmentBecameVisibleInterface {
@@ -106,7 +109,10 @@ public class WorkPlaseFragment extends Fragment implements FragmentBecameVisible
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getContext(), AddedPhotosActivity.class));
+                Intent intent = new Intent(getContext(), AddedPhotosActivity.class);
+                intent.putExtra(GALLERY_NAME_OBJECT, MobileManagerContract.WaybillContract.TABLE_NAME);
+                intent.putExtra(GALLERY_EXTERNALID_OBJECT, waybill.getExternalId());
+                startActivity(intent);
             }
         });
 

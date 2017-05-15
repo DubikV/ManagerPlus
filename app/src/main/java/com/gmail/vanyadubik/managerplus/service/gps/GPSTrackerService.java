@@ -42,7 +42,7 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATIO
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_SYNC_TRACER_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_CURRENT_ACCURACY;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SPEED_WRITE_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
@@ -87,8 +87,8 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Log.d(TAGLOG_GPS, new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-                .format(LocalDateTime.now(DateTimeZone.getDefault()).toDate().getTime()) + " start GPS servise");
+        Log.d(TAGLOG_GPS, dateFormat.format(
+                LocalDateTime.now(DateTimeZone.getDefault()).toDate().getTime()) + " start GPS servise");
 
         try {
             Double accuracy = Double.valueOf(dataRepository.getUserSetting(MIN_CURRENT_ACCURACY));
@@ -259,8 +259,8 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(TYPE_PRIORITY_CONNECTION_GPS);
         mLocationRequest.setInterval(MIN_TIME_WRITE_TRACK);
-        //mLocationRequest.setFastestInterval(MIN_TIME_WRITE_TRACK);
-        mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_WRITE_TRACK);
+        mLocationRequest.setFastestInterval(MIN_SPEED_WRITE_LOCATION);
+        //mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_WRITE_TRACK);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
