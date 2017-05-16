@@ -11,6 +11,7 @@ import com.gmail.vanyadubik.managerplus.modules.NetworkUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.PhoneUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.PhotoFileUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.service.gps.GPSTrackerService;
+import com.gmail.vanyadubik.managerplus.service.gps.GPSTrackerServiceAndroidAPI;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -31,7 +32,8 @@ public class ManagerPlusAplication extends Application{
                 .gPSTaskUtilsApiModule(new GPSTaskUtilsApiModule(this))
                 .photoFileUtilsApiModule(new PhotoFileUtilsApiModule(this))
                 .build();
-        startService(new Intent(this, GPSTrackerService.class));
+        //startService(new Intent(this, GPSTrackerService.class));
+        startService(new Intent(this, GPSTrackerServiceAndroidAPI.class));
     }
 
     public DIComponent getComponent() {

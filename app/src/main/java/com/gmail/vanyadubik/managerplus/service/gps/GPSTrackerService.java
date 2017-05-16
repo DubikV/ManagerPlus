@@ -128,7 +128,7 @@ public class GPSTrackerService extends Service {
                 sendNotification(
                         dateFormat
                                 .format(LocalDateTime.now(DateTimeZone.getDefault()).toDate().getTime())
-                                + " " + mContext.getString(R.string.gps_is_enabled), true);
+                                + " " + mContext.getString(R.string.gps_is_disabled), true);
             }
 
             @Override

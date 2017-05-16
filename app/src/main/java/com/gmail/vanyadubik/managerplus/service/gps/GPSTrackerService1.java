@@ -283,6 +283,6 @@ public class GPSTrackerService1 extends Service implements GoogleApiClient.Conne
         sendNotification(
                     dateFormat
                             .format(LocalDateTime.now(DateTimeZone.getDefault()).toDate().getTime())
-                            + " " + mContext.getString(R.string.gps_is_enabled), true);
+                            + " " + mContext.getString(R.string.gps_is_disabled), true);
     }
 }

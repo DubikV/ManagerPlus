@@ -58,7 +58,7 @@ public class AndroidLocationService implements LocationListener {
 
     }
 
-    public void startUpdates() {
+    public void startLocationUpdates() {
 
         Location location = null;
         try {
@@ -71,15 +71,17 @@ public class AndroidLocationService implements LocationListener {
 
             if (!isGPSEnabled && !isNetworkEnabled) {
 
-                locationManager.requestLocationUpdates(
-                        LocationManager.PASSIVE_PROVIDER,
-                        1000 * (timeInterval == 0 ? MIN_TIME_WRITE_TRACK : timeInterval),
-                        MIN_DISTANCE_WRITE_TRACK,
-                        this);
-                Log.d(TAGLOG_GPS, "pasive provider");
-                location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+//                locationManager.requestLocationUpdates(
+//                        LocationManager.PASSIVE_PROVIDER,
+//                        1000 * (timeInterval == 0 ? MIN_TIME_WRITE_TRACK : timeInterval),
+//                        MIN_DISTANCE_WRITE_TRACK,
+//                        this);
+//                Log.d(TAGLOG_GPS, "pasive provider");
+//                location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+//
+//                androidLocationUpdateListener.startLocation(location);
 
-                androidLocationUpdateListener.startLocation(location);
+                androidLocationUpdateListener.cannotReceiveLocationUpdates("isGPSEnabled = " + isGPSEnabled +"; isNetworkEnabled = " + isNetworkEnabled);
 
             }else {
 
@@ -120,10 +122,11 @@ public class AndroidLocationService implements LocationListener {
 
         } catch (Exception e) {
             e.printStackTrace();
+            androidLocationUpdateListener.cannotReceiveLocationUpdates("Android location service not updated");
         }
     }
 
-    public void stopUpdates() {
+    public void stopLocationUpdates() {
 
         if (locationManager != null) {
             locationManager.removeUpdates(AndroidLocationService.this);
