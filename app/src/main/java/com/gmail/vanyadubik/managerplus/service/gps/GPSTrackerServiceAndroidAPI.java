@@ -113,7 +113,7 @@ public class GPSTrackerServiceAndroidAPI extends Service implements LocationList
             if (!isGPSEnabled && !isNetworkEnabled) {
 
                 locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER,
-                        MIN_TIME_WRITE_TRACK, MIN_DISTANCE_WRITE_TRACK, this);
+                        1000 * MIN_TIME_WRITE_TRACK, MIN_DISTANCE_WRITE_TRACK, this);
                 Log.d(TAGLOG_GPS, "pasive provider");
                 location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
 

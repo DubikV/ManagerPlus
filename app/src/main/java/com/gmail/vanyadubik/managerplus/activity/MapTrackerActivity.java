@@ -25,7 +25,7 @@ import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.gps.GoogleLocationService;
-import com.gmail.vanyadubik.managerplus.service.gps.LocationUpdateListener;
+import com.gmail.vanyadubik.managerplus.service.gps.GoogleLocationUpdateListener;
 import com.gmail.vanyadubik.managerplus.service.navigationtrack.NavigationTrack;
 import com.gmail.vanyadubik.managerplus.service.navigationtrack.NavigationUpdateListener;
 import com.gmail.vanyadubik.managerplus.service.navigationtrack.ParamNavigationTrack;
@@ -110,7 +110,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
         mPreferences = getPreferences(Context.MODE_PRIVATE);
         developeMode = Boolean.valueOf(dataRepository.getUserSetting(DEVELOP_MODE));
 
-        googleLocationService = new GoogleLocationService(this, new LocationUpdateListener() {
+        googleLocationService = new GoogleLocationService(this, new GoogleLocationUpdateListener() {
             @Override
             public void canReceiveLocationUpdates() {
             }
@@ -382,7 +382,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
         if (googleLocationService != null) {
             googleLocationService.stopLocationUpdates();
         }
-        googleLocationService.startGoogleApi();
+        googleLocationService.closeGoogleApi();
     }
 
     @Override

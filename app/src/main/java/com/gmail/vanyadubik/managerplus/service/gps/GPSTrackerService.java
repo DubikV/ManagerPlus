@@ -23,6 +23,7 @@ import com.gmail.vanyadubik.managerplus.activity.StartActivity;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
+import com.gmail.vanyadubik.managerplus.utils.GPSTaskUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -48,17 +49,19 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRAC
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 
-public class GPSTrackerService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class GPSTrackerService extends Service {
 
     @Inject
     DataRepository dataRepository;
+    @Inject
+    GPSTaskUtils gpsTaskUtils;
 
     private NotificationManager mNotificationManager;
     private NotificationCompat.Builder mBuilder;
 
     private Context mContext;
-    private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
+
+    private GoogleLocationService googleLocationService;
     private Location currentBestLocation;
     private SimpleDateFormat dateFormat;
     private double minCurrentAccury;
@@ -75,11 +78,7 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
 
         dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
+        createLocationService();
 
         startNotification();
 
@@ -98,7 +97,7 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
             minCurrentAccury = MAX_COEFFICIENT_CURRENCY_LOCATION;
         }
 
-        mGoogleApiClient.connect();
+        googleLocationService.startUpdates();
 
         return START_REDELIVER_INTENT;
     }
@@ -107,12 +106,67 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
     public void onDestroy() {
         super.onDestroy();
 
-        if (mGoogleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-            mGoogleApiClient.disconnect();
+        if (googleLocationService != null) {
+            googleLocationService.stopLocationUpdates();
         }
+        googleLocationService.closeGoogleApi();
+
         mNotificationManager.cancel(DEFAULT_NOTIFICATION_GPS_TRACER_ID);
         stopForeground(true);
+    }
+
+    private void createLocationService(){
+
+        googleLocationService = new GoogleLocationService(this, new GoogleLocationUpdateListener() {
+            @Override
+            public void canReceiveLocationUpdates() {
+            }
+
+            @Override
+            public void cannotReceiveLocationUpdates(String exception) {
+                Log.i(TAGLOG_GPS, "Connection failed. Error: " + exception);
+                sendNotification(
+                        dateFormat
+                                .format(LocalDateTime.now(DateTimeZone.getDefault()).toDate().getTime())
+                                + " " + mContext.getString(R.string.gps_is_enabled), true);
+            }
+
+            @Override
+            public void updateLocation(Location location) {
+
+                if ( gpsTaskUtils.isBetterLocation(location, currentBestLocation,
+                        MIN_TIME_WRITE_TRACK, minCurrentAccury) ) {
+
+                    currentBestLocation = location;
+                }
+
+                Date date = LocalDateTime.now(DateTimeZone.getDefault()).toDate();
+                Log.d(TAGLOG_GPS, dateFormat
+                        .format(date.getTime()) +
+                        " location is null : " + String.valueOf(location == null));
+
+                if (currentBestLocation != null) {
+                    dataRepository.insertTrackPoint(new LocationPoint(date, currentBestLocation.getLatitude(),
+                            currentBestLocation.getLongitude(), true));
+                    sendNotification(
+                            dateFormat.format(date.getTime())
+                                    + "\n " + new DecimalFormat("#.####").format(currentBestLocation.getLatitude())
+                                    + "\n: " + new DecimalFormat("#.####").format(currentBestLocation.getLongitude()), false);
+                }
+
+            }
+
+            @Override
+            public void startLocation(Location location) {
+                currentBestLocation = location;
+            }
+
+        });
+        googleLocationService.setTypePriorityConnection(TYPE_PRIORITY_CONNECTION_GPS);
+        googleLocationService.setTimeInterval(MIN_TIME_WRITE_TRACK);
+        googleLocationService.setFastesInterval(MIN_SPEED_WRITE_LOCATION);
+        googleLocationService.setDistance(MIN_DISTANCE_WRITE_TRACK);
+
     }
 
     //Send custom notification
@@ -164,125 +218,8 @@ public class GPSTrackerService extends Service implements GoogleApiClient.Connec
     }
 
     @Override
-    public void onLocationChanged(Location location) {
-        if (isBetterLocation(location, currentBestLocation)) {
-            currentBestLocation = location;
-        }
-
-        Date date = LocalDateTime.now(DateTimeZone.getDefault()).toDate();
-        Log.d(TAGLOG_GPS, dateFormat
-                .format(date.getTime()) +
-                " location is null : " + String.valueOf(location == null));
-
-        if (currentBestLocation != null) {
-            dataRepository.insertTrackPoint(new LocationPoint(date, currentBestLocation.getLatitude(),
-                    currentBestLocation.getLongitude(), true));
-            sendNotification(
-                    dateFormat.format(date.getTime())
-                            + "\n " + new DecimalFormat("#.####").format(currentBestLocation.getLatitude())
-                            + "\n: " + new DecimalFormat("#.####").format(currentBestLocation.getLongitude()), false);
-        }
-    }
-
-    @Override
     public IBinder onBind(Intent arg0) {
         return null;
     }
 
-    protected boolean isBetterLocation(Location location, Location currentBestLocation) {
-
-        if (currentBestLocation == null) {
-            return true;
-        }
-
-        if (!isLocationAccurate(location)) {
-            return false;
-        }
-
-        if (location.getAccuracy() - currentBestLocation.getAccuracy() > (minCurrentAccury/2) ||
-                location.getAccuracy() > minCurrentAccury) {
-            return false;
-        }
-
-        // Check whether the new location fix is newer or older
-        long timeDelta = location.getTime() - currentBestLocation.getTime();
-        boolean isSignificantlyNewer = timeDelta > MIN_TIME_WRITE_TRACK * 2;
-        boolean isSignificantlyOlder = timeDelta < -MIN_TIME_WRITE_TRACK * 2;
-        boolean isNewer = timeDelta > 0;
-
-        // If it's been more than two minutes since the current location, use the new location,
-        // because the user has likely moved.
-        if (isSignificantlyNewer) {
-            return true;
-            // If the new location is more than two minutes older, it must be worse.
-        } else if (isSignificantlyOlder) {
-            return false;
-        }
-
-        // Check whether the new location fix is more or less accurate
-        int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
-        boolean isLessAccurate = accuracyDelta > 0;
-        boolean isMoreAccurate = accuracyDelta < 0;
-        boolean isSignificantlyLessAccurate = accuracyDelta > 200;
-
-        // Check if the old and new location are from the same provider
-        boolean isFromSameProvider = isSameProvider(location.getProvider(),
-                currentBestLocation.getProvider());
-
-        // Determine location quality using a combination of timeliness and accuracy
-        if (isMoreAccurate) {
-            return true;
-        } else if (isNewer && !isLessAccurate) {
-            return true;
-        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isSameProvider(String provider1, String provider2) {
-        if (provider1 == null) {
-            return provider2 == null;
-        }
-        return provider1.equals(provider2);
-    }
-
-    public boolean isLocationAccurate(Location location) {
-        if (location.hasAccuracy()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        mLocationRequest = LocationRequest.create();
-        mLocationRequest.setPriority(TYPE_PRIORITY_CONNECTION_GPS);
-        mLocationRequest.setInterval(MIN_TIME_WRITE_TRACK);
-        mLocationRequest.setFastestInterval(MIN_SPEED_WRITE_LOCATION);
-        //mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_WRITE_TRACK);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.i(TAGLOG_GPS, "Connection Suspended");
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.i(TAGLOG_GPS, "Connection failed. Error: " + connectionResult.getErrorCode());
-        sendNotification(
-                    dateFormat
-                            .format(LocalDateTime.now(DateTimeZone.getDefault()).toDate().getTime())
-                            + " " + mContext.getString(R.string.gps_is_enabled), true);
-    }
 }
