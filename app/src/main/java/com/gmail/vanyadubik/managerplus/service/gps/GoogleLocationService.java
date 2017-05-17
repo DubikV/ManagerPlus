@@ -25,7 +25,7 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
 public class GoogleLocationService implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener{
 
-    private LocationUpdateListener locationUpdateListener;
+    private GoogleLocationUpdateListener googleLocationUpdateListener;
     private Context mContext;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -34,8 +34,8 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
     private static long timeInterval, fastesInterval, distance;
 
 
-    public GoogleLocationService(Context mContext, LocationUpdateListener locationUpdateListener) {
-        this.locationUpdateListener = locationUpdateListener;
+    public GoogleLocationService(Context mContext, GoogleLocationUpdateListener googleLocationUpdateListener) {
+        this.googleLocationUpdateListener = googleLocationUpdateListener;
         this.mContext = mContext;
         buildGoogleApiClient();
     }
@@ -70,12 +70,12 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(typePriorityConnection == 0 ?
                 LocationRequest.PRIORITY_HIGH_ACCURACY : typePriorityConnection);
-        mLocationRequest.setInterval(timeInterval == 0 ?
-                MIN_TIME_WRITE_TRACK : timeInterval);
-        mLocationRequest.setFastestInterval(fastesInterval == 0 ?
-                MIN_SPEED_WRITE_LOCATION : fastesInterval);
-//        mLocationRequest.setSmallestDisplacement(distance == 0 ?
-//                MIN_DISTANCE_WRITE_TRACK : distance);
+        mLocationRequest.setInterval(
+                1000 * (timeInterval == 0 ? MIN_TIME_WRITE_TRACK : timeInterval));
+        mLocationRequest.setFastestInterval(
+                fastesInterval == 0 ? MIN_SPEED_WRITE_LOCATION : fastesInterval);
+        mLocationRequest.setSmallestDisplacement(
+                distance == 0 ? MIN_DISTANCE_WRITE_TRACK : distance);
 
     }
 
@@ -97,12 +97,12 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
                 Log.i(TAGLOG_GPS, "Google play service not updated");
 
             }
-            locationUpdateListener.cannotReceiveLocationUpdates("Google play service not updated");
+            googleLocationUpdateListener.cannotReceiveLocationUpdates("Google play service not updated");
         }
 
         @Override
         public void onLocationChanged(Location location) {
-            locationUpdateListener.updateLocation(location);
+            googleLocationUpdateListener.updateLocation(location);
         }
 
     private static boolean locationEnabled(Context context) {
@@ -139,14 +139,14 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
      */
         if (servicesConnected(mContext)) {
             if (locationEnabled(mContext)) {
-                locationUpdateListener.canReceiveLocationUpdates();
+                googleLocationUpdateListener.canReceiveLocationUpdates();
                 startLocationUpdates();
             } else {
-                locationUpdateListener.cannotReceiveLocationUpdates("Unable to get your location.Please turn on your device Gps");
+                googleLocationUpdateListener.cannotReceiveLocationUpdates("Unable to get your location.Please turn on your device Gps");
                 Log.e(TAGLOG_GPS, "Unable to get your location.Please turn on your device Gps");
             }
         } else {
-            locationUpdateListener.cannotReceiveLocationUpdates("Google play service not available");
+            googleLocationUpdateListener.cannotReceiveLocationUpdates("Google play service not available");
             Log.e(TAGLOG_GPS, "Google play service not available");
         }
     }
@@ -159,7 +159,7 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
     //start location updates
     public void startLocationUpdates() {
 
-        locationUpdateListener.startLocation(LocationServices.FusedLocationApi.getLastLocation(
+        googleLocationUpdateListener.startLocation(LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient));
 
         if (ActivityCompat.checkSelfPermission(mContext, ACCESS_FINE_LOCATION) !=

@@ -26,7 +26,7 @@ import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.gps.GoogleLocationService;
-import com.gmail.vanyadubik.managerplus.service.gps.LocationUpdateListener;
+import com.gmail.vanyadubik.managerplus.service.gps.GoogleLocationUpdateListener;
 import com.gmail.vanyadubik.managerplus.utils.GPSTaskUtils;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -95,7 +95,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         mPreferences = getPreferences(Context.MODE_PRIVATE);
 
-        googleLocationService = new GoogleLocationService(this, new LocationUpdateListener() {
+        googleLocationService = new GoogleLocationService(this, new GoogleLocationUpdateListener() {
             @Override
             public void canReceiveLocationUpdates() {
             }
@@ -424,7 +424,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (googleLocationService != null) {
             googleLocationService.stopLocationUpdates();
         }
-        googleLocationService.startGoogleApi();
+        googleLocationService.closeGoogleApi();
     }
 
     @Override

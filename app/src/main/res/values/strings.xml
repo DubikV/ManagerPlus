@@ -32,7 +32,7 @@
     <!-- GPS -->
     <string name="gps_is_setting">Налаштування місцезнаходження</string>
     <string name="gps_is_enabled_open_settings">На пристрої вимкнене визначення місцезнаходження.</string>
-    <string name="gps_is_enabled">Вимкнений GPS</string>
+    <string name="gps_is_disabled">Вимкнений GPS</string>
     <string name="gps_tracer_name">GPS Tracker</string>
 
     <!-- Phone -->

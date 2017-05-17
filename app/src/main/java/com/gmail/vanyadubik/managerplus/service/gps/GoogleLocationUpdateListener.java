@@ -1,8 +1,9 @@
 package com.gmail.vanyadubik.managerplus.service.gps;
 
 import android.location.Location;
+import android.os.Bundle;
 
-public interface LocationUpdateListener{
+public interface GoogleLocationUpdateListener {
 
     /**
      * Called immediately the service starts if the service can obtain location
@@ -25,4 +26,5 @@ public interface LocationUpdateListener{
      * @param location
      */
     void startLocation(Location location);
+
 }
