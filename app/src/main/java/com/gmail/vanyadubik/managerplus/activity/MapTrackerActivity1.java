@@ -20,7 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
@@ -348,8 +347,9 @@ public class MapTrackerActivity1 extends AppCompatActivity implements OnMapReady
 
         if (waybill == null){
             Toast.makeText(getApplicationContext(),
-                            "Not initialize last waybill",
-                            Toast.LENGTH_SHORT).show();
+                    getResources().getString(R.string.waybill_not_start),
+                    Toast.LENGTH_SHORT)
+                    .show();
             finish();
             return;
         }

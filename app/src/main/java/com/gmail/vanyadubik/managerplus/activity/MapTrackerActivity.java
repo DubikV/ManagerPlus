@@ -26,8 +26,6 @@ import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.gps.AndroidLocationService;
 import com.gmail.vanyadubik.managerplus.service.gps.AndroidLocationUpdateListener;
-import com.gmail.vanyadubik.managerplus.service.gps.GoogleLocationService;
-import com.gmail.vanyadubik.managerplus.service.gps.GoogleLocationUpdateListener;
 import com.gmail.vanyadubik.managerplus.service.navigationtrack.NavigationTrack;
 import com.gmail.vanyadubik.managerplus.service.navigationtrack.NavigationUpdateListener;
 import com.gmail.vanyadubik.managerplus.service.navigationtrack.ParamNavigationTrack;
@@ -63,13 +61,11 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CUR
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_CURRENT_ACCURACY;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SPEED_WRITE_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_ZOOM_TITLE_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TILT_CAMERA_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TIME_MAP_ANIMATE_CAMERA;
-import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.WIDTH_POLYLINE_MAP;
 
 public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -352,8 +348,9 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
 
         if (waybill == null){
             Toast.makeText(getApplicationContext(),
-                            "Not initialize last waybill",
-                            Toast.LENGTH_SHORT).show();
+                    getResources().getString(R.string.waybill_not_start),
+                    Toast.LENGTH_SHORT)
+                    .show();
             finish();
             return;
         }
