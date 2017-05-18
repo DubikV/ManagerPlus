@@ -32,8 +32,8 @@ public class ManagerPlusAplication extends Application{
                 .gPSTaskUtilsApiModule(new GPSTaskUtilsApiModule(this))
                 .photoFileUtilsApiModule(new PhotoFileUtilsApiModule(this))
                 .build();
-        //startService(new Intent(this, GPSTrackerService.class));
-        startService(new Intent(this, GPSTrackerServiceAndroidAPI.class));
+        startService(new Intent(this, GPSTrackerService.class));
+        //startService(new Intent(this, GPSTrackerServiceAndroidAPI.class));
     }
 
     public DIComponent getComponent() {
