@@ -103,7 +103,7 @@ public class MapTrackerActivity2 extends AppCompatActivity implements OnMapReady
         setContentView(R.layout.activity_map);
         getSupportActionBar().setTitle(getResources().getString(R.string.map_track_route));
 
-        ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
+        //((ManagerPlusAplication) getApplication()).getComponent().inject(this);
 
         mPreferences = getPreferences(Context.MODE_PRIVATE);
         developeMode = Boolean.valueOf(dataRepository.getUserSetting(DEVELOP_MODE));
