@@ -24,8 +24,8 @@ import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
-import com.gmail.vanyadubik.managerplus.service.gps.AndroidLocationService;
-import com.gmail.vanyadubik.managerplus.service.gps.AndroidLocationUpdateListener;
+import com.gmail.vanyadubik.managerplus.service.gps.GoogleLocationService;
+import com.gmail.vanyadubik.managerplus.service.gps.GoogleLocationUpdateListener;
 import com.gmail.vanyadubik.managerplus.service.navigationtrack.NavigationTrack;
 import com.gmail.vanyadubik.managerplus.service.navigationtrack.NavigationUpdateListener;
 import com.gmail.vanyadubik.managerplus.service.navigationtrack.ParamNavigationTrack;
@@ -61,11 +61,13 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CUR
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_CURRENT_ACCURACY;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SPEED_WRITE_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_ZOOM_TITLE_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TILT_CAMERA_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TIME_MAP_ANIMATE_CAMERA;
+import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.WIDTH_POLYLINE_MAP;
 
 public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -82,7 +84,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
     private SharedPreferences mPreferences;
     private GoogleMap mMap;
     private SupportMapFragment locationMapFragment;
-    private AndroidLocationService androidLocationService;
+    private GoogleLocationService googleLocationService;
     private Location lastCurrentLocation, locationCheckNavigation, oldCurrentLocation;
     private Marker mCurrLocationMarker, mOtherLocationMarker;
     private Polyline polylineTrack;
@@ -108,7 +110,11 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
         mPreferences = getPreferences(Context.MODE_PRIVATE);
         developeMode = Boolean.valueOf(dataRepository.getUserSetting(DEVELOP_MODE));
 
-        androidLocationService = new AndroidLocationService(this, new AndroidLocationUpdateListener() {
+        googleLocationService = new GoogleLocationService(this, new GoogleLocationUpdateListener() {
+            @Override
+            public void canReceiveLocationUpdates() {
+            }
+
             @Override
             public void cannotReceiveLocationUpdates(String exception) {
                 Toast.makeText(getApplicationContext(), exception, Toast.LENGTH_SHORT).show();
@@ -116,6 +122,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
 
             @Override
             public void updateLocation(Location location) {
+
                 if(developeMode) {
                     String textMessage = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
                             .format(location.getTime())
@@ -152,19 +159,12 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
                 insertMarker();
             }
 
-            @Override
-            public void onProviderDisabledEnabled(Boolean using, String provider) {
-
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
         });
-        androidLocationService.setTimeInterval(MIN_TIME_WRITE_TRACK);
-        androidLocationService.setDistance(MIN_DISTANCE_WRITE_TRACK);
-        androidLocationService.startLocationUpdates();
+        googleLocationService.setTypePriorityConnection(TYPE_PRIORITY_CONNECTION_GPS);
+        googleLocationService.setTimeInterval(MIN_TIME_WRITE_TRACK);
+        googleLocationService.setFastesInterval(MIN_SPEED_WRITE_LOCATION);
+        googleLocationService.setDistance(MIN_DISTANCE_WRITE_TRACK);
+        googleLocationService.startUpdates();
 
         moveMarker = true;
         setUpMap();
@@ -342,7 +342,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
     protected void onResume() {
         super.onResume();
 
-        androidLocationService.startLocationUpdates();
+        googleLocationService.startLocationUpdates();
 
         waybill = dataRepository.getLastWaybill();
 
@@ -380,16 +380,17 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (androidLocationService != null) {
-            androidLocationService.stopLocationUpdates();
+        if (googleLocationService != null) {
+            googleLocationService.stopLocationUpdates();
         }
+        googleLocationService.closeGoogleApi();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (androidLocationService != null) {
-            androidLocationService.stopLocationUpdates();
+        if (googleLocationService != null) {
+            googleLocationService.stopLocationUpdates();
         }
 
         mPreferences.edit().putInt(MAP_TTACK_ZOOM_PREF, sbZoom.getProgress()).apply();
@@ -484,10 +485,6 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
 
             if (mCurrLocationMarker == null) {
                 insertMarker();
-            }
-
-            if (mCurrLocationMarker == null) {
-                return;
             }
 
             LatLng position = new LatLng(lastCurrentLocation.getLatitude(),

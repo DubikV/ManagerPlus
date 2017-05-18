@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -36,10 +35,8 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATIO
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_CURRENT_ACCURACY;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SPEED_WRITE_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
-import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 
 public class GPSTrackerServiceAndroidAPI extends Service {
 
@@ -122,9 +119,9 @@ public class GPSTrackerServiceAndroidAPI extends Service {
             @Override
             public void updateLocation(Location location) {
 
-                if (!location.getProvider().equals(LocationManager.GPS_PROVIDER)){
-                    return;
-                }
+//                if (!location.getProvider().equals(LocationManager.GPS_PROVIDER)){
+//                    return;
+//                }
 
                 if ( gpsTaskUtils.isBetterLocation(location, currentBestLocation,
                         MIN_TIME_WRITE_TRACK, minCurrentAccury) ) {
