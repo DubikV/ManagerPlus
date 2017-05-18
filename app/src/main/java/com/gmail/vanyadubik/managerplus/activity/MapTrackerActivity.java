@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
+import com.gmail.vanyadubik.managerplus.gps.KalmanFilterLocation;
 import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
@@ -98,6 +99,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
     private TextView sbZoomProgress, messageMap;
     private Boolean developeMode;
     private double minCurrentAccury;
+    private KalmanFilterLocation kalmanFilterLocation;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -109,6 +111,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
 
         mPreferences = getPreferences(Context.MODE_PRIVATE);
         developeMode = Boolean.valueOf(dataRepository.getUserSetting(DEVELOP_MODE));
+        kalmanFilterLocation = new KalmanFilterLocation();
 
         googleLocationService = new GoogleLocationService(this, new GoogleLocationUpdateListener() {
             @Override
@@ -122,6 +125,8 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
 
             @Override
             public void updateLocation(Location location) {
+
+                location = kalmanFilterLocation.FilteredLocation(lastCurrentLocation, location);
 
                 if(developeMode) {
                     String textMessage = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")

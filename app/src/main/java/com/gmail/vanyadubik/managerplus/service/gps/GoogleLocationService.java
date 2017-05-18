@@ -103,6 +103,7 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
 
         @Override
         public void onLocationChanged(Location location) {
+
             googleLocationUpdateListener.updateLocation(location);
         }
 

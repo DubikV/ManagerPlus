@@ -1,34 +1,25 @@
 package com.gmail.vanyadubik.managerplus.service.gps;
 
-import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.StartActivity;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
+import com.gmail.vanyadubik.managerplus.gps.KalmanFilterLocation;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.utils.GPSTaskUtils;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -65,6 +56,7 @@ public class GPSTrackerService extends Service {
     private Location currentBestLocation;
     private SimpleDateFormat dateFormat;
     private double minCurrentAccury;
+    private KalmanFilterLocation kalmanFilterLocation;
 
     @Override
     public void onCreate() {
@@ -77,6 +69,8 @@ public class GPSTrackerService extends Service {
         mNotificationManager = (NotificationManager) this.getSystemService(this.NOTIFICATION_SERVICE);
 
         dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
+        kalmanFilterLocation = new KalmanFilterLocation();
 
         createLocationService();
 
@@ -133,6 +127,8 @@ public class GPSTrackerService extends Service {
 
             @Override
             public void updateLocation(Location location) {
+
+                location = kalmanFilterLocation.FilteredLocation(currentBestLocation, location);
 
                 if ( gpsTaskUtils.isBetterLocation(location, currentBestLocation,
                         MIN_TIME_WRITE_TRACK, minCurrentAccury) ) {

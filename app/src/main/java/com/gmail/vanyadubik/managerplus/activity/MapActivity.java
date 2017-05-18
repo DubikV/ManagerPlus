@@ -108,6 +108,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void updateLocation(Location location) {
 
+
+
                 if ( gpsTaskUtils.isBetterLocation(location, lastCurrentLocation,
                         MIN_TIME_WRITE_TRACK, MAX_COEFFICIENT_CURRENCY_LOCATION) ) {
                     lastCurrentLocation = location;
