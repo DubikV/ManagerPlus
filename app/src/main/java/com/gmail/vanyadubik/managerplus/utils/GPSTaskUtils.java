@@ -36,9 +36,9 @@ public class GPSTaskUtils {
             return false;
         }
 
-        if (!location.hasSpeed()|| location.getSpeed() <= 0) {
-            return false;
-        }
+//        if (!location.hasSpeed()|| location.getSpeed() <= 0) {
+//            return false;
+//        }
         if(currentBestLocation.distanceTo(location) < MIN_DISTANCE_WRITE_TRACK){
             return false;
         }
