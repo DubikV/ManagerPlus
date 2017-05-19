@@ -128,7 +128,7 @@ public class GPSTrackerService extends Service {
             @Override
             public void updateLocation(Location location) {
 
-                location = kalmanFilterLocation.FilteredLocation(currentBestLocation, location);
+                //location = kalmanFilterLocation.FilteredLocation(currentBestLocation, location);
 
                 if ( gpsTaskUtils.isBetterLocation(location, currentBestLocation,
                         MIN_TIME_WRITE_TRACK, minCurrentAccury) ) {

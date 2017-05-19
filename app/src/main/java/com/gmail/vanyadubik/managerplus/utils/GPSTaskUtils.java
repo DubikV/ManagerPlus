@@ -43,6 +43,8 @@ public class GPSTaskUtils {
             return false;
         }
 
+        minTime = minTime * 1000;
+
         // Check whether the new location fix is newer or older
         long timeDelta = location.getTime() - currentBestLocation.getTime();
         boolean isSignificantlyNewer = timeDelta > minTime * 2;
