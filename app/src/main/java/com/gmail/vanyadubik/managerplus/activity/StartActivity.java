@@ -28,10 +28,13 @@ import com.gmail.vanyadubik.managerplus.adapter.tabadapter.TabFragmentVisit;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.TabFragmentWaybill;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.fragment.ClientListFragment;
+import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
 import com.gmail.vanyadubik.managerplus.service.gps.TaskSchedure;
+
+import org.joda.time.LocalDateTime;
 
 import java.text.SimpleDateFormat;
 
@@ -111,26 +114,26 @@ public class StartActivity extends AppCompatActivity{
                                 + " location is - \nLat: " + locationPoint.getLatitude()
                                 + "\nLong: " + locationPoint.getLongitude(),
                         Toast.LENGTH_LONG).show();
+
+//                GpsTracking gpsTracking = new GpsTracking(getApplicationContext());
+////                gpsTracking.ApplyGpsTrackingSettings(
+////                        5,
+////                        (int) LocalDateTime.now().toDate().getTime(),
+////                        31,
+////                        true,
+////                        true,
+////                        "gpa_data",
+////                        1,
+////                        "pda.avtalantik.com.ua",
+////                        "ppcGuid",
+////                        "erpId",
+////                        5,
+////                        1235,
+////                        2,
+////                        true
+////                );
+//                gpsTracking.StartGpsTracking();
             }
-//            if(gpsTracker.canGetLocation()){
-//                LocationPoint locationPoint = gpsTracker.getLocationPoint();
-//
-////                Snackbar.make(findViewById(R.id.containerView),
-////                                new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(locationPoint.getDate().getTime())
-////                                + " location is - \nLat: " + locationPoint.getLatitude()
-////                                + "\nLong: " + locationPoint.getLongitude()
-////                                , Snackbar.LENGTH_LONG)
-////                        .show();
-//
-//                Toast.makeText(getApplicationContext(),
-//                        new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-//                                .format(locationPoint.getDate().getTime())
-//                                + " location is - \nLat: " + locationPoint.getLatitude()
-//                                + "\nLong: " + locationPoint.getLongitude(),
-//                        Toast.LENGTH_LONG).show();
-//            }else{
-//                gpsTracker.showSettingsAlert();
-//            }
             return true;
         }
 

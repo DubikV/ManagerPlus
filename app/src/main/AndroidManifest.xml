@@ -43,19 +43,19 @@
                 <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
             </intent-filter>
         </service>
-        <receiver
-        android:name=".service.gps.GPSTrackerReceiver"
-        android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
-        android:enabled="true">
+        <!--<receiver-->
+        <!--android:name=".service.gps.GPSTrackerReceiver"-->
+        <!--android:permission="android.permission.RECEIVE_BOOT_COMPLETED"-->
+        <!--android:enabled="true">-->
 
-            <intent-filter>
-               <action android:name="android.intent.action.BOOT_COMPLETED" />
-               <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-               <action android:name="android.intent.action.REBOOT"/>
-               <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
+            <!--<intent-filter>-->
+               <!--<action android:name="android.intent.action.BOOT_COMPLETED" />-->
+               <!--<action android:name="android.intent.action.QUICKBOOT_POWERON" />-->
+               <!--<action android:name="android.intent.action.REBOOT"/>-->
+               <!--<category android:name="android.intent.category.DEFAULT" />-->
+            <!--</intent-filter>-->
 
-        </receiver>
+        <!--</receiver>-->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version"/>
@@ -102,6 +102,15 @@
         <activity
             android:name=".activity.ImageActivity">
         </activity>
+
+        <receiver android:name="com.gmail.vanyadubik.managerplus.gps.service.RepeatingAlarmService"/>
+        <receiver android:enabled="true" android:exported="false" android:name="com.gmail.vanyadubik.managerplus.gps.service.OnBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+        <service android:enabled="true" android:name="com.gmail.vanyadubik.managerplus.gps.service.ServiceGpsTracking"/>
+
     </application>
 
 </manifest>

@@ -3,6 +3,7 @@ package com.gmail.vanyadubik.managerplus.app;
 import android.app.Application;
 import android.content.Intent;
 
+import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking;
 import com.gmail.vanyadubik.managerplus.modules.ActivityUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.DataApiModule;
 import com.gmail.vanyadubik.managerplus.modules.ErrorUtilsApiModule;
@@ -33,6 +34,8 @@ public class ManagerPlusAplication extends Application{
                 .build();
         startService(new Intent(this, GPSTrackerService.class));
         //startService(new Intent(this, GPSTrackerServiceAndroidAPI.class));
+        GpsTracking gpsTracking = new GpsTracking(getApplicationContext());
+        gpsTracking.StartGpsTracking();
     }
 
     public DIComponent getComponent() {
