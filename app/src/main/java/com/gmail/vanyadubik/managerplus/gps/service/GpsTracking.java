@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.text.TextUtils;
 
+import com.gmail.vanyadubik.managerplus.gps.service.android.ServiceGpsTracking;
+
 import java.io.File;
 import java.sql.Timestamp;
 

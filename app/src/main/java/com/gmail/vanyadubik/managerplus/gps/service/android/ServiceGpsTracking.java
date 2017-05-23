@@ -1,4 +1,4 @@
-package com.gmail.vanyadubik.managerplus.gps.service;
+package com.gmail.vanyadubik.managerplus.gps.service.android;
 
 import android.Manifest;
 import android.app.AlarmManager;
@@ -18,10 +18,16 @@ import android.os.IBinder;
 import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 
+import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking;
+import com.gmail.vanyadubik.managerplus.gps.service.Provider;
+import com.gmail.vanyadubik.managerplus.gps.service.RepeatingAlarmService;
+import com.gmail.vanyadubik.managerplus.gps.service.SharedStorage;
+
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 
 
@@ -66,7 +72,7 @@ public class ServiceGpsTracking extends Service {
         }
 
         public void onLocationChanged(Location location) {
-            if (location != null) {
+            if (location != null && location.hasAccuracy() && location.getAccuracy() < MAX_COEFFICIENT_CURRENCY_LOCATION) {
                 ServiceGpsTracking.this.lastnLocationTimeMillis = SystemClock.elapsedRealtime();
                 ServiceGpsTracking.gpsLatitude = location.getLatitude();
                 ServiceGpsTracking.gpsLongitude = location.getLongitude();

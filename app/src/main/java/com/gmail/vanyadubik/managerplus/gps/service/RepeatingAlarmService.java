@@ -8,6 +8,7 @@ import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.SystemClock;
 
+import com.gmail.vanyadubik.managerplus.gps.service.android.ServiceGpsTracking;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepositoryImpl;
 
@@ -24,7 +25,7 @@ public class RepeatingAlarmService extends BroadcastReceiver {
         if (action.equals(ACTION_WRITE_TRACK)) {
             ServiceGpsTracking.lastAlarmTick = SystemClock.elapsedRealtime();
             if (ServiceGpsTracking.gpsLatitude != 0.0 && ServiceGpsTracking.gpsLongitude != 0.0) {
-                saveLastLocation(context, new Timestamp(ServiceGpsTracking.bGpsTime ? ServiceGpsTracking.gpsTime : System.currentTimeMillis()),
+                saveLastLocation(context, new Timestamp(ServiceGpsTracking.gpsTime),
                         Gps.CorrectGPSDegree(ServiceGpsTracking.gpsLatitude),
                         Gps.CorrectGPSDegree(ServiceGpsTracking.gpsLongitude),
                         ServiceGpsTracking.gpsSpeed,
