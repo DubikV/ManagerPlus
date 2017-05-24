@@ -48,6 +48,7 @@ dependencies {
     compile 'com.google.android.gms:play-services:9.6.1'
     compile 'com.google.maps.android:android-maps-utils:0.4+'
     compile project(':slideDateTimePicker')
+    compile 'com.prolificinteractive:material-calendarview:1.4.3'
 
     // Version 23+ is required
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
