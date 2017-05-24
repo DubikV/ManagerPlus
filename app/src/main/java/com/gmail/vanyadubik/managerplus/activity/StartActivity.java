@@ -1,7 +1,5 @@
 package com.gmail.vanyadubik.managerplus.activity;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -21,22 +19,15 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.TabFragmentVisit;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.TabFragmentWaybill;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.fragment.ClientListFragment;
-import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking;
-import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
 import com.gmail.vanyadubik.managerplus.service.gps.TaskSchedure;
-
-import org.joda.time.LocalDateTime;
-
-import java.text.SimpleDateFormat;
 
 import javax.inject.Inject;
 
@@ -103,40 +94,6 @@ public class StartActivity extends AppCompatActivity{
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-
-        if (id == R.id.action_show_location) {
-
-            LocationPoint locationPoint = dataRepository.getLastTrackPoint();
-            if(locationPoint!=null) {
-                Toast.makeText(getApplicationContext(),
-                        new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-                                .format(locationPoint.getDate().getTime())
-                                + " location is - \nLat: " + locationPoint.getLatitude()
-                                + "\nLong: " + locationPoint.getLongitude(),
-                        Toast.LENGTH_LONG).show();
-
-//                GpsTracking gpsTracking = new GpsTracking(getApplicationContext());
-////                gpsTracking.ApplyGpsTrackingSettings(
-////                        5,
-////                        (int) LocalDateTime.now().toDate().getTime(),
-////                        31,
-////                        true,
-////                        true,
-////                        "gpa_data",
-////                        1,
-////                        "pda.avtalantik.com.ua",
-////                        "ppcGuid",
-////                        "erpId",
-////                        5,
-////                        1235,
-////                        2,
-////                        true
-////                );
-//                gpsTracking.StartGpsTracking();
-            }
-            return true;
-        }
-
         if (id == R.id.action_sync) {
                 Intent intent = new Intent(this, SyncIntentTrackService.class);
                 intent.putExtra(MIN_COUNT, 5000);
@@ -150,17 +107,6 @@ public class StartActivity extends AppCompatActivity{
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private boolean isServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private void startServices(){

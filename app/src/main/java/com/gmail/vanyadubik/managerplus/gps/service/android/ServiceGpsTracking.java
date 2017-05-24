@@ -230,6 +230,8 @@ public class ServiceGpsTracking extends Service {
         if (this.locManager != null) {
             this.locManager.removeUpdates(this.locListener);
         }
+        mNotificationManager.cancel(DEFAULT_NOTIFICATION_GPS_TRACER_ID);
+        stopForeground(true);
     }
 
     private void OnGpsStatusChanged(int status) {

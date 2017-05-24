@@ -22,6 +22,7 @@ import com.gmail.vanyadubik.managerplus.modules.GPSTaskUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.NetworkUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.PhoneUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.PhotoFileUtilsApiModule;
+import com.gmail.vanyadubik.managerplus.modules.ServiceUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.service.gps.GPSTrackerService;
 import com.gmail.vanyadubik.managerplus.service.gps.GPSTrackerServiceAndroidAPI;
 import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
@@ -35,7 +36,7 @@ import dagger.Component;
 @Component(modules = {DataApiModule.class, NetworkUtilsApiModule.class,
         ActivityUtilsApiModule.class, ErrorUtilsApiModule.class,
         PhoneUtilsApiModule.class, GPSTaskUtilsApiModule.class,
-        PhotoFileUtilsApiModule.class})
+        PhotoFileUtilsApiModule.class, ServiceUtilsApiModule.class})
 public interface DIComponent {
 
     void inject(StartActivity startActivity);
