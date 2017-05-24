@@ -32,7 +32,7 @@ public class Consts {
     public final static String MIN_CURRENT_ACCURACY = "min_current_accuracy";
 
     // GPS
-    public static final long MIN_DISTANCE_WRITE_TRACK = 40; //30 meters  //20 - impression  40???
+    public static final long MIN_DISTANCE_WRITE_TRACK = 20; //30 meters  //20 - impression  40???
     public static final long MIN_TIME_WRITE_TRACK = 5; // 10seconds //5 - impression
     public static final long  MIN_SPEED_WRITE_LOCATION = MIN_TIME_WRITE_TRACK/2; //
     public static final long MIN_TIME_SYNK_TRACK = 15*60; // seconds

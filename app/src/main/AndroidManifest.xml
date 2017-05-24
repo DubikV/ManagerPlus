@@ -104,9 +104,14 @@
         </activity>
 
         <receiver android:name="com.gmail.vanyadubik.managerplus.gps.service.RepeatingAlarmService"/>
-        <receiver android:enabled="true" android:exported="false" android:name="com.gmail.vanyadubik.managerplus.gps.service.OnBootReceiver">
+        <receiver android:name="com.gmail.vanyadubik.managerplus.gps.service.OnBootReceiver"
+            android:enabled="true"
+            android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+             <action android:name="android.intent.action.BOOT_COMPLETED" />
+             <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+             <action android:name="android.intent.action.REBOOT"/>
+             <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
         <service android:enabled="true" android:name="com.gmail.vanyadubik.managerplus.gps.service.android.ServiceGpsTracking"/>

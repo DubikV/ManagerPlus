@@ -3,46 +3,70 @@ package com.gmail.vanyadubik.managerplus.gps.service.android;
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
-import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 
+import com.gmail.vanyadubik.managerplus.R;
+import com.gmail.vanyadubik.managerplus.activity.StartActivity;
+import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking;
 import com.gmail.vanyadubik.managerplus.gps.service.Provider;
 import com.gmail.vanyadubik.managerplus.gps.service.RepeatingAlarmService;
 import com.gmail.vanyadubik.managerplus.gps.service.SharedStorage;
+import com.gmail.vanyadubik.managerplus.repository.DataRepository;
+import com.gmail.vanyadubik.managerplus.repository.DataRepositoryImpl;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
+
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
+import javax.inject.Inject;
+
+import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_GPS_TRACER_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
+import static com.gmail.vanyadubik.managerplus.gps.service.google.ServiceGpsTracking.gpsLatitude;
+import static com.gmail.vanyadubik.managerplus.gps.service.google.ServiceGpsTracking.gpsLongitude;
 
 
 public class ServiceGpsTracking extends Service {
+
+    @Inject
+    DataRepository dataRepository;
+
     private static final int CHANGE_LOCATION_INTERVAL = 1000;
     public static int REQUEST_CODE;
     public static AlarmManager alarmManager;
     public static boolean bGpsTime;
     private static Context context;
-    public static int days;
-    public static double gpsLatitude;
+    public static Location location;
+    public static Location lastCurrentLocation;
     public static int gpsLocationSource;
-    public static double gpsLongitude;
-    public static double gpsSpeed;
-    public static long gpsTime;
+    public static DataRepository dataRepositoryDB;
+//    public static double gpsLatitude;
+//    public static double gpsLongitude;
+//    public static double gpsSpeed;
+//    public static long gpsTime;
     private static int interval;
     public static long lastAlarmTick;
     public static int locationSource;
@@ -52,6 +76,10 @@ public class ServiceGpsTracking extends Service {
     private long lastnLocationTimeMillis;
     private LocationListener locListener;
     private LocationManager locManager;
+
+    private NotificationManager mNotificationManager;
+    private static NotificationCompat.Builder mBuilder;
+    private SimpleDateFormat dateFormat;
 
     class GpsTrackingStatusTimerTask extends TimerTask {
         GpsTrackingStatusTimerTask() {
@@ -72,12 +100,9 @@ public class ServiceGpsTracking extends Service {
         }
 
         public void onLocationChanged(Location location) {
-            if (location != null && location.hasAccuracy() && location.getAccuracy() < MAX_COEFFICIENT_CURRENCY_LOCATION) {
+            if (location != null) {
                 ServiceGpsTracking.this.lastnLocationTimeMillis = SystemClock.elapsedRealtime();
-                ServiceGpsTracking.gpsLatitude = location.getLatitude();
-                ServiceGpsTracking.gpsLongitude = location.getLongitude();
-                ServiceGpsTracking.gpsSpeed = (double) location.getSpeed();
-                ServiceGpsTracking.gpsTime = location.getTime();
+                ServiceGpsTracking.location = location;
                 ServiceGpsTracking.gpsLocationSource = Provider.FromName(location.getProvider()).getIndex();
                 if (ServiceGpsTracking.this.gpsStatus != 2) {
                     ServiceGpsTracking.this.gpsStatus = 2;
@@ -87,6 +112,11 @@ public class ServiceGpsTracking extends Service {
         }
 
         public void onProviderDisabled(String provider) {
+            if(provider.equals(LocationManager.GPS_PROVIDER)) {
+                sendNotification(
+                        dateFormat.format(LocalDateTime.now(DateTimeZone.getDefault()).toDate().getTime())
+                                + " " + context.getString(R.string.gps_is_disabled), true);
+            }
         }
 
         public void onProviderEnabled(String provider) {
@@ -109,19 +139,40 @@ public class ServiceGpsTracking extends Service {
     public void onCreate() {
         super.onCreate();
         context = this;
+
+        ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
+
+        dataRepositoryDB = dataRepository;
+
+        mNotificationManager = (NotificationManager) this.getSystemService(this.NOTIFICATION_SERVICE);
+        dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
         lastAlarmTick = -1;
         if (readPreference()) {
+
+            initNotification();
+
             this.locManager = (LocationManager) getSystemService(LOCATION_SERVICE);
             this.locListener = new gpsTrackingLocationListener();
             this.gpsStatusTimer = new Timer();
             this.gpsStatusTimer.schedule(new GpsTrackingStatusTimerTask(), 0, 1000);
             Provider provider = Provider.FromIndex(locationSource);
+
+            if(!locManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                sendNotification(
+                        dateFormat.format(LocalDateTime.now(DateTimeZone.getDefault()).toDate().getTime())
+                                + " " + context.getString(R.string.gps_is_disabled), true);
+            }
+
             if (provider == Provider.PASSIVE) {
                 List<String> providerList = this.locManager.getAllProviders();
                 if (providerList.contains(Provider.PROVIDER_GPS)) {
-                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        return;
+
+                    if ( Build.VERSION.SDK_INT >= 23 &&
+                            ContextCompat.checkSelfPermission( context, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
+                            ContextCompat.checkSelfPermission( context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     }
+
                     this.locManager.requestLocationUpdates(Provider.GPS.getName(), CHANGE_LOCATION_INTERVAL, 0.0f, this.locListener);
                 }
                 if (providerList.contains(Provider.PROVIDER_NETWORK)) {
@@ -148,6 +199,10 @@ public class ServiceGpsTracking extends Service {
         } else if (nextAlarmTick > currentTime) {
             alarmManager.set(2, nextAlarmTick, pendingIntent);
         }
+        sendNotification(
+                new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(location.getTime())
+                        + "\n " + new DecimalFormat("#.####").format(location.getLatitude())
+                        + "\n: " + new DecimalFormat("#.####").format(location.getLongitude()), false);
     }
 
     public IBinder onBind(Intent intent) {
@@ -199,5 +254,44 @@ public class ServiceGpsTracking extends Service {
 
     public static int getInterval() {
         return interval;
+    }
+
+    public void initNotification() {
+
+        Intent notificationIntent = new Intent(this, StartActivity.class);
+        notificationIntent.setAction(Intent.ACTION_MAIN);
+        notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
+                notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        mBuilder = new NotificationCompat.Builder(this);
+        mBuilder.setContentIntent(contentIntent)
+                .setOngoing(true)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                .setSmallIcon(R.drawable.ic_gps_track_connect)
+                .setContentTitle(context.getString(R.string.app_name) + " |" +
+                        context.getString(R.string.gps_tracer_name))
+                .setWhen(System.currentTimeMillis());
+    }
+
+    public void sendNotification(String text, boolean error) {
+
+        mBuilder.setContentText(text);
+
+        if (error) {
+            mBuilder.setSmallIcon(R.drawable.ic_gps_track_not_connect);
+        }else{
+            mBuilder.setSmallIcon(R.drawable.ic_gps_track_connect);
+        }
+
+        Notification notification;
+        if (Build.VERSION.SDK_INT <= 15) {
+            notification = mBuilder.getNotification(); // API-15 and lower
+        } else {
+            notification = mBuilder.build();
+        }
+
+        startForeground(DEFAULT_NOTIFICATION_GPS_TRACER_ID, notification);
     }
 }

@@ -31,7 +31,6 @@ import java.util.Date;
 import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_GPS_TRACER_ID;
-import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_SYNC_TRACER_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_CURRENT_ACCURACY;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
@@ -192,7 +191,7 @@ public class GPSTrackerService extends Service {
             notification = mBuilder.build();
         }
 
-        startForeground(DEFAULT_NOTIFICATION_SYNC_TRACER_ID, notification);
+        startForeground(DEFAULT_NOTIFICATION_GPS_TRACER_ID, notification);
     }
 
     public void sendNotification(String text, boolean error) {
@@ -210,7 +209,7 @@ public class GPSTrackerService extends Service {
             notification = mBuilder.build();
         }
 
-        startForeground(DEFAULT_NOTIFICATION_SYNC_TRACER_ID, notification);
+        startForeground(DEFAULT_NOTIFICATION_GPS_TRACER_ID, notification);
     }
 
     @Override
