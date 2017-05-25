@@ -29,8 +29,7 @@ public class RepeatingAlarmService extends BroadcastReceiver {
 
             ServiceGpsTracking.lastAlarmTick = SystemClock.elapsedRealtime();
 
-            if (ServiceGpsTracking.location.getLatitude() != 0.0d
-                    && ServiceGpsTracking.location.getLongitude() != 0.0d) {
+            if (ServiceGpsTracking.location != null) {
 
                 if (isBettherLocation(ServiceGpsTracking.location)) {
 
@@ -67,9 +66,7 @@ public class RepeatingAlarmService extends BroadcastReceiver {
             return true;
         }
 
-        if(location != null &&
-
-                location.hasAccuracy() &&
+        if(location.hasAccuracy() &&
 
                 location.getAccuracy() < MAX_COEFFICIENT_CURRENCY_LOCATION &&
 

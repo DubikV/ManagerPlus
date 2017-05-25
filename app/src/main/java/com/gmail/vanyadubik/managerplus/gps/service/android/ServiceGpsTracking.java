@@ -19,8 +19,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.StartActivity;
@@ -30,7 +30,6 @@ import com.gmail.vanyadubik.managerplus.gps.service.Provider;
 import com.gmail.vanyadubik.managerplus.gps.service.RepeatingAlarmService;
 import com.gmail.vanyadubik.managerplus.gps.service.SharedStorage;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
-import com.gmail.vanyadubik.managerplus.repository.DataRepositoryImpl;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -45,8 +44,6 @@ import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_GPS_TRACER_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
-import static com.gmail.vanyadubik.managerplus.gps.service.google.ServiceGpsTracking.gpsLatitude;
-import static com.gmail.vanyadubik.managerplus.gps.service.google.ServiceGpsTracking.gpsLongitude;
 
 
 public class ServiceGpsTracking extends Service {
@@ -67,9 +64,9 @@ public class ServiceGpsTracking extends Service {
 //    public static double gpsLongitude;
 //    public static double gpsSpeed;
 //    public static long gpsTime;
-    private static int interval;
     public static long lastAlarmTick;
     public static int locationSource;
+    private static int interval;
     private static int period;
     private int gpsStatus;
     private Timer gpsStatusTimer;
@@ -107,12 +104,20 @@ public class ServiceGpsTracking extends Service {
                 if (ServiceGpsTracking.this.gpsStatus != 2) {
                     ServiceGpsTracking.this.gpsStatus = 2;
                     ServiceGpsTracking.this.OnGpsStatusChanged(ServiceGpsTracking.this.gpsStatus);
+
+                    if(location != null ) {
+                        sendNotification(
+                                dateFormat.format(location.getTime()) + " | " + location.getProvider() + ": " + location.getAccuracy() + " |"
+                                        + "\n " + new DecimalFormat("#.####").format(location.getLatitude())
+                                        + "\n: " + new DecimalFormat("#.####").format(location.getLongitude()), false);
+                    }
+
                 }
             }
         }
 
         public void onProviderDisabled(String provider) {
-            if(provider.equals(LocationManager.GPS_PROVIDER)) {
+            if (provider.equals(LocationManager.GPS_PROVIDER)) {
                 sendNotification(
                         dateFormat.format(LocalDateTime.now(DateTimeZone.getDefault()).toDate().getTime())
                                 + " " + context.getString(R.string.gps_is_disabled), true);
@@ -120,6 +125,11 @@ public class ServiceGpsTracking extends Service {
         }
 
         public void onProviderEnabled(String provider) {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            locManager.requestLocationUpdates(Provider.GPS.getName(), CHANGE_LOCATION_INTERVAL, 0.0f, locListener);
         }
 
         public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -145,7 +155,7 @@ public class ServiceGpsTracking extends Service {
         dataRepositoryDB = dataRepository;
 
         mNotificationManager = (NotificationManager) this.getSystemService(this.NOTIFICATION_SERVICE);
-        dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        dateFormat = new SimpleDateFormat("dd/MM HH:mm:ss");
 
         lastAlarmTick = -1;
         if (readPreference()) {
@@ -168,10 +178,15 @@ public class ServiceGpsTracking extends Service {
                 List<String> providerList = this.locManager.getAllProviders();
                 if (providerList.contains(Provider.PROVIDER_GPS)) {
 
-                    if ( Build.VERSION.SDK_INT >= 23 &&
-                            ContextCompat.checkSelfPermission( context, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
-                            ContextCompat.checkSelfPermission( context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        return;
                     }
+
+//                    if ( Build.VERSION.SDK_INT >= 23 &&
+//                            ContextCompat.checkSelfPermission( context, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
+//                            ContextCompat.checkSelfPermission( context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                    }
 
                     this.locManager.requestLocationUpdates(Provider.GPS.getName(), CHANGE_LOCATION_INTERVAL, 0.0f, this.locListener);
                 }
@@ -199,10 +214,6 @@ public class ServiceGpsTracking extends Service {
         } else if (nextAlarmTick > currentTime) {
             alarmManager.set(2, nextAlarmTick, pendingIntent);
         }
-        sendNotification(
-                new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(location.getTime())
-                        + "\n " + new DecimalFormat("#.####").format(location.getLatitude())
-                        + "\n: " + new DecimalFormat("#.####").format(location.getLongitude()), false);
     }
 
     public IBinder onBind(Intent intent) {
@@ -242,8 +253,7 @@ public class ServiceGpsTracking extends Service {
         if (alarmManager != null) {
             alarmManager.cancel(PendingIntent.getBroadcast(this, REQUEST_CODE, new Intent(RepeatingAlarmService.MY_TRACKING_ALARM, Uri.parse(RepeatingAlarmService.ACTION_WRITE_TRACK), this, RepeatingAlarmService.class), 0));
         }
-        gpsLatitude = 0.0d;
-        gpsLongitude = 0.0d;
+        location = null;
     }
 
     public static Context getContext() {
@@ -296,4 +306,5 @@ public class ServiceGpsTracking extends Service {
 
         startForeground(DEFAULT_NOTIFICATION_GPS_TRACER_ID, notification);
     }
+
 }
