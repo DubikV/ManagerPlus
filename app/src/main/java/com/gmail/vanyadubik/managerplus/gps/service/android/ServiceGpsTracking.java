@@ -74,9 +74,9 @@ public class ServiceGpsTracking extends Service {
     private LocationListener locListener;
     private LocationManager locManager;
 
-    private NotificationManager mNotificationManager;
-    private static NotificationCompat.Builder mBuilder;
-    private SimpleDateFormat dateFormat;
+    public static NotificationManager mNotificationManager;
+    public static NotificationCompat.Builder mBuilder;
+    public static SimpleDateFormat dateFormat;
 
     class GpsTrackingStatusTimerTask extends TimerTask {
         GpsTrackingStatusTimerTask() {
@@ -104,13 +104,6 @@ public class ServiceGpsTracking extends Service {
                 if (ServiceGpsTracking.this.gpsStatus != 2) {
                     ServiceGpsTracking.this.gpsStatus = 2;
                     ServiceGpsTracking.this.OnGpsStatusChanged(ServiceGpsTracking.this.gpsStatus);
-
-                    if(location != null ) {
-                        sendNotification(
-                                dateFormat.format(location.getTime()) + " | " + location.getProvider() + ": " + location.getAccuracy() + " |"
-                                        + "\n " + new DecimalFormat("#.####").format(location.getLatitude())
-                                        + "\n: " + new DecimalFormat("#.####").format(location.getLongitude()), false);
-                    }
 
                 }
             }
@@ -253,7 +246,7 @@ public class ServiceGpsTracking extends Service {
         if (alarmManager != null) {
             alarmManager.cancel(PendingIntent.getBroadcast(this, REQUEST_CODE, new Intent(RepeatingAlarmService.MY_TRACKING_ALARM, Uri.parse(RepeatingAlarmService.ACTION_WRITE_TRACK), this, RepeatingAlarmService.class), 0));
         }
-        location = null;
+       // location = null;
     }
 
     public static Context getContext() {
