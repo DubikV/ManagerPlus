@@ -28,18 +28,20 @@ public class Consts {
     public final static String PASSWORD = "mPassword";
     public final static String SERVER = "mServer";
     public final static String MIN_TIME_SYNK_TRACK_NAME = "minTimeSyncTrack";
+    public final static String USING_SYNK_TRACK = "usingSyncTrack";
     public final static String DEVELOP_MODE = "developMode";
     public final static String MIN_CURRENT_ACCURACY = "min_current_accuracy";
 
     // GPS
     public static final long MIN_DISTANCE_WRITE_TRACK = 20; //30 meters  //20 - impression  40???
     public static final long MIN_TIME_WRITE_TRACK = 5; // 10seconds //5 - impression
-    public static final long  MIN_SPEED_WRITE_LOCATION = MIN_TIME_WRITE_TRACK/2; //
+    public static final long MIN_SPEED_WRITE_LOCATION = MIN_TIME_WRITE_TRACK/2; //
     public static final long MIN_TIME_SYNK_TRACK = 15*60; // seconds
     public static final double  MAX_COEFFICIENT_CURRENCY_LOCATION = 50.0; //100.0 //50.0 - impression
     public static final int TYPE_PRIORITY_CONNECTION_GPS = LocationRequest.PRIORITY_HIGH_ACCURACY;
 
     // Map
+    public static final long MIN_DISTANCE_MAP = 5;
     public static final int WIDTH_POLYLINE_MAP = 20;
     public static final long MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION = 100;// meters
     public static final float  TILT_CAMERA_MAP = 67;

@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
-import com.gmail.vanyadubik.managerplus.gps.KalmanFilterLocation;
 import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
@@ -61,7 +60,7 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.DEVELOP_MODE;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_CURRENT_ACCURACY;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SPEED_WRITE_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_ZOOM_TITLE_MAP;
@@ -164,7 +163,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
         googleLocationService.setTypePriorityConnection(TYPE_PRIORITY_CONNECTION_GPS);
         googleLocationService.setTimeInterval(MIN_TIME_WRITE_TRACK);
         googleLocationService.setFastesInterval(MIN_SPEED_WRITE_LOCATION);
-        googleLocationService.setDistance(MIN_DISTANCE_WRITE_TRACK);
+        googleLocationService.setDistance(MIN_DISTANCE_MAP);
         googleLocationService.startUpdates();
 
         moveMarker = true;

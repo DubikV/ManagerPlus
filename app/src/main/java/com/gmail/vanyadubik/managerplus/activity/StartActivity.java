@@ -27,7 +27,7 @@ import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.fragment.ClientListFragment;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
-import com.gmail.vanyadubik.managerplus.service.gps.TaskSchedure;
+import com.gmail.vanyadubik.managerplus.task.TaskSchedure;
 
 import javax.inject.Inject;
 
@@ -60,19 +60,6 @@ public class StartActivity extends AppCompatActivity{
         initNavigationView();
 
         initTabs();
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        startServices();
-
-//        if (!gpsTracker.canGetLocation()) {
-//            gpsTracker.showSettingsAlert();
-//        }
-
     }
 
     @Override
@@ -109,17 +96,6 @@ public class StartActivity extends AppCompatActivity{
         return super.onOptionsItemSelected(item);
     }
 
-    private void startServices(){
-
-        TaskSchedure taskTrackerSync = new TaskSchedure.Builder(SyncIntentTrackService.class, StartActivity.this)
-                .jobID(GPS_SYNK_SERVISE_JOB_ID)
-                .jobType(Job.Type.JOB_TYPE_HANDLER)
-                .jobNetworkType(Job.NetworkType.NETWORK_TYPE_ANY)
-                .requiresCharging(false)
-                .interval(MIN_TIME_SYNK_TRACK)
-                .build();
-        taskTrackerSync.startTask();
-    }
 
     private void initTabs() {
 

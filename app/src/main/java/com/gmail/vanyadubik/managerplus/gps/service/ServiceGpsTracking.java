@@ -1,4 +1,4 @@
-package com.gmail.vanyadubik.managerplus.gps.service.android;
+package com.gmail.vanyadubik.managerplus.gps.service;
 
 import android.Manifest;
 import android.app.AlarmManager;
@@ -26,16 +26,12 @@ import android.support.v4.content.ContextCompat;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.StartActivity;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
-import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking;
-import com.gmail.vanyadubik.managerplus.gps.service.Provider;
-import com.gmail.vanyadubik.managerplus.gps.service.RepeatingAlarmService;
-import com.gmail.vanyadubik.managerplus.gps.service.SharedStorage;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
+import com.gmail.vanyadubik.managerplus.utils.SharedStorage;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Timer;
@@ -60,10 +56,6 @@ public class ServiceGpsTracking extends Service {
     public static Location lastCurrentLocation;
     public static int gpsLocationSource;
     public static DataRepository dataRepositoryDB;
-    //    public static double gpsLatitude;
-//    public static double gpsLongitude;
-//    public static double gpsSpeed;
-//    public static long gpsTime;
     public static long lastAlarmTick;
     public static int locationSource;
     private static int interval;
@@ -171,14 +163,10 @@ public class ServiceGpsTracking extends Service {
                 List<String> providerList = this.locManager.getAllProviders();
                 if (providerList.contains(Provider.PROVIDER_GPS)) {
 
-//                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-//                            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                        return;
-//                    }
-
                     if ( Build.VERSION.SDK_INT >= 23 &&
                             ContextCompat.checkSelfPermission( context, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
                             ContextCompat.checkSelfPermission( context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        return;
                     }
 
                     this.locManager.requestLocationUpdates(Provider.GPS.getName(), CHANGE_LOCATION_INTERVAL, 0.0f, this.locListener);

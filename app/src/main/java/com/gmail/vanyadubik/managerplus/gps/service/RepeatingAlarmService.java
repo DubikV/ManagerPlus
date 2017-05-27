@@ -12,8 +12,8 @@ import android.os.Build;
 import android.os.SystemClock;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.gps.service.android.ServiceGpsTracking;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
+import com.gmail.vanyadubik.managerplus.utils.SharedStorage;
 
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
@@ -22,8 +22,8 @@ import java.util.Date;
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_GPS_TRACER_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
-import static com.gmail.vanyadubik.managerplus.gps.service.android.ServiceGpsTracking.location;
-import static com.gmail.vanyadubik.managerplus.gps.service.android.ServiceGpsTracking.mBuilder;
+import static com.gmail.vanyadubik.managerplus.gps.service.ServiceGpsTracking.location;
+import static com.gmail.vanyadubik.managerplus.gps.service.ServiceGpsTracking.mBuilder;
 
 public class RepeatingAlarmService extends BroadcastReceiver {
     public static final String ACTION_WRITE_TRACK = "Write";

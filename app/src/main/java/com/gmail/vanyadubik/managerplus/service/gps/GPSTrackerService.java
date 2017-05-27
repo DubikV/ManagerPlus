@@ -16,7 +16,7 @@ import android.util.Log;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.StartActivity;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
-import com.gmail.vanyadubik.managerplus.gps.KalmanFilterLocation;
+import com.gmail.vanyadubik.managerplus.gps.kalmanfilter.KalmanFilterLocation;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.utils.GPSTaskUtils;
@@ -55,7 +55,6 @@ public class GPSTrackerService extends Service {
     private Location currentBestLocation;
     private SimpleDateFormat dateFormat;
     private double minCurrentAccury;
-    private KalmanFilterLocation kalmanFilterLocation;
 
     @Override
     public void onCreate() {
@@ -68,8 +67,6 @@ public class GPSTrackerService extends Service {
         mNotificationManager = (NotificationManager) this.getSystemService(this.NOTIFICATION_SERVICE);
 
         dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-
-        kalmanFilterLocation = new KalmanFilterLocation();
 
         createLocationService();
 
@@ -126,8 +123,6 @@ public class GPSTrackerService extends Service {
 
             @Override
             public void updateLocation(Location location) {
-
-                //location = kalmanFilterLocation.FilteredLocation(currentBestLocation, location);
 
                 if ( gpsTaskUtils.isBetterLocation(location, currentBestLocation,
                         MIN_TIME_WRITE_TRACK, minCurrentAccury) ) {

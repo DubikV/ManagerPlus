@@ -1,5 +1,6 @@
 package com.gmail.vanyadubik.managerplus.activity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -14,23 +15,31 @@ import android.widget.TextView;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
+import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking;
 import com.gmail.vanyadubik.managerplus.model.ParameterInfo;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
+import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
+import com.gmail.vanyadubik.managerplus.task.TaskSchedure;
 import com.gmail.vanyadubik.managerplus.utils.ActivityUtils;
 import com.gmail.vanyadubik.managerplus.utils.PropertyUtils;
+import com.gmail.vanyadubik.managerplus.utils.SharedStorage;
 
 import java.io.IOException;
 import java.util.Properties;
 
 import javax.inject.Inject;
 
+import io.hypertrack.smart_scheduler.Job;
+
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEVELOP_MODE;
+import static com.gmail.vanyadubik.managerplus.common.Consts.GPS_SYNK_SERVISE_JOB_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.LOGIN;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_CURRENT_ACCURACY;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_SYNK_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_SYNK_TRACK_NAME;
 import static com.gmail.vanyadubik.managerplus.common.Consts.PASSWORD;
 import static com.gmail.vanyadubik.managerplus.common.Consts.SERVER;
+import static com.gmail.vanyadubik.managerplus.common.Consts.USING_SYNK_TRACK;
 
 public class SettingsActivity extends AppCompatActivity {
     @Inject
@@ -116,8 +125,6 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void initData() {
 
-        //getSupportActionBar().setTitle(getString(R.string.item_settings));
-
         String adressServer = dataRepository.getUserSetting(SERVER);
         if (adressServer == null || adressServer.isEmpty()) {
             final String APPLICATION_PROPERTIES = "application.properties";
@@ -133,18 +140,20 @@ public class SettingsActivity extends AppCompatActivity {
         mAddressView.setText(adressServer);
         mLoginView.setText(dataRepository.getUserSetting(LOGIN));
         mPasswordView.setText(dataRepository.getUserSetting(PASSWORD));
-        String minTime = dataRepository.getUserSetting(MIN_TIME_SYNK_TRACK_NAME);
-        if(minTime!=null&&!minTime.isEmpty()){
+
+        if(SharedStorage.getBoolean(getApplicationContext(), USING_SYNK_TRACK, true)){
+            String minTime = String.valueOf(
+                    SharedStorage.getLong(getApplicationContext(), MIN_TIME_SYNK_TRACK_NAME, MIN_TIME_SYNK_TRACK));
             mTimeSyncView.setText(minTime);
             using_auto_sync_trackSwitch.setChecked(true);
             activityUtils.setVisiblyElement(minTimeTrackSyncLayout, true);
         }
 
-        if(Boolean.valueOf(dataRepository.getUserSetting(DEVELOP_MODE))){
+        if(SharedStorage.getBoolean(getApplicationContext(), DEVELOP_MODE, true)){
             minCurrentAccuracyGPSL.setVisibility(View.VISIBLE);
             using_develop_modeSwitch.setChecked(true);
             activityUtils.setVisiblyElement(minCurrentAccuracyGPSL, true);
-            mPasswordView.setText(dataRepository.getUserSetting(MIN_CURRENT_ACCURACY));
+            minCurrentAccuracyGPSText.setText(dataRepository.getUserSetting(MIN_CURRENT_ACCURACY));
         }
 
     }
@@ -181,7 +190,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         if (using_auto_sync_trackSwitch.isChecked()&& TextUtils.isEmpty(minTimeSync)) {
-            mAddressView.setError(getString(R.string.error_field_required));
+            mTimeSyncView.setError(getString(R.string.error_field_required));
             focusView = mTimeSyncView;
             cancel = true;
         }
@@ -202,22 +211,39 @@ public class SettingsActivity extends AppCompatActivity {
         dataRepository.insertUserSetting(new ParameterInfo(SERVER, String.valueOf(mAddressView.getText())));
         dataRepository.insertUserSetting(new ParameterInfo(LOGIN, String.valueOf(mLoginView.getText())));
         dataRepository.insertUserSetting(new ParameterInfo(PASSWORD, String.valueOf(mPasswordView.getText())));
+
         if (using_auto_sync_trackSwitch.isChecked()) {
-            dataRepository.insertUserSetting(new ParameterInfo(MIN_TIME_SYNK_TRACK_NAME,
-                    String.valueOf(mTimeSyncView.getText())));
+
+            long interval = Long.valueOf(String.valueOf(mTimeSyncView.getText()));
+
+            SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences(SharedStorage.APP_PREFS, 0).edit();
+            editor.putLong(MIN_TIME_SYNK_TRACK_NAME, interval);
+            editor.commit();
+
+            if (interval > 0 && interval != MIN_TIME_SYNK_TRACK) {
+                TaskSchedure taskTrackerSync = new TaskSchedure.Builder(SyncIntentTrackService.class, getApplicationContext())
+                        .jobID(GPS_SYNK_SERVISE_JOB_ID)
+                        .jobType(Job.Type.JOB_TYPE_HANDLER)
+                        .jobNetworkType(Job.NetworkType.NETWORK_TYPE_ANY)
+                        .requiresCharging(false)
+                        .interval(interval)
+                        .build();
+                taskTrackerSync.startTask();
+            }
         }
 
-
-        dataRepository.insertUserSetting(
-                new ParameterInfo(DEVELOP_MODE, String.valueOf(using_develop_modeSwitch.isChecked())));
         String minCurrentAccText = minCurrentAccuracyGPSText.getText().toString();
         int minAccurancy = minCurrentAccText == null || minCurrentAccText.isEmpty() ? 0 :
                 Integer.valueOf(minCurrentAccText);
-        if(using_develop_modeSwitch.isChecked() &&
-                minAccurancy > MAX_COEFFICIENT_CURRENCY_LOCATION) {
+        if(using_develop_modeSwitch.isChecked()) {
             dataRepository.insertUserSetting(
                     new ParameterInfo(MIN_CURRENT_ACCURACY, String.valueOf(minAccurancy)));
         }
+
+        SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences(SharedStorage.APP_PREFS, 0).edit();
+        editor.putBoolean(DEVELOP_MODE, using_develop_modeSwitch.isChecked());
+        editor.putBoolean(USING_SYNK_TRACK, using_auto_sync_trackSwitch.isChecked());
+        editor.commit();
 
         finish();
     }

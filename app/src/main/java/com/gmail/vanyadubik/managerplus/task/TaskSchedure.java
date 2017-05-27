@@ -1,4 +1,4 @@
-package com.gmail.vanyadubik.managerplus.service.gps;
+package com.gmail.vanyadubik.managerplus.task;
 
 
 import android.content.Context;

@@ -1,11 +1,11 @@
-package com.gmail.vanyadubik.managerplus.gps.service;
+package com.gmail.vanyadubik.managerplus.utils;
 
 
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
 
 public class SharedStorage {
-    public static final String APP_PREFS = "AgentP2Prefs";
+    public static final String APP_PREFS = "ManagePlusPrefs";
 
     private SharedStorage() {
     }

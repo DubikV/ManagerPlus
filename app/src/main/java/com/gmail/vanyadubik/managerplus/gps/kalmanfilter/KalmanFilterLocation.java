@@ -1,4 +1,4 @@
-package com.gmail.vanyadubik.managerplus.gps;
+package com.gmail.vanyadubik.managerplus.gps.kalmanfilter;
 
 import android.location.Location;
 

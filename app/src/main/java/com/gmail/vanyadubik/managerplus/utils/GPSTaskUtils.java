@@ -8,7 +8,7 @@ import android.location.Location;
 import android.provider.Settings;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.gps.KalmanFilterLocation;
+import com.gmail.vanyadubik.managerplus.gps.kalmanfilter.KalmanFilterLocation;
 
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
 

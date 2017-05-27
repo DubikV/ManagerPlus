@@ -1,15 +1,20 @@
 package com.gmail.vanyadubik.managerplus.gps.service;
 
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.provider.Settings.Secure;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 
 import java.sql.Timestamp;
 import java.util.Timer;
@@ -146,6 +151,12 @@ public class Gps {
         if (this.gpsStatusTimer == null) {
             this.gpsStatusTimer = new Timer();
             this.gpsStatusTimer.schedule(new GpsStatusTimerTask(), 0, 1000);
+        }
+
+        if ( Build.VERSION.SDK_INT >= 23 &&
+                ContextCompat.checkSelfPermission( _context, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission( _context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return false;
         }
         this.manager.requestLocationUpdates(Provider.PROVIDER_GPS, 0, 0.0f, this.locListener);
         this.isGpsEnabled = s_gpsUseWGS84;
