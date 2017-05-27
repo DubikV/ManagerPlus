@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +58,16 @@ public class TabFragmentWaybill extends Fragment {
 
             @Override
             public void onPageSelected(final int position) {
+
+                if(position == 0) {
+                    ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(R.string.work_plase_name);
+                }else if(position == 1){
+                    ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle(R.string.fuel_name);
+                }else if(position == 2){
+                    ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle(R.string.waybill_list_name);
+                }else{
+                    ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle("");
+                }
 
                 FragmentBecameVisibleInterface fragment =
                         (FragmentBecameVisibleInterface) viewPagerAdapter.instantiateItem(viewPager, position);

@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +56,15 @@ public class TabFragmentVisit extends Fragment {
 
             @Override
             public void onPageSelected(final int position) {
+
+                if(position == 0) {
+                    ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(R.string.visit_name);
+                }else if(position == 1){
+                    ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle(R.string.visit_plane_name);
+                }else{
+                    ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle("");
+                }
+
                 FragmentBecameVisibleInterface fragment =
                         (FragmentBecameVisibleInterface) viewPagerAdapter.instantiateItem(viewPager, position);
                 if (fragment != null) {

@@ -5,6 +5,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Налаштування</string>
+    <string name="action_side_panel">Бокова панель</string>
     <string name="action_show_location">Паказати положення</string>
     <string name="action_sync">Виконати обмін</string>
     <string name="action_save">Зберегти</string>

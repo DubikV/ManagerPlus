@@ -135,8 +135,9 @@ public class StartActivity extends AppCompatActivity{
                 InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
                 super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle(R.string.action_settings);
+                getSupportActionBar().setTitle(R.string.action_side_panel);
                 invalidateOptionsMenu();
+                getSupportActionBar().setSubtitle("");
             }
         };
 
@@ -159,15 +160,19 @@ public class StartActivity extends AppCompatActivity{
                 switch (item.getItemId()) {
                     case R.id.nav_waybill:
                         xfragmentTransaction.replace(R.id.containerView, new TabFragmentWaybill()).commit();
+                        getSupportActionBar().setSubtitle(R.string.work_plase_name);
                         break;
                     case R.id.nav_visit:
                         xfragmentTransaction.replace(R.id.containerView, new TabFragmentVisit()).commit();
+                        getSupportActionBar().setSubtitle(R.string.visit_name);
                         break;
                     case R.id.nav_clients:
                         xfragmentTransaction.replace(R.id.containerView, new ClientListFragment()).commit();
+                        getSupportActionBar().setSubtitle(R.string.clients);
                         break;
                     case R.id.nav_settings:
                         startActivity(new Intent(getBaseContext(), SettingsActivity.class));
+                        getSupportActionBar().setSubtitle("");
                         break;
                     case R.id.nav_exit:
                         logout();

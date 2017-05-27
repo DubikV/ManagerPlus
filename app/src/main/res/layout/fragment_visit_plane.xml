@@ -18,6 +18,7 @@
             android:layout_height="match_parent"
             android:layout_margin="@dimen/marging_waybill_cap"
             android:layout_weight="1"
+            android:textSize = "20dp"
             app:mcv_selectionColor="@color/colorPrimary"
             app:mcv_showOtherDates="all"/>
 
@@ -29,7 +30,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/marging_waybill_cap"
                 android:layout_marginRight="@dimen/marging_waybill_cap"
                 android:layout_marginTop="@dimen/marging_waybill_cap"
@@ -38,45 +39,12 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1.9"
-                    android:background="@drawable/shape_cap_left"
-                    android:gravity="left|center_horizontal"
-                    android:padding="@dimen/pading_edittext_waybill_cap"
-                    android:textColor="@color/tab_background"
-                    android:textSize="@dimen/textsize_table_cap"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.5"
-                    android:background="@drawable/shape_cap_left"
-                    android:gravity="left|center_horizontal"
-                    android:padding="@dimen/pading_edittext_waybill_cap"
-                    android:text="@string/fuel_date"
-                    android:textColor="@color/tab_background"
-                    android:textSize="@dimen/textsize_table_cap"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@drawable/shape_cap_left"
-                    android:gravity="left|center_horizontal"
-                    android:padding="@dimen/pading_edittext_waybill_cap"
-                    android:text="@string/client_name"
-                    android:textColor="@color/tab_background"
-                    android:textSize="@dimen/textsize_table_cap"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.6"
                     android:background="@drawable/shape_cap_right"
                     android:gravity="left|center_horizontal"
                     android:padding="@dimen/pading_edittext_waybill_cap"
-                    android:text="@string/visit_type"
                     android:textColor="@color/tab_background"
-                    android:textSize="@dimen/textsize_table_cap"/>
+                    android:textSize="@dimen/textsize_table_cap" />
 
             </LinearLayout>
 
@@ -93,5 +61,19 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/satelite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="@dimen/marging_button_map"
+        android:layout_marginRight="@dimen/marging_button_map"
+        android:layout_marginBottom="@dimen/marging_button_map"
+        android:clickable="true"
+        android:paddingTop="@dimen/seekbar_outer_circle_size"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/ic_plus"/>
 
 </RelativeLayout>
