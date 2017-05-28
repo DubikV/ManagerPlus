@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.support.annotation.IntDef;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
@@ -143,9 +144,14 @@ public class ServiceGpsTracking extends Service {
         dateFormat = new SimpleDateFormat("dd/MM HH:mm:ss");
 
         lastAlarmTick = -1;
-        if (readPreference()) {
 
-            initNotification();
+        initNotification();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        if (readPreference()) {
 
             this.locManager = (LocationManager) getSystemService(LOCATION_SERVICE);
             this.locListener = new gpsTrackingLocationListener();
@@ -166,7 +172,7 @@ public class ServiceGpsTracking extends Service {
                     if ( Build.VERSION.SDK_INT >= 23 &&
                             ContextCompat.checkSelfPermission( context, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
                             ContextCompat.checkSelfPermission( context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        return;
+                        return START_REDELIVER_INTENT;
                     }
 
                     this.locManager.requestLocationUpdates(Provider.GPS.getName(), CHANGE_LOCATION_INTERVAL, 0.0f, this.locListener);
@@ -178,9 +184,11 @@ public class ServiceGpsTracking extends Service {
                 this.locManager.requestLocationUpdates(provider.getName(), CHANGE_LOCATION_INTERVAL, 0.0f, this.locListener);
             }
             alarmManager = (AlarmManager) getSystemService(Notification.CATEGORY_ALARM);
-            return;
+            return START_REDELIVER_INTENT;
         }
         stopSelf();
+
+        return START_REDELIVER_INTENT;
     }
 
     private void startService() {
