@@ -71,15 +71,15 @@ public class AndroidLocationService implements LocationListener {
 
             if (!isGPSEnabled && !isNetworkEnabled) {
 
-//                locationManager.requestLocationUpdates(
-//                        LocationManager.PASSIVE_PROVIDER,
-//                        1000 * (timeInterval == 0 ? MIN_TIME_WRITE_TRACK : timeInterval),
-//                        MIN_DISTANCE_WRITE_TRACK,
-//                        this);
-//                Log.d(TAGLOG_GPS, "pasive provider");
-//                location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-//
-//                androidLocationUpdateListener.startLocation(location);
+                locationManager.requestLocationUpdates(
+                        LocationManager.PASSIVE_PROVIDER,
+                        1000 * timeInterval,
+                        distance,
+                        this);
+                Log.d(TAGLOG_GPS, "pasive provider");
+                location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+
+                androidLocationUpdateListener.startLocation(location);
 
                 androidLocationUpdateListener.cannotReceiveLocationUpdates("isGPSEnabled = " + isGPSEnabled +"; isNetworkEnabled = " + isNetworkEnabled);
 
@@ -88,8 +88,8 @@ public class AndroidLocationService implements LocationListener {
                 if (isGPSEnabled) {
                     locationManager.requestLocationUpdates(
                             LocationManager.GPS_PROVIDER,
-                            1000 * (timeInterval == 0 ? MIN_TIME_WRITE_TRACK : timeInterval),
-                            MIN_DISTANCE_WRITE_TRACK,
+                            1000 * timeInterval,
+                            distance,
                             this);
                     Log.d(TAGLOG_GPS, "GPS used");
                     if (locationManager != null) {
@@ -105,8 +105,8 @@ public class AndroidLocationService implements LocationListener {
                     if (location == null) {
                         locationManager.requestLocationUpdates(
                                 LocationManager.NETWORK_PROVIDER,
-                                1000 * (timeInterval == 0 ? MIN_TIME_WRITE_TRACK : timeInterval),
-                                MIN_DISTANCE_WRITE_TRACK,
+                                1000 * timeInterval,
+                                distance,
                                 this);
                         Log.d(TAGLOG_GPS, "Network used");
                         if (locationManager != null) {

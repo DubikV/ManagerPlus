@@ -77,9 +77,9 @@ public class RepeatingAlarmService extends BroadcastReceiver {
                 long currentTime = SystemClock.elapsedRealtime();
                 long nextAlarmTick = currentTime + ((long) ServiceGpsTracking.getInterval());
                 if (ServiceGpsTracking.lastAlarmTick == -1 || nextAlarmTick < currentTime) {
-                    ServiceGpsTracking.alarmManager.set(2, currentTime, pendingIntent);
+                    ServiceGpsTracking.setStartTimeInAlamManager(currentTime, pendingIntent);
                 } else if (nextAlarmTick > currentTime) {
-                    ServiceGpsTracking.alarmManager.set(2, nextAlarmTick, pendingIntent);
+                    ServiceGpsTracking.setStartTimeInAlamManager(nextAlarmTick, pendingIntent);
                 }
             }
         }

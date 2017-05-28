@@ -25,7 +25,6 @@ import android.support.v4.content.ContextCompat;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.StartActivity;
-import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.utils.SharedStorage;
 
@@ -43,7 +42,7 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATIO
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 
 
-public class ServiceGpsTracking1 extends Service {
+public class ServiceGpsTrackingOld extends Service {
 
     @Inject
     DataRepository dataRepository;
@@ -75,10 +74,10 @@ public class ServiceGpsTracking1 extends Service {
         }
 
         public void run() {
-            if (ServiceGpsTracking1.this.gpsStatus == 2) {
-                if ((SystemClock.elapsedRealtime() - ServiceGpsTracking1.this.lastnLocationTimeMillis > 3000) && ServiceGpsTracking1.this.lastnLocationTimeMillis > 0) {
-                    ServiceGpsTracking1.this.gpsStatus = 1;
-                    ServiceGpsTracking1.this.OnGpsStatusChanged(ServiceGpsTracking1.this.gpsStatus);
+            if (ServiceGpsTrackingOld.this.gpsStatus == 2) {
+                if ((SystemClock.elapsedRealtime() - ServiceGpsTrackingOld.this.lastnLocationTimeMillis > 3000) && ServiceGpsTrackingOld.this.lastnLocationTimeMillis > 0) {
+                    ServiceGpsTrackingOld.this.gpsStatus = 1;
+                    ServiceGpsTrackingOld.this.OnGpsStatusChanged(ServiceGpsTrackingOld.this.gpsStatus);
                 }
             }
         }
@@ -90,12 +89,12 @@ public class ServiceGpsTracking1 extends Service {
 
         public void onLocationChanged(Location location) {
             if (location != null) {
-                ServiceGpsTracking1.this.lastnLocationTimeMillis = SystemClock.elapsedRealtime();
-                ServiceGpsTracking1.location = location;
-                ServiceGpsTracking1.gpsLocationSource = Provider.FromName(location.getProvider()).getIndex();
-                if (ServiceGpsTracking1.this.gpsStatus != 2) {
-                    ServiceGpsTracking1.this.gpsStatus = 2;
-                    ServiceGpsTracking1.this.OnGpsStatusChanged(ServiceGpsTracking1.this.gpsStatus);
+                ServiceGpsTrackingOld.this.lastnLocationTimeMillis = SystemClock.elapsedRealtime();
+                ServiceGpsTrackingOld.location = location;
+                ServiceGpsTrackingOld.gpsLocationSource = Provider.FromName(location.getProvider()).getIndex();
+                if (ServiceGpsTrackingOld.this.gpsStatus != 2) {
+                    ServiceGpsTrackingOld.this.gpsStatus = 2;
+                    ServiceGpsTrackingOld.this.OnGpsStatusChanged(ServiceGpsTrackingOld.this.gpsStatus);
 
                 }
             }
@@ -121,7 +120,7 @@ public class ServiceGpsTracking1 extends Service {
         }
     }
 
-    public ServiceGpsTracking1() {
+    public ServiceGpsTrackingOld() {
         this.gpsStatus = 0;
         this.lastnLocationTimeMillis = 0;
         this.gpsStatusTimer = null;
