@@ -126,6 +126,7 @@
 
     <!--Visits-->
     <string name="visit_name">Події</string>
+    <string name="visit_name_to">Події на:</string>
     <string name="visit_plane_name">Планування подій</string>
     <string name="visit_type">Тип події</string>
     <string name="visit_client">Клієнт</string>

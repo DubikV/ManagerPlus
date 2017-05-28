@@ -10,7 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
         <com.prolificinteractive.materialcalendarview.MaterialCalendarView
             android:id="@+id/calendarView"
@@ -18,14 +18,14 @@
             android:layout_height="match_parent"
             android:layout_margin="@dimen/marging_waybill_cap"
             android:layout_weight="1"
-            android:textSize = "20dp"
             app:mcv_selectionColor="@color/colorPrimary"
-            app:mcv_showOtherDates="all"/>
+            app:mcv_showOtherDates="all"
+            android:dateTextAppearance="@android:style/TextAppearance.Large"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="2.5"
+            android:layout_weight="1"
             android:orientation="vertical">
 
             <LinearLayout
@@ -37,6 +37,7 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/selected_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -49,21 +50,20 @@
             </LinearLayout>
 
             <ListView
-                android:id="@+id/event_list_view"
+                android:id="@+id/visitplane_list_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@+id/list_header_title"
                 android:layout_marginBottom="@dimen/marging_waybill_cap"
                 android:layout_marginLeft="@dimen/marging_waybill_cap"
-                android:layout_marginRight="@dimen/marging_waybill_cap"
-                />
+                android:layout_marginRight="@dimen/marging_waybill_cap" />
 
         </LinearLayout>
 
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/satelite"
+        android:id="@+id/visitplane_add_bt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"

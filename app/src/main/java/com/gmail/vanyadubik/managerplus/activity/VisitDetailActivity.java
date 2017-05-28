@@ -176,24 +176,33 @@ public class VisitDetailActivity extends AppCompatActivity {
         super.onStart();
 
         Bundle extras = getIntent().getExtras();
-
+        Date date = LocalDateTime.now().toDate();
         if (extras != null) {
             String externalId = extras.getString(MobileManagerContract.VisitContract.VISIT_ID);
             visit = dataRepository.getVisit(externalId);
 
-            client = dataRepository.getClient(visit.getClientExternalId());
-            visitPosition = dataRepository.getLocationPoint(visit.getVisitLP());
+            if (visit != null) {
+                client = dataRepository.getClient(visit.getClientExternalId());
+                visitPosition = dataRepository.getLocationPoint(visit.getVisitLP());
 
-            mDetailDateView.setText(dateFormatter.format(visit.getDate()));
-            mDetailTypeView.setText(visit.getTypeVisit());
+                mDetailDateView.setText(dateFormatter.format(visit.getDate()));
+                mDetailTypeView.setText(visit.getTypeVisit());
 
-            mDetailClientView.setText(client!=null? client.getName(): "");
-            mDetailInfoView.setText(visit.getInformation());
+                mDetailClientView.setText(client != null ? client.getName() : "");
+                mDetailInfoView.setText(visit.getInformation());
+            }else{
+                visit = Visit_Document.builder()
+                        .externalId("app-" + UUID.randomUUID().toString())
+                        .build();
+                date = new Date(extras.getLong(MobileManagerContract.VisitContract.VISIT_DATE));
+                mDetailDateView.setText(dateFormatter.format(date));
+            }
 
         }else{
             visit = Visit_Document.builder()
                     .externalId("app-" + UUID.randomUUID().toString())
                     .build();
+            mDetailDateView.setText(dateFormatter.format(date));
         }
 
 

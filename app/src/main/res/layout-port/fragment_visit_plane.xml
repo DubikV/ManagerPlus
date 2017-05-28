@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:background="@color/colorWhite"
+                  android:orientation="vertical" >
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+            android:id="@+id/calendarView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/marging_waybill_cap"
+            android:layout_weight="1"
+            android:textSize = "20dp"
+            app:mcv_selectionColor="@color/colorPrimary"
+            app:mcv_showOtherDates="all"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2.5"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/marging_waybill_cap"
+                android:layout_marginRight="@dimen/marging_waybill_cap"
+                android:layout_marginTop="@dimen/marging_waybill_cap"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/selected_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/shape_cap_right"
+                    android:gravity="left|center_horizontal"
+                    android:padding="@dimen/pading_edittext_waybill_cap"
+                    android:textColor="@color/tab_background"
+                    android:textSize="@dimen/textsize_table_cap" />
+
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/visitplane_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/list_header_title"
+                android:layout_marginBottom="@dimen/marging_waybill_cap"
+                android:layout_marginLeft="@dimen/marging_waybill_cap"
+                android:layout_marginRight="@dimen/marging_waybill_cap"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/visitplane_add_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="@dimen/marging_button_map"
+        android:layout_marginRight="@dimen/marging_button_map"
+        android:layout_marginBottom="@dimen/marging_button_map"
+        android:clickable="true"
+        android:paddingTop="@dimen/seekbar_outer_circle_size"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/ic_plus"/>
+
+</RelativeLayout>
