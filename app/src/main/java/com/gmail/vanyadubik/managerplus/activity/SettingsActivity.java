@@ -149,7 +149,7 @@ public class SettingsActivity extends AppCompatActivity {
             activityUtils.setVisiblyElement(minTimeTrackSyncLayout, true);
         }
 
-        if(SharedStorage.getBoolean(getApplicationContext(), DEVELOP_MODE, true)){
+        if(SharedStorage.getBoolean(getApplicationContext(), DEVELOP_MODE, false)){
             minCurrentAccuracyGPSL.setVisibility(View.VISIBLE);
             using_develop_modeSwitch.setChecked(true);
             activityUtils.setVisiblyElement(minCurrentAccuracyGPSL, true);

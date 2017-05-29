@@ -85,7 +85,7 @@ public class ServiceGpsTrackingG extends Service {
 
         mNotificationManager = (NotificationManager) this.getSystemService(this.NOTIFICATION_SERVICE);
 
-        dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        dateFormat = new SimpleDateFormat("dd/MM HH:mm:ss");
 
         lastAlarmTick = -1;
 

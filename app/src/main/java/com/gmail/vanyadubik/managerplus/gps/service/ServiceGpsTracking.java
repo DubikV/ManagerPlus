@@ -28,6 +28,7 @@ import com.gmail.vanyadubik.managerplus.utils.SharedStorage;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -38,6 +39,7 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATIO
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
+import static com.gmail.vanyadubik.managerplus.gps.service.ServiceGpsTracking.location;
 
 
 public class ServiceGpsTracking extends Service {
@@ -85,7 +87,7 @@ public class ServiceGpsTracking extends Service {
 
         mNotificationManager = (NotificationManager) this.getSystemService(this.NOTIFICATION_SERVICE);
 
-        dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        dateFormat = new SimpleDateFormat("dd/MM HH:mm:ss");
 
         lastAlarmTick = -1;
 
@@ -146,13 +148,17 @@ public class ServiceGpsTracking extends Service {
             public void updateLocation(Location location) {
 
                 if (location != null) {
+                    String text = dateFormat.format(location.getTime()) + " |S " + location.getProvider() + ": " + location.getAccuracy() + " |"
+                            + "\n " + new DecimalFormat("#.####").format(location.getLatitude())
+                            + "\n: " + new DecimalFormat("#.####").format(location.getLongitude());
+                    sendNotification(text, true);
+
                     ServiceGpsTracking.this.lastnLocationTimeMillis = SystemClock.elapsedRealtime();
-                    ServiceGpsTrackingG.location = location;
-                    ServiceGpsTrackingG.gpsLocationSource = Provider.FromName(location.getProvider()).getIndex();
+                    ServiceGpsTracking.location = location;
+                    ServiceGpsTracking.gpsLocationSource = Provider.FromName(location.getProvider()).getIndex();
                     if (ServiceGpsTracking.this.gpsStatus != 2) {
                         ServiceGpsTracking.this.gpsStatus = 2;
                         ServiceGpsTracking.this.OnGpsStatusChanged(ServiceGpsTracking.this.gpsStatus);
-
                     }
                 }
 

@@ -31,6 +31,7 @@ import com.gmail.vanyadubik.managerplus.service.navigationtrack.NavigationUpdate
 import com.gmail.vanyadubik.managerplus.service.navigationtrack.ParamNavigationTrack;
 import com.gmail.vanyadubik.managerplus.utils.ActivityUtils;
 import com.gmail.vanyadubik.managerplus.utils.GPSTaskUtils;
+import com.gmail.vanyadubik.managerplus.utils.SharedStorage;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -108,7 +109,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
         ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
 
         mPreferences = getPreferences(Context.MODE_PRIVATE);
-        developeMode = Boolean.valueOf(dataRepository.getUserSetting(DEVELOP_MODE));
+        developeMode = SharedStorage.getBoolean(getApplicationContext(), DEVELOP_MODE, false);
 
         googleLocationService = new GoogleLocationService(this, new GoogleLocationUpdateListener() {
             @Override

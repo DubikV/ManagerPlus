@@ -52,7 +52,7 @@ public class RepeatingAlarmService extends BroadcastReceiver {
                                     location.getLongitude(), true));
 
 
-                    String text = ServiceGpsTracking.dateFormat.format(location.getTime()) + " | " + location.getProvider() + ": " + location.getAccuracy() + " |"
+                    String text = ServiceGpsTracking.dateFormat.format(location.getTime()) + " |W " + location.getProvider() + ": " + location.getAccuracy() + " |"
                                         + "\n " + new DecimalFormat("#.####").format(location.getLatitude())
                                         + "\n: " + new DecimalFormat("#.####").format(location.getLongitude());
 
