@@ -178,9 +178,11 @@ public class ServiceGpsTracking extends Service {
     }
 
     private void startService() {
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, REQUEST_CODE,
-                new Intent(RepeatingAlarmService.MY_TRACKING_ALARM, Uri.parse(RepeatingAlarmService.ACTION_WRITE_TRACK),
-                        this, RepeatingAlarmService.class), 0);
+        Intent intent = new Intent(RepeatingAlarmService.MY_TRACKING_ALARM,
+                Uri.parse(RepeatingAlarmService.ACTION_WRITE_TRACK),
+                this, RepeatingAlarmService.class);
+        intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, REQUEST_CODE, intent, 0);
 
         long currentTime = SystemClock.elapsedRealtime();
         long nextAlarmTick = currentTime + ((long) interval);
@@ -248,7 +250,7 @@ public class ServiceGpsTracking extends Service {
                     new Intent(RepeatingAlarmService.MY_TRACKING_ALARM, Uri.parse(RepeatingAlarmService.ACTION_WRITE_TRACK),
                             this, RepeatingAlarmService.class), 0));
         }
-        // location = null;
+        location = null;
     }
 
     public static Context getContext() {

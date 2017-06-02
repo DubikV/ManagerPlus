@@ -57,7 +57,11 @@
 
         <!--</receiver>-->
 
-        <receiver android:name="com.gmail.vanyadubik.managerplus.gps.service.RepeatingAlarmService"/>
+        <receiver android:name="com.gmail.vanyadubik.managerplus.gps.service.RepeatingAlarmService">
+            <intent-filter android:priority="1">
+                 <action android:name="com.blah.something.ALARM_RECIEVED" />
+            </intent-filter>
+        </receiver>
         <receiver android:name="com.gmail.vanyadubik.managerplus.gps.service.OnBootReceiver"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
             android:enabled="true">

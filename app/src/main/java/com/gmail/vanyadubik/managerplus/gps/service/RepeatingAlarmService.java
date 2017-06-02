@@ -72,6 +72,7 @@ public class RepeatingAlarmService extends BroadcastReceiver {
                 }
 
                 intent = new Intent(MY_TRACKING_ALARM, Uri.parse(ACTION_WRITE_TRACK), ServiceGpsTracking.getContext(), RepeatingAlarmService.class);
+                intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(ServiceGpsTracking.getContext(), ServiceGpsTracking.REQUEST_CODE, intent, 0);
                 ServiceGpsTracking.alarmManager.cancel(PendingIntent.getBroadcast(ServiceGpsTracking.getContext(), ServiceGpsTracking.REQUEST_CODE, intent, 0));
                 long currentTime = SystemClock.elapsedRealtime();
