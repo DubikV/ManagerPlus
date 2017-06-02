@@ -1,6 +1,5 @@
 package com.gmail.vanyadubik.managerplus.gps.service;
 
-
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -13,12 +12,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.provider.Settings.Secure;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
 import java.sql.Timestamp;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static android.content.Context.LOCATION_SERVICE;
 
 public class Gps {
     private static final int CHANGE_LOCATION_INTERVAL = 3000;
@@ -61,6 +61,7 @@ public class Gps {
     }
 
     private class mylocationlistener implements LocationListener {
+
         private mylocationlistener() {
         }
 
@@ -104,7 +105,7 @@ public class Gps {
         this.isSupported = false;
         this.onGpsStatusChange = new C02751();
         this._context = context;
-        this.manager = (LocationManager) getContext().getSystemService("location");
+        this.manager = (LocationManager) getContext().getSystemService(LOCATION_SERVICE);
         this.isSupported = getContext().getPackageManager().hasSystemFeature("android.hardware.location.gps");
         this.locListener = new mylocationlistener();
     }
@@ -152,7 +153,6 @@ public class Gps {
             this.gpsStatusTimer = new Timer();
             this.gpsStatusTimer.schedule(new GpsStatusTimerTask(), 0, 1000);
         }
-
         if ( Build.VERSION.SDK_INT >= 23 &&
                 ContextCompat.checkSelfPermission( _context, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission( _context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

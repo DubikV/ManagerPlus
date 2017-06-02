@@ -35,6 +35,12 @@
     <string name="gps_is_enabled_open_settings">На пристрої вимкнене визначення місцезнаходження.</string>
     <string name="gps_is_disabled">Вимкнений GPS</string>
     <string name="gps_tracer_name">GPS Tracker</string>
+    <string name="button_goto_gps_settings">Перейти в налаштування</string>
+    <string name="service_tracking_error_message">Некорректні налаштування GPS-трекингу</string>
+    <string name="service_tracking_null_address">"» Не выбран профиль обмена по умолчанию "</string>
+    <string name="service_tracking_null_interval">"» Не задан интервал записи "</string>
+    <string name="service_tracking_null_period">"» Не задан период отправки данных "</string>
+    <string name="service_tracking_message">Ведётся запись GPS-трека</string>
 
     <!-- Phone -->
     <string name="phone_sms_send">СМС відправлено!</string>

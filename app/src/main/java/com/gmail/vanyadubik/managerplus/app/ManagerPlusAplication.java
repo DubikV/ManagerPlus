@@ -55,7 +55,7 @@ public class ManagerPlusAplication extends Application{
         //startService(new Intent(this, GPSTrackerService.class));
         //startService(new Intent(this, GPSTrackerServiceAndroidAPI.class));
         GpsTracking gpsTracking = new GpsTracking(getApplicationContext());
-        gpsTracking.StartGpsTracking();
+        gpsTracking.startGpsTracking();
 
         if(SharedStorage.getBoolean(getApplicationContext(), USING_SYNK_TRACK, true)) {
             Long interval = SharedStorage.getLong(getApplicationContext(), MIN_TIME_SYNK_TRACK_NAME, MIN_TIME_SYNK_TRACK);

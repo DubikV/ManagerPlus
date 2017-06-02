@@ -49,4 +49,10 @@ public class SharedStorage {
         editor.putInt(key, value);
         editor.commit();
     }
+
+    public static void setLong(Context context, String key, long value) {
+        Editor editor = context.getSharedPreferences(APP_PREFS, 0).edit();
+        editor.putLong(key, value);
+        editor.commit();
+    }
 }
