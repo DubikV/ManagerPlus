@@ -14,7 +14,7 @@ import com.gmail.vanyadubik.managerplus.utils.SharedStorage;
 public class GpsTracking {
     static final String BOOLEAN_PARAMS = "boolean_shared_preferences";
     static final String CHECK_PREFERENCES = "initializer_wait_for_check_preferences";
-    static final String INITIALIZER_ACTION = "ru.agentp2.GpsTracking.initializerBroadcaster";
+    static final String INITIALIZER_ACTION = "gps.service.GpsTracking.initializerBroadcaster";
     static final String LONG_PARAMS = "long_shared_preferences_from_service";
     static final String NEW_LOCATION = "service_have_a_new_location_for_initializer";
     static final String NUMERIC_PARAMS = "numeric_shared_preferences";
@@ -59,12 +59,12 @@ public class GpsTracking {
     private BroadcastReceiver gpsTrackingReceiver;
 
     /* renamed from: ru.agentplus.tracking.GpsTracking.1 */
-    class C04711 extends BroadcastReceiver {
-        C04711() {
+    class gpsTrackingReceiver extends BroadcastReceiver {
+        gpsTrackingReceiver() {
         }
 
         public void onReceive(Context context, Intent intent) {
-            GpsTracking.this.setLastGpsData(intent.getLongExtra(GpsTracking.LONG_PARAMS, 0), intent.getStringArrayListExtra(GpsTracking.STRING_PARAMS_FROM_SERVICE));
+            setLastGpsData(intent.getLongExtra(GpsTracking.LONG_PARAMS, 0), intent.getStringArrayListExtra(GpsTracking.STRING_PARAMS_FROM_SERVICE));
         }
     }
 
@@ -79,11 +79,11 @@ public class GpsTracking {
             long longTime = SharedStorage.getLong(context, "last_date_key", 0);
             Calendar timeStamp = Calendar.getInstance();
             timeStamp.setTimeInMillis(longTime);
-            this._date = String.format(Locale.US, "%d:%d:%d %d:%d", new Object[]{Integer.valueOf(timeStamp.get(1)), Integer.valueOf(timeStamp.get(2) + 1), Integer.valueOf(timeStamp.get(5)), Integer.valueOf(timeStamp.get(11)), Integer.valueOf(timeStamp.get(12))});
-            this._longitude = Double.parseDouble(SharedStorage.getString(context, "last_longitude_key", "0"));
-            this._latitude = Double.parseDouble(SharedStorage.getString(context, "last_latitude_key", "0"));
-            this._speed = Double.parseDouble(SharedStorage.getString(context, "last_speed_key", "0"));
-            this._locationSource = Integer.parseInt(SharedStorage.getString(context, "last_locationsource_key", "0"));
+            _date = String.format(Locale.US, "%d:%d:%d %d:%d", new Object[]{Integer.valueOf(timeStamp.get(1)), Integer.valueOf(timeStamp.get(2) + 1), Integer.valueOf(timeStamp.get(5)), Integer.valueOf(timeStamp.get(11)), Integer.valueOf(timeStamp.get(12))});
+            _longitude = Double.parseDouble(SharedStorage.getString(context, "last_longitude_key", "0"));
+            _latitude = Double.parseDouble(SharedStorage.getString(context, "last_latitude_key", "0"));
+            _speed = Double.parseDouble(SharedStorage.getString(context, "last_speed_key", "0"));
+            _locationSource = Integer.parseInt(SharedStorage.getString(context, "last_locationsource_key", "0"));
         }
     }
 
@@ -97,11 +97,11 @@ public class GpsTracking {
         private int _prefId;
 
         private booleanPrefs(int prefId) {
-            this._prefId = prefId;
+            _prefId = prefId;
         }
 
         public int getID() {
-            return this._prefId;
+            return _prefId;
         }
     }
 
@@ -117,11 +117,11 @@ public class GpsTracking {
         private int _prefId;
 
         private integerPrefs(int prefId) {
-            this._prefId = prefId;
+            _prefId = prefId;
         }
 
         public int getID() {
-            return this._prefId;
+            return _prefId;
         }
     }
 
@@ -134,11 +134,11 @@ public class GpsTracking {
         private int _prefId;
 
         private serviceStringPrefs(int prefId) {
-            this._prefId = prefId;
+            _prefId = prefId;
         }
 
         public int getID() {
-            return this._prefId;
+            return _prefId;
         }
     }
 
@@ -155,47 +155,47 @@ public class GpsTracking {
         private int _prefId;
 
         private stringPrefs(int prefId) {
-            this._prefId = prefId;
+            _prefId = prefId;
         }
 
         public int getID() {
-            return this._prefId;
+            return _prefId;
         }
     }
     public GpsTracking(Context context) {
-        this.PREF_ENABLE = "gpsTrackingEnable";
-        this.PREF_LOCATIONSOURCE = "LocationSource";
-        this.PREF_DAYS = "gpsTrackingDays";
-        this.PREF_TIME = "gpsTrackingTime";
-        this.PREF_SPEED = "gpsTrackingSpeed";
-        this.PREF_GPSTIME = "gpsTrackingGpsTime";
-        this.PREF_SERVERTYPE = "gpsTrackingServerType";
-        this.PREF_FILE = "gpsTrackingFile";
-        this.PREF_PPCGUID = "gpsTrackingPPCGuid";
-        this.PREF_ISLOCATIONSOURCE = "IsWriteLocationSource";
-        this.PREF_ERPID = "gpsTrackingErpId";
-        this.PREF_PORT = "gpsTrackingPort";
-        this.PREF_SENDNULL = "gpsTrackingFixGpsDisabling";
-        this.PREF_USERNAME = "gpsTrackingUsername";
-        this.PREF_PASSWORD = "gpsTrackingPassword";
-        this.PREF_TRACKFILEPATH = "gpsTrackingFilePath";
-        this.PREF_TRACKFILENAME = "gpsTrackingFileName";
-        this.PREF_PASSIVECONNECTION = "gpsTrackingIsPassiveConnection";
-        this.LAST_DATE_KEY = "last_date_key";
-        this.LAST_LATITUDE_KEY = "last_latitude_key";
-        this.LAST_LONGITUDE_KEY = "last_longitude_key";
-        this.LAST_SPEED_KEY = "last_speed_key";
-        this.LAST_LOCATIONSOURCE_KEY = "last_locationsource_key";
-        this._isStarted = false;
-        this._isReceiverRegistered = false;
-        this._integerParams = new int[7];
-        this._booleanParams = new boolean[5];
-        this._stringParams = new ArrayList();
-        this._context = context;
+        PREF_ENABLE = "gpsTrackingEnable";
+        PREF_LOCATIONSOURCE = "LocationSource";
+        PREF_DAYS = "gpsTrackingDays";
+        PREF_TIME = "gpsTrackingTime";
+        PREF_SPEED = "gpsTrackingSpeed";
+        PREF_GPSTIME = "gpsTrackingGpsTime";
+        PREF_SERVERTYPE = "gpsTrackingServerType";
+        PREF_FILE = "gpsTrackingFile";
+        PREF_PPCGUID = "gpsTrackingPPCGuid";
+        PREF_ISLOCATIONSOURCE = "IsWriteLocationSource";
+        PREF_ERPID = "gpsTrackingErpId";
+        PREF_PORT = "gpsTrackingPort";
+        PREF_SENDNULL = "gpsTrackingFixGpsDisabling";
+        PREF_USERNAME = "gpsTrackingUsername";
+        PREF_PASSWORD = "gpsTrackingPassword";
+        PREF_TRACKFILEPATH = "gpsTrackingFilePath";
+        PREF_TRACKFILENAME = "gpsTrackingFileName";
+        PREF_PASSIVECONNECTION = "gpsTrackingIsPassiveConnection";
+        LAST_DATE_KEY = "last_date_key";
+        LAST_LATITUDE_KEY = "last_latitude_key";
+        LAST_LONGITUDE_KEY = "last_longitude_key";
+        LAST_SPEED_KEY = "last_speed_key";
+        LAST_LOCATIONSOURCE_KEY = "last_locationsource_key";
+        _isStarted = false;
+        _isReceiverRegistered = false;
+        _integerParams = new int[7];
+        _booleanParams = new boolean[5];
+        _stringParams = new ArrayList();
+        _context = context;
     }
 
     private Context getContext() {
-        return this._context;
+        return _context;
     }
 
     private boolean isSupported() {
@@ -211,25 +211,25 @@ public class GpsTracking {
 
     private void sendNewPreferences(String intentAction) {
         readGpsTrackingSettings(true);
-        Intent intent = new Intent(SERVICE_ACTION);
-        intent.putExtra(NUMERIC_PARAMS, this._integerParams);
-        intent.putExtra(BOOLEAN_PARAMS, this._booleanParams);
-        intent.putExtra(STRING_PARAMS, this._stringParams);
+        Intent intent = new Intent(ServiceGpsTracking.RECEIVER_FILTER);//SERVICE_ACTION);
+        intent.putExtra(NUMERIC_PARAMS, _integerParams);
+        intent.putExtra(BOOLEAN_PARAMS, _booleanParams);
+        intent.putExtra(STRING_PARAMS, _stringParams);
         intent.putExtra(RECEIVER_ACTION, intentAction);
         getContext().sendBroadcast(intent);
     }
 
     private void setReceiver() {
-        this.gpsTrackingReceiver = new C04711();
-        getContext().registerReceiver(this.gpsTrackingReceiver, new IntentFilter(INITIALIZER_ACTION));
-        this._isReceiverRegistered = true;
+        gpsTrackingReceiver = new gpsTrackingReceiver();
+        getContext().registerReceiver(gpsTrackingReceiver, new IntentFilter(INITIALIZER_ACTION));
+        _isReceiverRegistered = true;
     }
 
     public boolean startGpsTracking() {
-        if (!isSupported() || this._isStarted) {
+        if (!isSupported() || _isStarted) {
             return false;
         }
-        this._isStarted = true;
+        _isStarted = true;
         SharedStorage.setBoolean(getContext(), "gpsTrackingEnable", Boolean.valueOf(true));
         setReceiver();
         getContext().startService(new Intent(getContext(), ServiceGpsTracking.class));
@@ -239,11 +239,11 @@ public class GpsTracking {
     }
 
     public void stopGpsTracking() {
-        this._isStarted = false;
+        _isStarted = false;
         SharedStorage.setBoolean(getContext(), "gpsTrackingEnable", Boolean.valueOf(false));
-        if (this._isReceiverRegistered) {
-            this._isReceiverRegistered = false;
-            getContext().unregisterReceiver(this.gpsTrackingReceiver);
+        if (_isReceiverRegistered) {
+            _isReceiverRegistered = false;
+            getContext().unregisterReceiver(gpsTrackingReceiver);
         }
         getContext().stopService(new Intent(getContext(), ServiceGpsTracking.class));
     }
@@ -314,10 +314,10 @@ public class GpsTracking {
             isUpdated = true;
             SharedStorage.setBoolean(getContext(), "gpsTrackingIsPassiveConnection", Boolean.valueOf(passiveConnection));
         }
-        if (this._isStarted && isUpdated) {
+        if (_isStarted && isUpdated) {
             sendNewPreferences(RENEW_PREFERENCES);
         }
-        if (this._isStarted && !isUpdated) {
+        if (_isStarted && !isUpdated) {
             sendNewPreferences(CHECK_PREFERENCES);
         }
     }
@@ -337,18 +337,18 @@ public class GpsTracking {
         boolean bSendNull = SharedStorage.getBoolean(getContext(), "gpsTrackingFixGpsDisabling", false);
         boolean passiveConnection = SharedStorage.getBoolean(getContext(), "gpsTrackingIsPassiveConnection", false);
         if (isRenew) {
-            this._integerParams[integerPrefs.TIME.getID()] = time;
-            this._integerParams[integerPrefs.INTERVAL.getID()] = interval;
-            this._integerParams[integerPrefs.DAYS.getID()] = days;
-            this._integerParams[integerPrefs.PERIOD.getID()] = period;
-            this._integerParams[integerPrefs.PORT.getID()] = port;
-            this._integerParams[integerPrefs.SERVER_TYPE.getID()] = serverType;
-            this._integerParams[integerPrefs.INDEX_LOCATION_SOURCE.getID()] = indexLocationSource;
-            this._booleanParams[booleanPrefs.SPEED.getID()] = bSpeed;
-            this._booleanParams[booleanPrefs.GPS_TIME.getID()] = bGpsTime;
-            this._booleanParams[booleanPrefs.LOCATION_SOURCE.getID()] = bIsLocationSource;
-            this._booleanParams[booleanPrefs.SEND_NULL.getID()] = bSendNull;
-            this._booleanParams[booleanPrefs.PASSIVE_CONNECTION.getID()] = passiveConnection;
+            _integerParams[integerPrefs.TIME.getID()] = time;
+            _integerParams[integerPrefs.INTERVAL.getID()] = interval;
+            _integerParams[integerPrefs.DAYS.getID()] = days;
+            _integerParams[integerPrefs.PERIOD.getID()] = period;
+            _integerParams[integerPrefs.PORT.getID()] = port;
+            _integerParams[integerPrefs.SERVER_TYPE.getID()] = serverType;
+            _integerParams[integerPrefs.INDEX_LOCATION_SOURCE.getID()] = indexLocationSource;
+            _booleanParams[booleanPrefs.SPEED.getID()] = bSpeed;
+            _booleanParams[booleanPrefs.GPS_TIME.getID()] = bGpsTime;
+            _booleanParams[booleanPrefs.LOCATION_SOURCE.getID()] = bIsLocationSource;
+            _booleanParams[booleanPrefs.SEND_NULL.getID()] = bSendNull;
+            _booleanParams[booleanPrefs.PASSIVE_CONNECTION.getID()] = passiveConnection;
             return;
         }
     }

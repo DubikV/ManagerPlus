@@ -57,11 +57,11 @@
 
         <!--</receiver>-->
 
-        <receiver android:name="com.gmail.vanyadubik.managerplus.gps.service.old.RepeatingAlarmService">
-            <intent-filter android:priority="1">
-                 <action android:name="com.blah.something.ALARM_RECIEVED" />
-            </intent-filter>
-        </receiver>
+        <!--<receiver android:name="com.gmail.vanyadubik.managerplus.gps.service.old.RepeatingAlarmService">-->
+            <!--<intent-filter android:priority="1">-->
+                 <!--<action android:name="com.blah.something.ALARM_RECIEVED" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
         <receiver android:name="com.gmail.vanyadubik.managerplus.gps.service.OnBootReceiver"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
             android:enabled="true">
@@ -73,15 +73,21 @@
             </intent-filter>
         </receiver>
 
+        <!--<service-->
+                <!--android:name=".gps.service.ServiceGpsTracking"-->
+                <!--android:enabled="true"-->
+                <!--android:exported="true"-->
+                <!--android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">-->
+                <!--<intent-filter>-->
+                        <!--<action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />-->
+                <!--</intent-filter>-->
+        <!--</service>-->
+
         <service
-                android:name=".gps.service.ServiceGpsTracking"
-                android:enabled="true"
-                android:exported="true"
-                android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
-                <intent-filter>
-                        <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
-                </intent-filter>
-        </service>
+            android:enabled="true"
+            android:exported="false"
+            android:name=".gps.service.ServiceGpsTracking">
+       </service>
 
         <meta-data
             android:name="com.google.android.gms.version"
