@@ -320,33 +320,6 @@ public class ServiceGpsTracking extends Service {
         }
     }
 
-    class ServiceBroadcaster extends BroadcastReceiver {
-        ServiceBroadcaster() {
-        }
-
-        public void onReceive(Context context, Intent intent) {
-            String Action = intent.getStringExtra("brc_receiver_action");
-            int[] IntegerParams = intent.getIntArrayExtra("numeric_shared_preferences");
-            boolean[] BooleanParams = intent.getBooleanArrayExtra("boolean_shared_preferences");
-            ArrayList<String> StringParams = intent.getStringArrayListExtra("string_shared_preferences");
-            if (Action.equals("initializer_have_new_preferences")) {
-                boolean isTTStartedBefore = _isTickTimerStarted;
-                boolean isSTStartedBefore = _isSendTimerStarted;
-                startTickTimer(false);
-                startSendingTimer(false);
-                setNewPreference(0, IntegerParams, BooleanParams, StringParams);
-                startTickTimer(isTTStartedBefore);
-                startSendingTimer(isSTStartedBefore);
-            }
-            if (Action.equals("initializer_wait_for_check_preferences")) {
-                setNewPreference(1, IntegerParams, BooleanParams, StringParams);
-            }
-            if (Action.equals("send_preferences_to_service")) {
-                setNewPreference(2, IntegerParams, BooleanParams, StringParams);
-            }
-        }
-    }
-
     private class GpsTrackingLocationListener implements LocationListener {
         private GpsTrackingLocationListener() {
         }
@@ -554,8 +527,34 @@ public class ServiceGpsTracking extends Service {
     }
 
     private void setReceiver() {
-        serviceReceiver = new ServiceBroadcaster();
-        registerReceiver(serviceReceiver, new IntentFilter(RECEIVER_FILTER));
+
+        serviceReceiver = new BroadcastReceiver(){
+
+            public void onReceive(Context context, Intent intent) {
+                String Action = intent.getStringExtra("brc_receiver_action");
+                int[] IntegerParams = intent.getIntArrayExtra("numeric_shared_preferences");
+                boolean[] BooleanParams = intent.getBooleanArrayExtra("boolean_shared_preferences");
+                ArrayList<String> StringParams = intent.getStringArrayListExtra("string_shared_preferences");
+                if (Action.equals("initializer_have_new_preferences")) {
+                    boolean isTTStartedBefore = _isTickTimerStarted;
+                    boolean isSTStartedBefore = _isSendTimerStarted;
+                    startTickTimer(false);
+                    startSendingTimer(false);
+                    setNewPreference(0, IntegerParams, BooleanParams, StringParams);
+                    startTickTimer(isTTStartedBefore);
+                    startSendingTimer(isSTStartedBefore);
+                }
+                if (Action.equals("initializer_wait_for_check_preferences")) {
+                    setNewPreference(1, IntegerParams, BooleanParams, StringParams);
+                }
+                if (Action.equals("send_preferences_to_service")) {
+                    setNewPreference(2, IntegerParams, BooleanParams, StringParams);
+                }
+            }
+        };
+
+        this.registerReceiver(serviceReceiver, new IntentFilter(RECEIVER_FILTER));
+        //registerReceiver(serviceReceiver, new IntentFilter(RECEIVER_FILTER));
     }
 
     private long getCurrentTime() {
