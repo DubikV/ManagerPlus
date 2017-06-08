@@ -20,7 +20,6 @@ public class GpsTracking {
     static final String NUMERIC_PARAMS = "numeric_shared_preferences";
     static final String PREF_INTERVAL = "gpsTrackingInterval";
     static final String PREF_PERIOD = "gpsTrackingPeriod";
-    static final String PREF_SERVERADDRESS = "gpsTrackingServerAddress";
     static final String RECEIVER_ACTION = "brc_receiver_action";
     static final String RENEW_PREFERENCES = "initializer_have_new_preferences";
     static final String SERVICE_ACTION = "gps.service.serviceGpsTracking.serviceBroadcaster";
@@ -58,16 +57,6 @@ public class GpsTracking {
     private ArrayList<String> _stringParams;
     private BroadcastReceiver gpsTrackingReceiver;
 
-    /* renamed from: ru.agentplus.tracking.GpsTracking.1 */
-    class gpsTrackingReceiver extends BroadcastReceiver {
-        gpsTrackingReceiver() {
-        }
-
-        public void onReceive(Context context, Intent intent) {
-            setLastGpsData(intent.getLongExtra(GpsTracking.LONG_PARAMS, 0), intent.getStringArrayListExtra(GpsTracking.STRING_PARAMS_FROM_SERVICE));
-        }
-    }
-
     private class GpsData {
         String _date;
         double _latitude;
@@ -76,14 +65,20 @@ public class GpsTracking {
         double _speed;
 
         GpsData(Context context) {
-            long longTime = SharedStorage.getLong(context, "last_date_key", 0);
+            long longTime = SharedStorage.getLong(context, LAST_DATE_KEY, 0);
             Calendar timeStamp = Calendar.getInstance();
             timeStamp.setTimeInMillis(longTime);
-            _date = String.format(Locale.US, "%d:%d:%d %d:%d", new Object[]{Integer.valueOf(timeStamp.get(1)), Integer.valueOf(timeStamp.get(2) + 1), Integer.valueOf(timeStamp.get(5)), Integer.valueOf(timeStamp.get(11)), Integer.valueOf(timeStamp.get(12))});
-            _longitude = Double.parseDouble(SharedStorage.getString(context, "last_longitude_key", "0"));
-            _latitude = Double.parseDouble(SharedStorage.getString(context, "last_latitude_key", "0"));
-            _speed = Double.parseDouble(SharedStorage.getString(context, "last_speed_key", "0"));
-            _locationSource = Integer.parseInt(SharedStorage.getString(context, "last_locationsource_key", "0"));
+            _date = String.format(Locale.US, "%d:%d:%d %d:%d",
+                    new Object[]{Integer.valueOf(timeStamp.get(1)),
+                            Integer.valueOf(timeStamp.get(2) + 1),
+                            Integer.valueOf(timeStamp.get(5)),
+                            Integer.valueOf(timeStamp.get(11)),
+                            Integer.valueOf(timeStamp.get(12))});
+
+            _longitude = Double.parseDouble(SharedStorage.getString(context, LAST_LONGITUDE_KEY, "0"));
+            _latitude = Double.parseDouble(SharedStorage.getString(context, LAST_LATITUDE_KEY, "0"));
+            _speed = Double.parseDouble(SharedStorage.getString(context, LAST_SPEED_KEY, "0"));
+            _locationSource = Integer.parseInt(SharedStorage.getString(context, LAST_LOCATIONSOURCE_KEY, "0"));
         }
     }
 
@@ -200,9 +195,10 @@ public class GpsTracking {
 
     private boolean isSupported() {
         PackageManager packageManager = getContext().getPackageManager();
-        boolean hasSystemFeatureLocation = packageManager.hasSystemFeature(Provider.FromIndex(SharedStorage.getInteger(getContext(), "LocationSource", 1)).getFeatureName());
-        boolean gpsLocation = packageManager.hasSystemFeature("android.hardware.location.gps");
-        boolean networkLocation = packageManager.hasSystemFeature("android.hardware.location.network");
+        boolean hasSystemFeatureLocation = packageManager.hasSystemFeature(
+                Provider.FromIndex(SharedStorage.getInteger(getContext(), PREF_LOCATIONSOURCE, 1)).getFeatureName());
+        boolean gpsLocation = packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
+        boolean networkLocation = packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION_NETWORK);
         if ((gpsLocation || networkLocation) && hasSystemFeatureLocation) {
             return true;
         }
@@ -211,7 +207,7 @@ public class GpsTracking {
 
     private void sendNewPreferences(String intentAction) {
         readGpsTrackingSettings(true);
-        Intent intent = new Intent(ServiceGpsTracking.RECEIVER_FILTER);//SERVICE_ACTION);
+        Intent intent = new Intent(SERVICE_ACTION);
         intent.putExtra(NUMERIC_PARAMS, _integerParams);
         intent.putExtra(BOOLEAN_PARAMS, _booleanParams);
         intent.putExtra(STRING_PARAMS, _stringParams);
@@ -220,7 +216,14 @@ public class GpsTracking {
     }
 
     private void setReceiver() {
-        gpsTrackingReceiver = new gpsTrackingReceiver();
+        gpsTrackingReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                setLastGpsData(intent.getLongExtra(GpsTracking.LONG_PARAMS, 0),
+                        intent.getStringArrayListExtra(GpsTracking.STRING_PARAMS_FROM_SERVICE));
+            }
+        };
+
         getContext().registerReceiver(gpsTrackingReceiver, new IntentFilter(INITIALIZER_ACTION));
         _isReceiverRegistered = true;
     }
@@ -230,17 +233,17 @@ public class GpsTracking {
             return false;
         }
         _isStarted = true;
-        SharedStorage.setBoolean(getContext(), "gpsTrackingEnable", Boolean.valueOf(true));
+        SharedStorage.setBoolean(getContext(), PREF_ENABLE, Boolean.valueOf(true));
         setReceiver();
         getContext().startService(new Intent(getContext(), ServiceGpsTracking.class));
-        SystemClock.sleep(300);
+        SystemClock.sleep(1000);
         sendNewPreferences(SET_PREFERENCES);
         return true;
     }
 
     public void stopGpsTracking() {
         _isStarted = false;
-        SharedStorage.setBoolean(getContext(), "gpsTrackingEnable", Boolean.valueOf(false));
+        SharedStorage.setBoolean(getContext(), PREF_ENABLE, Boolean.valueOf(false));
         if (_isReceiverRegistered) {
             _isReceiverRegistered = false;
             getContext().unregisterReceiver(gpsTrackingReceiver);
@@ -249,70 +252,79 @@ public class GpsTracking {
     }
 
     private int getGpsTrackingStatus() {
-        return SharedStorage.getBoolean(getContext(), "gpsTrackingEnable", false) ? 1 : 0;
+        return SharedStorage.getBoolean(getContext(), PREF_ENABLE, false) ? 1 : 0;
     }
 
     private void setLastGpsData(long datetime, ArrayList<String> stringParams) {
-        SharedStorage.setLong(getContext(), "last_date_key", datetime);
-        SharedStorage.setString(getContext(), "last_latitude_key", (String) stringParams.get(serviceStringPrefs.LATITUDE.getID()));
-        SharedStorage.setString(getContext(), "last_longitude_key", (String) stringParams.get(serviceStringPrefs.LONGTITUDE.getID()));
-        SharedStorage.setString(getContext(), "last_speed_key", (String) stringParams.get(serviceStringPrefs.SPEED.getID()));
-        SharedStorage.setString(getContext(), "last_locationsource_key", (String) stringParams.get(serviceStringPrefs.LOCATION_SOURCE.getID()));
+        SharedStorage.setLong(getContext(), LAST_DATE_KEY, datetime);
+        SharedStorage.setString(getContext(), LAST_LATITUDE_KEY,
+                (String) stringParams.get(serviceStringPrefs.LATITUDE.getID()));
+        SharedStorage.setString(getContext(), LAST_LONGITUDE_KEY,
+                (String) stringParams.get(serviceStringPrefs.LONGTITUDE.getID()));
+        SharedStorage.setString(getContext(), LAST_SPEED_KEY,
+                (String) stringParams.get(serviceStringPrefs.SPEED.getID()));
+        SharedStorage.setString(getContext(), LAST_LOCATIONSOURCE_KEY,
+                (String) stringParams.get(serviceStringPrefs.LOCATION_SOURCE.getID()));
     }
 
     private GpsData getLastGpsData() {
-        if (SharedStorage.getLong(getContext(), "last_date_key", 0) == 0) {
+        if (SharedStorage.getLong(getContext(), LAST_DATE_KEY, 0) == 0) {
             return null;
         }
         return new GpsData(getContext());
     }
 
-    private void writeGpsTrackingSettings(int interval, int time, int days, boolean bSpeed, boolean bGpsTime, String fileName, int serverType, String serverAddress, String ppcGuid, String erpId, int period, int port, int locationSource, boolean bLocationSource, boolean bSendNull, String FTPfileName, String userName, String password, String FTPfolder, boolean passiveConnection) {
+    private void writeGpsTrackingSettings(int interval, int time, int days, boolean bSpeed,
+                                          boolean bGpsTime, String fileName, int serverType,
+                                          String serverAddress, String ppcGuid, String erpId,
+                                          int period, int port, int locationSource, boolean bLocationSource,
+                                          boolean bSendNull, String FTPfileName, String userName,
+                                          String password, String FTPfolder, boolean passiveConnection) {
         boolean isUpdated = false;
-        SharedStorage.setBoolean(getContext(), "gpsTrackingFixGpsDisabling", Boolean.valueOf(bSendNull));
+        SharedStorage.setBoolean(getContext(), PREF_SENDNULL, Boolean.valueOf(bSendNull));
         if (interval != SharedStorage.getInteger(getContext(), PREF_INTERVAL, 0)) {
             isUpdated = true;
             SharedStorage.setInteger(getContext(), PREF_INTERVAL, interval);
         }
-        if (time != SharedStorage.getInteger(getContext(), "gpsTrackingTime", 0)) {
+        if (time != SharedStorage.getInteger(getContext(), PREF_TIME, 0)) {
             isUpdated = true;
-            SharedStorage.setInteger(getContext(), "gpsTrackingTime", time);
+            SharedStorage.setInteger(getContext(), PREF_TIME, time);
         }
-        if (days != SharedStorage.getInteger(getContext(), "gpsTrackingDays", 0)) {
+        if (days != SharedStorage.getInteger(getContext(), PREF_DAYS, 0)) {
             isUpdated = true;
-            SharedStorage.setInteger(getContext(), "gpsTrackingDays", days);
+            SharedStorage.setInteger(getContext(), PREF_DAYS, days);
         }
-        if (serverType != SharedStorage.getInteger(getContext(), "gpsTrackingServerType", 0)) {
+        if (serverType != SharedStorage.getInteger(getContext(), PREF_SERVERTYPE, 0)) {
             isUpdated = true;
-            SharedStorage.setInteger(getContext(), "gpsTrackingServerType", serverType);
+            SharedStorage.setInteger(getContext(), PREF_SERVERTYPE, serverType);
         }
         if (period != SharedStorage.getInteger(getContext(), PREF_PERIOD, 0)) {
             isUpdated = true;
             SharedStorage.setInteger(getContext(), PREF_PERIOD, period);
         }
-        if (port != SharedStorage.getInteger(getContext(), "gpsTrackingPort", 0)) {
+        if (port != SharedStorage.getInteger(getContext(), PREF_PORT, 0)) {
             isUpdated = true;
-            SharedStorage.setInteger(getContext(), "gpsTrackingPort", port);
+            SharedStorage.setInteger(getContext(), PREF_PORT, port);
         }
-        if (locationSource != SharedStorage.getInteger(getContext(), "LocationSource", 1)) {
+        if (locationSource != SharedStorage.getInteger(getContext(), PREF_LOCATIONSOURCE, 1)) {
             isUpdated = true;
-            SharedStorage.setInteger(getContext(), "LocationSource", locationSource);
+            SharedStorage.setInteger(getContext(), PREF_LOCATIONSOURCE, locationSource);
         }
-        if (bSpeed != SharedStorage.getBoolean(getContext(), "gpsTrackingSpeed", false)) {
+        if (bSpeed != SharedStorage.getBoolean(getContext(), PREF_SPEED, false)) {
             isUpdated = true;
-            SharedStorage.setBoolean(getContext(), "gpsTrackingSpeed", Boolean.valueOf(bSpeed));
+            SharedStorage.setBoolean(getContext(), PREF_SPEED, Boolean.valueOf(bSpeed));
         }
-        if (bGpsTime != SharedStorage.getBoolean(getContext(), "gpsTrackingGpsTime", false)) {
+        if (bGpsTime != SharedStorage.getBoolean(getContext(), PREF_GPSTIME, false)) {
             isUpdated = true;
-            SharedStorage.setBoolean(getContext(), "gpsTrackingGpsTime", Boolean.valueOf(bGpsTime));
+            SharedStorage.setBoolean(getContext(), PREF_GPSTIME, Boolean.valueOf(bGpsTime));
         }
-        if (bLocationSource != SharedStorage.getBoolean(getContext(), "IsWriteLocationSource", false)) {
+        if (bLocationSource != SharedStorage.getBoolean(getContext(), PREF_ISLOCATIONSOURCE, false)) {
             isUpdated = true;
-            SharedStorage.setBoolean(getContext(), "IsWriteLocationSource", Boolean.valueOf(bLocationSource));
+            SharedStorage.setBoolean(getContext(), PREF_ISLOCATIONSOURCE, Boolean.valueOf(bLocationSource));
         }
-        if (passiveConnection != SharedStorage.getBoolean(getContext(), "gpsTrackingIsPassiveConnection", false)) {
+        if (passiveConnection != SharedStorage.getBoolean(getContext(), PREF_PASSIVECONNECTION, false)) {
             isUpdated = true;
-            SharedStorage.setBoolean(getContext(), "gpsTrackingIsPassiveConnection", Boolean.valueOf(passiveConnection));
+            SharedStorage.setBoolean(getContext(), PREF_PASSIVECONNECTION, Boolean.valueOf(passiveConnection));
         }
         if (_isStarted && isUpdated) {
             sendNewPreferences(RENEW_PREFERENCES);
@@ -324,18 +336,18 @@ public class GpsTracking {
 
     private void readGpsTrackingSettings(boolean isRenew) {
         int interval = SharedStorage.getInteger(getContext(), PREF_INTERVAL, 0);
-        int time = SharedStorage.getInteger(getContext(), "gpsTrackingTime", 0);
-        int days = SharedStorage.getInteger(getContext(), "gpsTrackingDays", 0);
-        int serverType = SharedStorage.getInteger(getContext(), "gpsTrackingServerType", 0);
+        int time = SharedStorage.getInteger(getContext(), PREF_TIME, 0);
+        int days = SharedStorage.getInteger(getContext(), PREF_DAYS, 0);
+        int serverType = SharedStorage.getInteger(getContext(), PREF_SERVERTYPE, 0);
         int period = SharedStorage.getInteger(getContext(), PREF_PERIOD, 0);
-        int port = SharedStorage.getInteger(getContext(), "gpsTrackingPort", 0);
-        int indexLocationSource = SharedStorage.getInteger(getContext(), "LocationSource", 1);
-        boolean bSpeed = SharedStorage.getBoolean(getContext(), "gpsTrackingSpeed", false);
-        boolean bGpsTime = SharedStorage.getBoolean(getContext(), "gpsTrackingGpsTime", false);
-        boolean bIsLocationSource = SharedStorage.getBoolean(getContext(), "IsWriteLocationSource", false);
-        boolean enable = SharedStorage.getBoolean(getContext(), "gpsTrackingEnable", false);
-        boolean bSendNull = SharedStorage.getBoolean(getContext(), "gpsTrackingFixGpsDisabling", false);
-        boolean passiveConnection = SharedStorage.getBoolean(getContext(), "gpsTrackingIsPassiveConnection", false);
+        int port = SharedStorage.getInteger(getContext(), PREF_PORT, 0);
+        int indexLocationSource = SharedStorage.getInteger(getContext(), PREF_LOCATIONSOURCE, 1);
+        boolean bSpeed = SharedStorage.getBoolean(getContext(), PREF_SPEED, false);
+        boolean bGpsTime = SharedStorage.getBoolean(getContext(), PREF_GPSTIME, false);
+        boolean bIsLocationSource = SharedStorage.getBoolean(getContext(), PREF_ISLOCATIONSOURCE, false);
+        boolean enable = SharedStorage.getBoolean(getContext(), PREF_ENABLE, false);
+        boolean bSendNull = SharedStorage.getBoolean(getContext(), PREF_SENDNULL, false);
+        boolean passiveConnection = SharedStorage.getBoolean(getContext(), PREF_PASSIVECONNECTION, false);
         if (isRenew) {
             _integerParams[integerPrefs.TIME.getID()] = time;
             _integerParams[integerPrefs.INTERVAL.getID()] = interval;

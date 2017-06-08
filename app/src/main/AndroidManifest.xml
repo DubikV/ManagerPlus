@@ -33,7 +33,8 @@
         <service
             android:name=".service.gps.SyncIntentTrackService"
             android:enabled="true"
-            android:exported="true"  />
+            android:exported="false"
+            android:process=":GPSSending"/>
         <!--<service-->
             <!--android:name=".service.gps.GPSTrackerService"-->
             <!--android:enabled="true"-->
@@ -84,10 +85,18 @@
         <!--</service>-->
 
         <service
+            android:name=".gps.service.ServiceGpsTracking"
             android:enabled="true"
             android:exported="false"
-            android:name=".gps.service.ServiceGpsTracking">
+            android:process=":GPSTracking">
        </service>
+
+        <activity
+            android:theme="@style/Theme.Transparent"
+            android:name="gps.service.GpsTrackingNotification"
+            android:exported="true"
+            android:configChanges="keyboardHidden">
+        </activity>
 
         <meta-data
             android:name="com.google.android.gms.version"

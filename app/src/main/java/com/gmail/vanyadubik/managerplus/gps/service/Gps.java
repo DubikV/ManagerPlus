@@ -106,7 +106,7 @@ public class Gps {
         this.onGpsStatusChange = new C02751();
         this._context = context;
         this.manager = (LocationManager) getContext().getSystemService(LOCATION_SERVICE);
-        this.isSupported = getContext().getPackageManager().hasSystemFeature("android.hardware.location.gps");
+        this.isSupported = getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
         this.locListener = new mylocationlistener();
     }
 

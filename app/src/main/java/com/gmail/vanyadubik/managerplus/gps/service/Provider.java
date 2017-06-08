@@ -1,12 +1,13 @@
 package com.gmail.vanyadubik.managerplus.gps.service;
 
 
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 
 public enum Provider {
-    GPS(1, LocationManager.GPS_PROVIDER, "android.hardware.location.gps"),
-    NETWORK(2, LocationManager.NETWORK_PROVIDER, "android.hardware.location.network"),
-    PASSIVE(3, LocationManager.PASSIVE_PROVIDER, "android.hardware.location");
+    GPS(1, LocationManager.GPS_PROVIDER, PackageManager.FEATURE_LOCATION_GPS),
+    NETWORK(2, LocationManager.NETWORK_PROVIDER, PackageManager.FEATURE_LOCATION_NETWORK),
+    PASSIVE(3, LocationManager.PASSIVE_PROVIDER, PackageManager.FEATURE_LOCATION);
 
     public static final String PROVIDER_GPS = "gps";
     public static final String PROVIDER_NETWORK = "network";
