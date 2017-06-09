@@ -19,24 +19,32 @@ import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat.Builder;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.internal.view.SupportMenu;
 import android.util.Log;
 
 import com.gmail.vanyadubik.managerplus.R;
+import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
+import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.booleanPrefs;
+import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.integerPrefs;
+import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.serviceStringPrefs;
+import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
+import com.gmail.vanyadubik.managerplus.repository.DataRepository;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.stringPrefs;
-import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.booleanPrefs;
-import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.integerPrefs;
-import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.serviceStringPrefs;
+import javax.inject.Inject;
+
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
 
 public class ServiceGpsTracking extends Service {
+
+    @Inject
+    DataRepository dataRepository;
+
     final int CHECK_PREFS;
     final String LINE_ARGS;
     final int RENEW_PREFS;
@@ -79,12 +87,11 @@ public class ServiceGpsTracking extends Service {
         }
 
         public void run() {
-            int access$2100;
+            int intervalRun;
             int abs;
-            Builder notification;
+            Builder notifyBuilder;
             double latitude;
             double longitude;
-            Object[] objArr;
             boolean isStoped = false;
             Calendar timeStamp = Calendar.getInstance();
             timeStamp.setTimeInMillis(getCurrentTime());
@@ -93,12 +100,14 @@ public class ServiceGpsTracking extends Service {
             _tickTimerInProgress = true;
             if (_startTime != _endTime) {
                 if (time + ((_interval / 1000) / 60) > (time < _startTime ? _startTime : _endTime)) {
-                    access$2100 = (((time < _startTime ? _startTime : _endTime) - time) * 60) * 1000;
-                    abs = Math.abs(access$2100);
+                    intervalRun = (((time < _startTime ? _startTime : _endTime) - time) * 60) * 1000;
+                    abs = Math.abs(intervalRun);
                     if (_startTime != _endTime && (time < _startTime || time >= _endTime)) {
                         Log.i(TAGLOG_GPS, "The current position has not been recorded. The current time is outside the working time limits");
                         isStoped = true;
-                        abs = (((time <= _endTime ? ((1440 - _endTime) + _startTime) - (time - _endTime) : _startTime - time) * 60) * 1000) - (timeStamp.get(13) * 1000);
+                        abs = (((time <= _endTime ?
+                                ((1440 - _endTime) + _startTime) - (time - _endTime) :
+                                _startTime - time) * 60) * 1000) - (timeStamp.get(13) * 1000);
                     }
                     if ((((int) Math.pow(2.0d, (double) (day + -2 >= 0 ? day + 5 : day - 2))) & _days) == 0 && !isStoped) {
                         Log.i(TAGLOG_GPS, "The current position has not been recorded. The current day is outside the working days limits");
@@ -119,8 +128,12 @@ public class ServiceGpsTracking extends Service {
                         abs = (abs + ((_startTime * 60) * 1000)) - (timeStamp.get(13) * 1000);
                     }
                     if (!(_isNotificationEnabled || isStoped)) {
-                        notification = getNotification(true);
-                        startForeground(_notifyId, notification.build());
+                        if (_interval != 0 || _period == 0) {
+                            notifyBuilder = getNotification(false);
+                        } else {
+                            notifyBuilder = getNotification(true);
+                        }
+                        startForeground(ServiceGpsTracking.this._notifyId, notifyBuilder.build());
                         updateProvider(true);
                     }
                     if (_isNotificationEnabled && isStoped) {
@@ -132,16 +145,17 @@ public class ServiceGpsTracking extends Service {
                     boolean isGPSEnabled = ((LocationManager) getSystemService(LOCATION_SERVICE))
                             .isProviderEnabled(Provider.PROVIDER_GPS);
 
-                    if (!((_gpsLatitude != 0.0 && _gpsLongitude != 0.0) || isStoped || _bSendNull)) {
+                    if (!((_gpsLatitude != 0.0d && _gpsLongitude != 0.0d) || isStoped || _bSendNull)) {
                         Log.i(TAGLOG_GPS, "The current position is not recorded, the coordinates received incorrectly");
                         isStoped = true;
                     }
-//                    if (!(file.exists() || isStoped || file.createNewFile())) {
-//                        Log.e(TAGLOG_GPS, "An error occurred while creating the file in ServiceGpsTracking method");
-//                        isStoped = true;
-//                    }
+
+                    if (!(dataRepository!=null || isStoped)) {
+                        Log.e(TAGLOG_GPS, "An error occurred while data repository in ServiceGpsTracking method");
+                        isStoped = true;
+                    }
                     if (!isStoped) {
-//                        PrintWriter printWriter = new PrintWriter(new FileOutputStream(file, true));
+                        //PrintWriter printWriter = new PrintWriter(new FileOutputStream(file, true));
                         latitude = Gps.CorrectGPSDegree(_gpsLatitude);
                         longitude = Gps.CorrectGPSDegree(_gpsLongitude);
                         if (!isGPSEnabled && _bSendNull) {
@@ -149,23 +163,10 @@ public class ServiceGpsTracking extends Service {
                             longitude = -100.0d;
                         }
                         saveLastLocation(timeStamp, latitude, longitude, _gpsSpeed, _gpsLocationSource);
-//                        locationLine = String.format(Locale.US, "%04d-%02d-%02d %02d-%02d-%02d\t%9.4f\t%9.4f", new Object[]{Integer.valueOf(timeStamp.get(1)), Integer.valueOf(timeStamp.get(2) + 1), Integer.valueOf(timeStamp.get(5)), Integer.valueOf(timeStamp.get(11)), Integer.valueOf(timeStamp.get(12)), Integer.valueOf(timeStamp.get(13)), Double.valueOf(latitude), Double.valueOf(longitude)});
-//                        if (ServiceGpsTracking.this._bSpeed) {
-//                            StringBuilder append = new StringBuilder().append(locationLine);
-//                            objArr = new Object[1];
-//                            objArr[0] = Double.valueOf(ServiceGpsTracking.this._gpsSpeed);
-//                            locationLine = append.append(String.format(Locale.US, "\t%.2f", objArr)).toString();
-//                        }
-//                        if (ServiceGpsTracking.this._bLocationSource) {
-//                            StringBuilder append2 = new StringBuilder().append(locationLine);
-//                            Locale locale = Locale.US;
-//                            String str = (ServiceGpsTracking.this._bSpeed ? BuildConfig.VERSION_NAME : "\t") + "\t%d";
-//                            objArr = new Object[1];
-//                            objArr[0] = Integer.valueOf(ServiceGpsTracking.this._gpsLocationSource);
-//                            locationLine = append2.append(String.format(locale, str, objArr)).toString();
-//                        }
-//                        printWriter.print(locationLine + SocketClient.NETASCII_EOL);
-//                        printWriter.close();
+
+                        dataRepository.insertTrackPoint(
+                                new LocationPoint(timeStamp.getTime(), latitude, longitude, true));
+
                     }
                     _tickTimerInProgress = false;
                     if (abs < 1000) {
@@ -174,14 +175,17 @@ public class ServiceGpsTracking extends Service {
                     tickHandler.postDelayed(tickTimer, (long) abs);
                 }
             }
-            access$2100 = _interval;
-            abs = Math.abs(access$2100);
-//            try {
-                Log.i(TAGLOG_GPS, "The current position has not been recorded. The current time is outside the working time limits");
+            intervalRun = _interval;
+            abs = Math.abs(intervalRun);
+
+            Log.i(TAGLOG_GPS, "The current position has not been recorded. The current time is outside the working time limits");
                 isStoped = true;
                 if (time <= _endTime) {
                 }
-                abs = (((time <= _endTime ? ((1440 - _endTime) + _startTime) - (time - _endTime) : _startTime - time) * 60) * 1000) - (timeStamp.get(13) * 1000);
+                abs = (((time <= _endTime ?
+                        ((1440 - _endTime) + _startTime) - (time - _endTime) :
+                        _startTime - time) * 60) * 1000) - (timeStamp.get(13) * 1000);
+
                 if (day + -2 >= 0) {
                 }
                 Log.i(TAGLOG_GPS, "The current position has not been recorded. The current day is outside the working days limits");
@@ -194,53 +198,38 @@ public class ServiceGpsTracking extends Service {
                     }
                     if ((((int) Math.pow(2.0d, (double) (day + -2 >= 0 ? day + 5 : day - 2))) & _days) == 0) {
                         break;
-//                        abs = (abs + ((_startTime * 60) * 1000)) - (timeStamp.get(13) * 1000);
-//                        if (_interval != 0) {
-//                        }
-//                        notification = getNotification(false);
-//                        startForeground(_notifyId, notification.build());
-//                        updateProvider(true);
-//                        stopForeground(false);
-//                        _notificationManager.cancel(_notifyId);
-//                        _isNotificationEnabled = false;
-//                        updateProvider(false);
-//                        boolean isGPSEnabled2 = ((LocationManager) getSystemService(LOCATION_SERVICE)).isProviderEnabled(Provider.PROVIDER_GPS);
-//                        Log.i(TAGLOG_GPS, "The current position is not recorded, the coordinates received incorrectly");
-//                        isStoped = true;
-//                        Log.e(TAGLOG_GPS, "An error occurred while creating the file in ServiceGpsTracking method");
-//                        isStoped = true;
-//                        if (isStoped) {
-////                            PrintWriter printWriter2 = new PrintWriter(new FileOutputStream(file, true));
-//                            latitude = Gps.CorrectGPSDegree(_gpsLatitude);
-//                            longitude = Gps.CorrectGPSDegree(_gpsLongitude);
-//                            latitude = -100.0;
-//                            longitude = -100.0;
-//                            saveLastLocation(timeStamp, latitude, longitude, _gpsSpeed, _gpsLocationSource);
-////                            locationLine = String.format(Locale.US, "%04d-%02d-%02d %02d-%02d-%02d\t%9.4f\t%9.4f", new Object[]{Integer.valueOf(timeStamp.get(1)), Integer.valueOf(timeStamp.get(2) + 1), Integer.valueOf(timeStamp.get(5)), Integer.valueOf(timeStamp.get(11)), Integer.valueOf(timeStamp.get(12)), Integer.valueOf(timeStamp.get(13)), Double.valueOf(latitude), Double.valueOf(longitude)});
-////                            if (ServiceGpsTracking.this._bSpeed) {
-////                                StringBuilder append3 = new StringBuilder().append(locationLine);
-////                                objArr = new Object[1];
-////                                objArr[0] = Double.valueOf(ServiceGpsTracking.this._gpsSpeed);
-////                                locationLine = append3.append(String.format(Locale.US, "\t%.2f", objArr)).toString();
-////                            }
-////                            if (ServiceGpsTracking.this._bLocationSource) {
-////                                StringBuilder append22 = new StringBuilder().append(locationLine);
-////                                Locale locale2 = Locale.US;
-////                                if (ServiceGpsTracking.this._bSpeed) {
-////                                }
-////                                String str2 = (ServiceGpsTracking.this._bSpeed ? BuildConfig.VERSION_NAME : "\t") + "\t%d";
-////                                objArr = new Object[1];
-////                                objArr[0] = Integer.valueOf(ServiceGpsTracking.this._gpsLocationSource);
-////                                locationLine = append22.append(String.format(locale2, str2, objArr)).toString();
-////                            }
-////                            printWriter2.print(locationLine + SocketClient.NETASCII_EOL);
-////                            printWriter2.close();
-//                        }
-//                        _tickTimerInProgress = false;
-//                        if (abs < 1000) {
-//                            abs = _period;
-//                        }
-//                        tickHandler.postDelayed(tickTimer, (long) abs);
+                        abs = (abs + ((_startTime * 60) * 1000)) - (timeStamp.get(13) * 1000);
+                        if (_interval != 0) {
+                        }
+                        notifyBuilder = getNotification(false);
+                        startForeground(_notifyId, notifyBuilder.build());
+                        updateProvider(true);
+                        stopForeground(false);
+                        _notificationManager.cancel(_notifyId);
+                        _isNotificationEnabled = false;
+                        updateProvider(false);
+                        boolean isGPSEnabled2 = ((LocationManager) getSystemService(LOCATION_SERVICE)).isProviderEnabled(Provider.PROVIDER_GPS);
+                        Log.i(TAGLOG_GPS, "The current position is not recorded, the coordinates received incorrectly");
+                        isStoped = true;
+                        Log.e(TAGLOG_GPS, "An error occurred while creating the file in ServiceGpsTracking method");
+                        isStoped = true;
+                        if (isStoped) {
+
+                            latitude = Gps.CorrectGPSDegree(_gpsLatitude);
+                            longitude = Gps.CorrectGPSDegree(_gpsLongitude);
+                            latitude = -100.0d;
+                            longitude = -100.0d;
+                            saveLastLocation(timeStamp, latitude, longitude, _gpsSpeed, _gpsLocationSource);
+
+                            dataRepository.insertTrackPoint(
+                                    new LocationPoint(timeStamp.getTime(), latitude, longitude, true));
+
+                        }
+                        _tickTimerInProgress = false;
+                        if (abs < 1000) {
+                            abs = _period;
+                        }
+                        tickHandler.postDelayed(tickTimer, (long) abs);
                     }
                     abs += 86400000;
                     if (day >= 7) {
@@ -249,11 +238,14 @@ public class ServiceGpsTracking extends Service {
                         day++;
                     }
                 }
+
+
+
                 abs = (abs + ((_startTime * 60) * 1000)) - (timeStamp.get(13) * 1000);
                 if (_interval != 0) {
                 }
-                notification = getNotification(false);
-                startForeground(_notifyId, notification.build());
+                notifyBuilder = getNotification(false);
+                startForeground(_notifyId, notifyBuilder.build());
                 updateProvider(true);
                 stopForeground(false);
                 _notificationManager.cancel(_notifyId);
@@ -265,38 +257,20 @@ public class ServiceGpsTracking extends Service {
                 Log.e(TAGLOG_GPS, "An error occurred while creating the file in ServiceGpsTracking method");
                 isStoped = true;
                 if (isStoped) {
-//                    PrintWriter printWriter22 = new PrintWriter(new FileOutputStream(file, true));
+
                     latitude = Gps.CorrectGPSDegree(_gpsLatitude);
                     longitude = Gps.CorrectGPSDegree(_gpsLongitude);
                     latitude = -100.0d;
                     longitude = -100.0d;
-//                    ServiceGpsTracking.this.saveLastLocation(timeStamp, latitude, longitude, ServiceGpsTracking.this._gpsSpeed, ServiceGpsTracking.this._gpsLocationSource);
-//                    locationLine = String.format(Locale.US, "%04d-%02d-%02d %02d-%02d-%02d\t%9.4f\t%9.4f", new Object[]{Integer.valueOf(timeStamp.get(1)), Integer.valueOf(timeStamp.get(2) + 1), Integer.valueOf(timeStamp.get(5)), Integer.valueOf(timeStamp.get(11)), Integer.valueOf(timeStamp.get(12)), Integer.valueOf(timeStamp.get(13)), Double.valueOf(latitude), Double.valueOf(longitude)});
-//                    if (ServiceGpsTracking.this._bSpeed) {
-//                        StringBuilder append32 = new StringBuilder().append(locationLine);
-//                        objArr = new Object[1];
-//                        objArr[0] = Double.valueOf(ServiceGpsTracking.this._gpsSpeed);
-//                        locationLine = append32.append(String.format(Locale.US, "\t%.2f", objArr)).toString();
-//                    }
-//                    if (ServiceGpsTracking.this._bLocationSource) {
-//                        StringBuilder append222 = new StringBuilder().append(locationLine);
-//                        Locale locale22 = Locale.US;
-//                        if (ServiceGpsTracking.this._bSpeed) {
-//                        }
-//                        String str22 = (ServiceGpsTracking.this._bSpeed ? BuildConfig.VERSION_NAME : "\t") + "\t%d";
-//                        objArr = new Object[1];
-//                        objArr[0] = Integer.valueOf(ServiceGpsTracking.this._gpsLocationSource);
-//                        locationLine = append222.append(String.format(locale22, str22, objArr)).toString();
-//                    }
-//                    printWriter22.print(locationLine + SocketClient.NETASCII_EOL);
-//                    printWriter22.close();
+                    saveLastLocation(timeStamp, latitude, longitude, _gpsSpeed, _gpsLocationSource);
+
+                    dataRepository.insertTrackPoint(
+                            new LocationPoint(timeStamp.getTime(), latitude, longitude, true));
                 }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+
             _tickTimerInProgress = false;
             if (abs < 1000) {
-                abs = _period;
+                abs = ServiceGpsTracking.this._period;
             }
             tickHandler.postDelayed(tickTimer, (long) abs);
         }
@@ -555,6 +529,7 @@ public class ServiceGpsTracking extends Service {
 
     public void onCreate() {
         super.onCreate();
+        ((ManagerPlusAplication) getApplication()).getComponent().inject(this);
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
