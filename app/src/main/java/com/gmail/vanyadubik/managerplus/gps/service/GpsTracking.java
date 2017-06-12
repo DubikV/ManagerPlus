@@ -16,7 +16,6 @@ public class GpsTracking {
     static final String CHECK_PREFERENCES = "initializer_wait_for_check_preferences";
     static final String INITIALIZER_ACTION = "gps.service.GpsTracking.initializerBroadcaster";
     static final String LONG_PARAMS = "long_shared_preferences_from_service";
-    static final String NEW_LOCATION = "service_have_a_new_location_for_initializer";
     static final String NUMERIC_PARAMS = "numeric_shared_preferences";
     static final String PREF_INTERVAL = "gpsTrackingInterval";
     static final String PREF_PERIOD = "gpsTrackingPeriod";
@@ -30,25 +29,14 @@ public class GpsTracking {
     private final String LAST_LATITUDE_KEY;
     private final String LAST_LOCATIONSOURCE_KEY;
     private final String LAST_LONGITUDE_KEY;
-    private final String LAST_SPEED_KEY;
     private final String PREF_DAYS;
     private final String PREF_ENABLE;
-    private final String PREF_ERPID;
-    private final String PREF_FILE;
     private final String PREF_GPSTIME;
     private final String PREF_ISLOCATIONSOURCE;
     private final String PREF_LOCATIONSOURCE;
     private final String PREF_PASSIVECONNECTION;
-    private final String PREF_PASSWORD;
-    private final String PREF_PORT;
-    private final String PREF_PPCGUID;
-    private final String PREF_SENDNULL;
-    private final String PREF_SERVERTYPE;
-    private final String PREF_SPEED;
-    private final String PREF_TIME;
-    private final String PREF_TRACKFILENAME;
-    private final String PREF_TRACKFILEPATH;
-    private final String PREF_USERNAME;
+    private final String PREF_TIME_START;
+    private final String PREF_TIME_END;
     private boolean[] _booleanParams;
     private Context _context;
     private int[] _integerParams;
@@ -77,17 +65,14 @@ public class GpsTracking {
 
             _longitude = Double.parseDouble(SharedStorage.getString(context, LAST_LONGITUDE_KEY, "0"));
             _latitude = Double.parseDouble(SharedStorage.getString(context, LAST_LATITUDE_KEY, "0"));
-            _speed = Double.parseDouble(SharedStorage.getString(context, LAST_SPEED_KEY, "0"));
             _locationSource = Integer.parseInt(SharedStorage.getString(context, LAST_LOCATIONSOURCE_KEY, "0"));
         }
     }
 
     enum booleanPrefs {
-        SPEED(0),
-        GPS_TIME(1),
-        LOCATION_SOURCE(2),
-        SEND_NULL(3),
-        PASSIVE_CONNECTION(4);
+        GPS_TIME(0),
+        LOCATION_SOURCE(1),
+        PASSIVE_CONNECTION(2);
 
         private int _prefId;
 
@@ -101,13 +86,12 @@ public class GpsTracking {
     }
 
     enum integerPrefs {
-        TIME(0),
-        INTERVAL(1),
-        DAYS(2),
-        PERIOD(3),
-        PORT(4),
-        SERVER_TYPE(5),
-        INDEX_LOCATION_SOURCE(6);
+        TIMESTART(0),
+        TIMEEND(1),
+        INTERVAL(2),
+        DAYS(3),
+        PERIOD(4),
+        INDEX_LOCATION_SOURCE(5);
 
         private int _prefId;
 
@@ -123,8 +107,7 @@ public class GpsTracking {
     enum serviceStringPrefs {
         LATITUDE(0),
         LONGTITUDE(1),
-        SPEED(2),
-        LOCATION_SOURCE(3);
+        LOCATION_SOURCE(2);
 
         private int _prefId;
 
@@ -139,13 +122,8 @@ public class GpsTracking {
 
     enum stringPrefs {
         FILE(0),
-        SERVER_ADDRESS(1),
-        PPC_GUID(2),
-        ERP_ID(3),
-        USERNAME(4),
-        PASSWORD(5),
-        FILEPATH(6),
-        FILENAME(7);
+        PPC_GUID(1),
+        ERP_ID(2);
 
         private int _prefId;
 
@@ -161,25 +139,14 @@ public class GpsTracking {
         PREF_ENABLE = "gpsTrackingEnable";
         PREF_LOCATIONSOURCE = "LocationSource";
         PREF_DAYS = "gpsTrackingDays";
-        PREF_TIME = "gpsTrackingTime";
-        PREF_SPEED = "gpsTrackingSpeed";
+        PREF_TIME_START = "gpsTrackingTimeStart";
+        PREF_TIME_END = "gpsTrackingTimeEND";
         PREF_GPSTIME = "gpsTrackingGpsTime";
-        PREF_SERVERTYPE = "gpsTrackingServerType";
-        PREF_FILE = "gpsTrackingFile";
-        PREF_PPCGUID = "gpsTrackingPPCGuid";
         PREF_ISLOCATIONSOURCE = "IsWriteLocationSource";
-        PREF_ERPID = "gpsTrackingErpId";
-        PREF_PORT = "gpsTrackingPort";
-        PREF_SENDNULL = "gpsTrackingFixGpsDisabling";
-        PREF_USERNAME = "gpsTrackingUsername";
-        PREF_PASSWORD = "gpsTrackingPassword";
-        PREF_TRACKFILEPATH = "gpsTrackingFilePath";
-        PREF_TRACKFILENAME = "gpsTrackingFileName";
         PREF_PASSIVECONNECTION = "gpsTrackingIsPassiveConnection";
         LAST_DATE_KEY = "last_date_key";
         LAST_LATITUDE_KEY = "last_latitude_key";
         LAST_LONGITUDE_KEY = "last_longitude_key";
-        LAST_SPEED_KEY = "last_speed_key";
         LAST_LOCATIONSOURCE_KEY = "last_locationsource_key";
         _isStarted = false;
         _isReceiverRegistered = false;
@@ -261,8 +228,6 @@ public class GpsTracking {
                 (String) stringParams.get(serviceStringPrefs.LATITUDE.getID()));
         SharedStorage.setString(getContext(), LAST_LONGITUDE_KEY,
                 (String) stringParams.get(serviceStringPrefs.LONGTITUDE.getID()));
-        SharedStorage.setString(getContext(), LAST_SPEED_KEY,
-                (String) stringParams.get(serviceStringPrefs.SPEED.getID()));
         SharedStorage.setString(getContext(), LAST_LOCATIONSOURCE_KEY,
                 (String) stringParams.get(serviceStringPrefs.LOCATION_SOURCE.getID()));
     }
@@ -274,45 +239,35 @@ public class GpsTracking {
         return new GpsData(getContext());
     }
 
-    private void writeGpsTrackingSettings(int interval, int time, int days, boolean bSpeed,
-                                          boolean bGpsTime, String fileName, int serverType,
-                                          String serverAddress, String ppcGuid, String erpId,
-                                          int period, int port, int locationSource, boolean bLocationSource,
-                                          boolean bSendNull, String FTPfileName, String userName,
-                                          String password, String FTPfolder, boolean passiveConnection) {
+    private void writeGpsTrackingSettings(int interval, int timeStart, int timeEnd, int days, boolean bGpsTime,
+                                          int period, int locationSource, boolean bLocationSource,
+                                          boolean passiveConnection) {
         boolean isUpdated = false;
-        SharedStorage.setBoolean(getContext(), PREF_SENDNULL, Boolean.valueOf(bSendNull));
         if (interval != SharedStorage.getInteger(getContext(), PREF_INTERVAL, 0)) {
             isUpdated = true;
             SharedStorage.setInteger(getContext(), PREF_INTERVAL, interval);
         }
-        if (time != SharedStorage.getInteger(getContext(), PREF_TIME, 0)) {
+        if (timeStart != SharedStorage.getInteger(getContext(), PREF_TIME_START, 0)) {
             isUpdated = true;
-            SharedStorage.setInteger(getContext(), PREF_TIME, time);
+            SharedStorage.setInteger(getContext(), PREF_TIME_START, timeStart);
         }
+
+        if (timeEnd != SharedStorage.getInteger(getContext(), PREF_TIME_END, 0)) {
+            isUpdated = true;
+            SharedStorage.setInteger(getContext(), PREF_TIME_END, timeEnd);
+        }
+
         if (days != SharedStorage.getInteger(getContext(), PREF_DAYS, 0)) {
             isUpdated = true;
             SharedStorage.setInteger(getContext(), PREF_DAYS, days);
-        }
-        if (serverType != SharedStorage.getInteger(getContext(), PREF_SERVERTYPE, 0)) {
-            isUpdated = true;
-            SharedStorage.setInteger(getContext(), PREF_SERVERTYPE, serverType);
         }
         if (period != SharedStorage.getInteger(getContext(), PREF_PERIOD, 0)) {
             isUpdated = true;
             SharedStorage.setInteger(getContext(), PREF_PERIOD, period);
         }
-        if (port != SharedStorage.getInteger(getContext(), PREF_PORT, 0)) {
-            isUpdated = true;
-            SharedStorage.setInteger(getContext(), PREF_PORT, port);
-        }
         if (locationSource != SharedStorage.getInteger(getContext(), PREF_LOCATIONSOURCE, 1)) {
             isUpdated = true;
             SharedStorage.setInteger(getContext(), PREF_LOCATIONSOURCE, locationSource);
-        }
-        if (bSpeed != SharedStorage.getBoolean(getContext(), PREF_SPEED, false)) {
-            isUpdated = true;
-            SharedStorage.setBoolean(getContext(), PREF_SPEED, Boolean.valueOf(bSpeed));
         }
         if (bGpsTime != SharedStorage.getBoolean(getContext(), PREF_GPSTIME, false)) {
             isUpdated = true;
@@ -335,31 +290,25 @@ public class GpsTracking {
     }
 
     private void readGpsTrackingSettings(boolean isRenew) {
-        int interval = SharedStorage.getInteger(getContext(), PREF_INTERVAL, 0);
-        int time = SharedStorage.getInteger(getContext(), PREF_TIME, 0);
-        int days = SharedStorage.getInteger(getContext(), PREF_DAYS, 0);
-        int serverType = SharedStorage.getInteger(getContext(), PREF_SERVERTYPE, 0);
-        int period = SharedStorage.getInteger(getContext(), PREF_PERIOD, 0);
-        int port = SharedStorage.getInteger(getContext(), PREF_PORT, 0);
+        int interval = SharedStorage.getInteger(getContext(), PREF_INTERVAL, 5);
+        int timeStart = SharedStorage.getInteger(getContext(), PREF_TIME_START, 480);
+        int timeEnd = SharedStorage.getInteger(getContext(), PREF_TIME_END, 1320);
+        int days = SharedStorage.getInteger(getContext(), PREF_DAYS, 128);
+        int period = SharedStorage.getInteger(getContext(), PREF_PERIOD, 3);
         int indexLocationSource = SharedStorage.getInteger(getContext(), PREF_LOCATIONSOURCE, 1);
-        boolean bSpeed = SharedStorage.getBoolean(getContext(), PREF_SPEED, false);
-        boolean bGpsTime = SharedStorage.getBoolean(getContext(), PREF_GPSTIME, false);
-        boolean bIsLocationSource = SharedStorage.getBoolean(getContext(), PREF_ISLOCATIONSOURCE, false);
-        boolean enable = SharedStorage.getBoolean(getContext(), PREF_ENABLE, false);
-        boolean bSendNull = SharedStorage.getBoolean(getContext(), PREF_SENDNULL, false);
-        boolean passiveConnection = SharedStorage.getBoolean(getContext(), PREF_PASSIVECONNECTION, false);
+        boolean bGpsTime = SharedStorage.getBoolean(getContext(), PREF_GPSTIME, true);
+        boolean bIsLocationSource = SharedStorage.getBoolean(getContext(), PREF_ISLOCATIONSOURCE, true);
+        boolean enable = SharedStorage.getBoolean(getContext(), PREF_ENABLE, true);
+        boolean passiveConnection = SharedStorage.getBoolean(getContext(), PREF_PASSIVECONNECTION, true);
         if (isRenew) {
-            _integerParams[integerPrefs.TIME.getID()] = time;
+            _integerParams[integerPrefs.TIMESTART.getID()] = timeStart;
+            _integerParams[integerPrefs.TIMEEND.getID()] = timeEnd;
             _integerParams[integerPrefs.INTERVAL.getID()] = interval;
             _integerParams[integerPrefs.DAYS.getID()] = days;
             _integerParams[integerPrefs.PERIOD.getID()] = period;
-            _integerParams[integerPrefs.PORT.getID()] = port;
-            _integerParams[integerPrefs.SERVER_TYPE.getID()] = serverType;
             _integerParams[integerPrefs.INDEX_LOCATION_SOURCE.getID()] = indexLocationSource;
-            _booleanParams[booleanPrefs.SPEED.getID()] = bSpeed;
             _booleanParams[booleanPrefs.GPS_TIME.getID()] = bGpsTime;
             _booleanParams[booleanPrefs.LOCATION_SOURCE.getID()] = bIsLocationSource;
-            _booleanParams[booleanPrefs.SEND_NULL.getID()] = bSendNull;
             _booleanParams[booleanPrefs.PASSIVE_CONNECTION.getID()] = passiveConnection;
             return;
         }

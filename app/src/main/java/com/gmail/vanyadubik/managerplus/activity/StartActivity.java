@@ -25,16 +25,12 @@ import com.gmail.vanyadubik.managerplus.adapter.tabadapter.TabFragmentVisit;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.TabFragmentWaybill;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.fragment.ClientListFragment;
+import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
-import com.gmail.vanyadubik.managerplus.task.TaskSchedure;
 
 import javax.inject.Inject;
 
-import io.hypertrack.smart_scheduler.Job;
-
-import static com.gmail.vanyadubik.managerplus.common.Consts.GPS_SYNK_SERVISE_JOB_ID;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_SYNK_TRACK;
 import static com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService.MIN_COUNT;
 
 public class StartActivity extends AppCompatActivity{
@@ -85,6 +81,12 @@ public class StartActivity extends AppCompatActivity{
                 Intent intent = new Intent(this, SyncIntentTrackService.class);
                 intent.putExtra(MIN_COUNT, 5000);
                 startService(intent);
+            return true;
+        }
+
+        if (id == R.id.action_startServiceLocation) {
+            GpsTracking gpsTracking = new GpsTracking(getApplicationContext());
+            gpsTracking.startGpsTracking();
             return true;
         }
 
