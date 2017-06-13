@@ -81,8 +81,8 @@ public class ServiceGpsTracking extends Service {
             boolean isWrite = true;
             Calendar timeStamp = Calendar.getInstance();
             timeStamp.setTimeInMillis(getCurrentTime());
-            int time = (timeStamp.get(11) * 60) + timeStamp.get(12);
-            int day = timeStamp.get(7);
+            int time = (timeStamp.get(Calendar.HOUR_OF_DAY) * 60) + timeStamp.get(Calendar.MINUTE);
+            int day = timeStamp.get(Calendar.DAY_OF_WEEK);
 
             intervalRun = Math.abs(_interval);
 
@@ -92,7 +92,7 @@ public class ServiceGpsTracking extends Service {
                 intervalRun = (((time <= _endTime ?
                         ((1440 - _endTime) + _startTime) -
                                 (time - _endTime) : _startTime - time) * 60) * 1000) -
-                        (timeStamp.get(13) * 1000);
+                        (timeStamp.get(Calendar.SECOND) * 1000);
 
             }
 
@@ -281,7 +281,7 @@ public class ServiceGpsTracking extends Service {
 
         Calendar timeStamp = Calendar.getInstance();
         timeStamp.setTimeInMillis(getCurrentTime());
-        int time = (timeStamp.get(11) * 60) + timeStamp.get(12);
+        int time = (timeStamp.get(Calendar.HOUR_OF_DAY) * 60) + timeStamp.get(Calendar.MINUTE);
         if (_interval != 0 && ((LocationManager)getSystemService(LOCATION_SERVICE)).isProviderEnabled(Provider.PROVIDER_GPS)) {
             if ((isInitialize == 0 || isInitialize == 1) && (_startTime == _endTime ||
                     (time >= _startTime && time < _endTime))) {
