@@ -63,16 +63,17 @@
                  <!--<action android:name="com.blah.something.ALARM_RECIEVED" />-->
             <!--</intent-filter>-->
         <!--</receiver>-->
-        <receiver android:name="com.gmail.vanyadubik.managerplus.gps.service.OnBootReceiver"
-            android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-                <action android:name="android.intent.action.REBOOT"/>
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </receiver>
+
+        <!--<receiver android:name="com.gmail.vanyadubik.managerplus.gps.service.OnBootReceiver"-->
+            <!--android:permission="android.permission.RECEIVE_BOOT_COMPLETED"-->
+            <!--android:enabled="true">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.BOOT_COMPLETED" />-->
+                <!--<action android:name="android.intent.action.QUICKBOOT_POWERON" />-->
+                <!--<action android:name="android.intent.action.REBOOT"/>-->
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
 
         <!--<service-->
                 <!--android:name=".gps.service.ServiceGpsTracking"-->
@@ -84,6 +85,15 @@
                 <!--</intent-filter>-->
         <!--</service>-->
 
+        <receiver android:name="gps.service.OnBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
+                <action android:name="android.intent.action.QUICKBOOT_POWEROFF" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
         <service
             android:name=".gps.service.ServiceGpsTracking"
             android:enabled="true"

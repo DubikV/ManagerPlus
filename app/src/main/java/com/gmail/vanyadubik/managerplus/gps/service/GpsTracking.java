@@ -25,6 +25,7 @@ public class GpsTracking {
     static final String SET_PREFERENCES = "send_preferences_to_service";
     static final String STRING_PARAMS = "string_shared_preferences";
     static final String STRING_PARAMS_FROM_SERVICE = "string_shared_preferences_from_service";
+    static final String SERVICE_GPS_NOTIFY = "fromServiceGpsTrackingNotify";
     private final String LAST_DATE_KEY;
     private final String LAST_LATITUDE_KEY;
     private final String LAST_LOCATIONSOURCE_KEY;
@@ -203,7 +204,7 @@ public class GpsTracking {
         SharedStorage.setBoolean(getContext(), PREF_ENABLE, Boolean.valueOf(true));
         setReceiver();
         getContext().startService(new Intent(getContext(), ServiceGpsTracking.class));
-        SystemClock.sleep(1000);
+        SystemClock.sleep(300);
         sendNewPreferences(SET_PREFERENCES);
         return true;
     }
@@ -293,12 +294,11 @@ public class GpsTracking {
         int interval = SharedStorage.getInteger(getContext(), PREF_INTERVAL, 5);
         int timeStart = SharedStorage.getInteger(getContext(), PREF_TIME_START, 480);
         int timeEnd = SharedStorage.getInteger(getContext(), PREF_TIME_END, 1320);
-        int days = SharedStorage.getInteger(getContext(), PREF_DAYS, 128);
+        int days = SharedStorage.getInteger(getContext(), PREF_DAYS, 7);
         int period = SharedStorage.getInteger(getContext(), PREF_PERIOD, 3);
         int indexLocationSource = SharedStorage.getInteger(getContext(), PREF_LOCATIONSOURCE, 1);
         boolean bGpsTime = SharedStorage.getBoolean(getContext(), PREF_GPSTIME, true);
         boolean bIsLocationSource = SharedStorage.getBoolean(getContext(), PREF_ISLOCATIONSOURCE, true);
-        boolean enable = SharedStorage.getBoolean(getContext(), PREF_ENABLE, true);
         boolean passiveConnection = SharedStorage.getBoolean(getContext(), PREF_PASSIVECONNECTION, true);
         if (isRenew) {
             _integerParams[integerPrefs.TIMESTART.getID()] = timeStart;

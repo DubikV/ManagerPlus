@@ -2,6 +2,7 @@ package com.gmail.vanyadubik.managerplus.app;
 
 import android.app.Application;
 
+import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking;
 import com.gmail.vanyadubik.managerplus.modules.ActivityUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.DataApiModule;
 import com.gmail.vanyadubik.managerplus.modules.ErrorUtilsApiModule;
@@ -53,8 +54,8 @@ public class ManagerPlusAplication extends Application{
 
         //startService(new Intent(this, GPSTrackerService.class));
         //startService(new Intent(this, GPSTrackerServiceAndroidAPI.class));
-//        GpsTracking gpsTracking = new GpsTracking(getApplicationContext());
-//        gpsTracking.startGpsTracking();
+        GpsTracking gpsTracking = new GpsTracking(getApplicationContext());
+        gpsTracking.startGpsTracking();
 
         if(SharedStorage.getBoolean(getApplicationContext(), USING_SYNK_TRACK, true)) {
             Long interval = SharedStorage.getLong(getApplicationContext(), MIN_TIME_SYNK_TRACK_NAME, MIN_TIME_SYNK_TRACK);
