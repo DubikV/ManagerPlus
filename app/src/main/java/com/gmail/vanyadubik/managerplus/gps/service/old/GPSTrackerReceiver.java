@@ -1,4 +1,4 @@
-package com.gmail.vanyadubik.managerplus.service.gps;
+package com.gmail.vanyadubik.managerplus.gps.service.old;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

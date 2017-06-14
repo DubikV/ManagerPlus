@@ -1,4 +1,4 @@
-package com.gmail.vanyadubik.managerplus.service.gps;
+package com.gmail.vanyadubik.managerplus.gps.service.old;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -16,6 +16,8 @@ import android.util.Log;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.StartActivity;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
+import com.gmail.vanyadubik.managerplus.gps.location.GoogleLocationService;
+import com.gmail.vanyadubik.managerplus.gps.location.GoogleLocationUpdateListener;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.utils.GPSTaskUtils;

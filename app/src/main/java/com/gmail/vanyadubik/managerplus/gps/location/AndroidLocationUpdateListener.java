@@ -1,14 +1,9 @@
-package com.gmail.vanyadubik.managerplus.service.gps;
+package com.gmail.vanyadubik.managerplus.gps.location;
 
 import android.location.Location;
 import android.os.Bundle;
 
-public interface GoogleLocationUpdateListener {
-
-    /**
-     * Called immediately the service starts if the service can obtain location
-     */
-    void canReceiveLocationUpdates();
+public interface AndroidLocationUpdateListener {
 
     /**
      * Called immediately the service tries to start if it cannot obtain location - eg the user has disabled wireless and
@@ -27,4 +22,9 @@ public interface GoogleLocationUpdateListener {
      */
     void startLocation(Location location);
 
+
+    void onProviderDisabledEnabled(Boolean using, String provider);
+
+
+    void onStatusChanged(String provider, int status, Bundle extras);
 }

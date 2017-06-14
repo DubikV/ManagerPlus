@@ -25,8 +25,8 @@ import com.gmail.vanyadubik.managerplus.modules.NetworkUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.PhoneUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.PhotoFileUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.ServiceUtilsApiModule;
-import com.gmail.vanyadubik.managerplus.service.gps.GPSTrackerService;
-import com.gmail.vanyadubik.managerplus.service.gps.GPSTrackerServiceAndroidAPI;
+import com.gmail.vanyadubik.managerplus.gps.service.old.GPSTrackerService;
+import com.gmail.vanyadubik.managerplus.gps.service.old.GPSTrackerServiceAndroidAPI;
 import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
 import com.gmail.vanyadubik.managerplus.task.SyncIntentService;
 

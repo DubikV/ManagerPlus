@@ -1,4 +1,4 @@
-package com.gmail.vanyadubik.managerplus.service.gps;
+package com.gmail.vanyadubik.managerplus.gps.location;
 
 import android.Manifest;
 import android.content.Context;
@@ -12,8 +12,6 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import static android.content.Context.LOCATION_SERVICE;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
 
 public class AndroidLocationService implements LocationListener {

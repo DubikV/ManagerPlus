@@ -54,8 +54,8 @@ public class GpsTrackingNotification extends Activity {
             Locale locale = Locale.US;
             String str = "%s%s";
             Object[] objArr = new Object[4];
-            objArr[0] = SharedStorage.getInteger(this, GpsTracking.PREF_INTERVAL, 0) == 0 ? getResources().getString(R.string.service_tracking_null_interval) : BuildConfig.VERSION_NAME;
-            objArr[1] = !isGPSEnabled ? getResources().getString(R.string.gps_is_disabled) : BuildConfig.VERSION_NAME;
+            objArr[0] = SharedStorage.getInteger(this, GpsTracking.PREF_INTERVAL, 0) == 0 ? getResources().getString(R.string.service_tracking_null_interval) : "";
+            objArr[1] = !isGPSEnabled ? getResources().getString(R.string.gps_is_disabled) : "";
             String notifyText = String.format(locale, str, objArr);
             Builder builder = new Builder(this);
             builder.setTitle(R.string.service_tracking_error_message).setMessage(notifyText).setCancelable(false).setNegativeButton(R.string.questions_answer_ok, new DissmisButton());
