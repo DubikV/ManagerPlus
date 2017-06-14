@@ -83,50 +83,6 @@
             </android.support.design.widget.TextInputLayout>
 
             <Switch
-                android:id="@+id/using_track_sync_service"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:checked="false"
-                android:textOff="@string/questions_answer_no"
-                android:textOn="@string/questions_answer_yes"
-                android:text="@string/using_track_sync_service"
-                android:textSize="@dimen/text_size_medium"
-                android:textColor="@color/zxing_result_view"
-                android:layout_alignParentRight="true"
-                android:button="@null"
-                android:paddingBottom="10dp"
-                android:paddingTop="10dp"/>
-
-            <LinearLayout
-                android:id="@+id/min_timetrack_sync_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:layout_marginTop="10dp"
-                android:paddingLeft="20dp">
-
-                <TextView
-                    android:id="@+id/min_timetrack_sync_service"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/min_timetrack_sync_service"
-                    android:textColor="@color/zxing_result_view"
-                    android:textSize="@dimen/text_size_medium"
-                    android:layout_weight="1"/>
-
-                <EditText
-                    android:id="@+id/min_timetrack_sync_service_edit_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:layout_weight="3"
-                    android:background="@color/colorWhite"
-                    android:inputType="number" />
-
-            </LinearLayout>
-
-            <Switch
                 android:id="@+id/using_develop_mode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -142,31 +98,30 @@
                 android:paddingTop="10dp"/>
 
             <LinearLayout
-                android:id="@+id/min_current_accuracy_layout"
+                android:id="@+id/settings_location_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginTop="10dp"
-                android:paddingLeft="20dp">
+                android:clickable="true"
+                android:orientation="horizontal"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp">
 
                 <TextView
-                    android:id="@+id/min_current_accuracy_text_view"
+                    android:id="@+id/settings_location_text_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/min_current_accuracy"
+                    android:layout_weight="1"
+                    android:text="@string/action_settings_location"
                     android:textColor="@color/zxing_result_view"
-                    android:textSize="@dimen/text_size_medium"
-                    android:layout_weight="1"/>
+                    android:textSize="@dimen/text_size_medium"/>
 
-                <EditText
-                    android:id="@+id/min_current_accuracy_edit_taxt"
+                <ImageView
+                    android:id="@+id/imageView3"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:layout_weight="3"
-                    android:background="@color/colorWhite"
-                    android:inputType="number" />
+                    android:layout_height="match_parent"
+                    android:layout_weight="5"
+                    app:srcCompat="@drawable/ic_keyboard_arrow_right"/>
 
             </LinearLayout>
 

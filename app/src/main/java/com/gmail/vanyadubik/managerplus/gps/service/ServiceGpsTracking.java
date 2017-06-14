@@ -28,6 +28,8 @@ import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.StartActivity;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.integerPrefs;
+import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.booleanPrefs;
+import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.doublePrefs;
 import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.serviceStringPrefs;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
@@ -41,7 +43,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_GPS_TRACER_ID;
-import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
 
@@ -57,16 +58,18 @@ public class ServiceGpsTracking extends Service {
     private int _endTime;
     private int _days;
     private int _gpsLocationSource;
+    private double _gpsAccury;
     private int _gpsStatus;
     private boolean _isNotificationEnabled;
     private boolean _isTickTimerStarted;
+    private boolean _devMode;
     private LocationListener _locListener;
     private LocationManager _locManager;
     private NotificationManager _notificationManager;
     private int _notifyId;
     private BroadcastReceiver serviceReceiver;
     private Location _currentBestLocation, _location;
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM HH:mm:ss");
     private Handler tickHandler;
     private Runnable tickTimer;
 
@@ -124,12 +127,16 @@ public class ServiceGpsTracking extends Service {
             if (_location == null || isStoped ||
                     !(((LocationManager) getSystemService(LOCATION_SERVICE)).isProviderEnabled(Provider.PROVIDER_GPS))) {
                 Log.i(TAGLOG_GPS, "The current position is not recorded, the coordinates received incorrectly");
-                isWrite = false;
+                notifyBuilder = getNotification(false, getString(R.string.service_tracking_error_location));
+                startForeground(_notifyId, notifyBuilder.build());
+                isStoped = true;
             }
 
             if (!(dataRepository != null || isStoped)) {
                 Log.e(TAGLOG_GPS, "An error occurred while data repository in ServiceGpsTracking method");
-                isWrite = false;
+                notifyBuilder = getNotification(false, getString(R.string.service_tracking_error_database));
+                startForeground(_notifyId, notifyBuilder.build());
+                isStoped = true;
             }
 
             if (_isNotificationEnabled && !isStoped) {
@@ -138,14 +145,20 @@ public class ServiceGpsTracking extends Service {
                     startForeground(_notifyId, notifyBuilder.build());
                     isStoped = true;
                 }
-                if(!isWrite){
-                    notifyBuilder = getNotification(false, getString(R.string.service_tracking_error_location));
-                    startForeground(_notifyId, notifyBuilder.build());
-                    isStoped = true;
-                }
             }
 
             if (!isStoped) {
+
+                if (_devMode) {
+                    String message = dateFormat.format(timeStamp.getTime().getTime()) + " |F "
+                            + _location.getProvider() + ": "
+                            + new DecimalFormat("#.#").format(_location.getAccuracy()) + " |"
+                            + "\n " + new DecimalFormat("#.####").format(_location.getLatitude())
+                            + "\n: " + new DecimalFormat("#.####").format(_location.getLongitude());
+
+                    notifyBuilder = getNotification(true, message);
+                    startForeground(_notifyId, notifyBuilder.build());
+                }
 
                 if (isBettherLocation(_location)) {
 
@@ -164,7 +177,11 @@ public class ServiceGpsTracking extends Service {
                             new LocationPoint(timeStamp.getTime(),
                                     _location.getLatitude(),
                                     _location.getLongitude(), true));
+                }else if(_currentBestLocation == null){
+                    notifyBuilder = getNotification(false, getString(R.string.service_tracking_error_location));
+                    startForeground(_notifyId, notifyBuilder.build());
                 }
+
             }
             if (intervalRun < 1000) {
                 intervalRun = _interval;
@@ -293,13 +310,15 @@ public class ServiceGpsTracking extends Service {
         _notificationManager.notify(_notifyId, getNotification(false, getString(R.string.service_tracking_error_message)).build());
     }
 
-    private void setNewPreference(int isInitialize, int[] integerParams,
+    private void setNewPreference(int isInitialize, int[] integerParams, double[] doubleParams,
                                   boolean[] booleanParams, ArrayList<String> stringParams) {
         if (isInitialize == 0 || isInitialize == 2) {
             _startTime = integerParams[integerPrefs.TIMESTART.getID()]  & SupportMenu.USER_MASK;
             _endTime = integerParams[integerPrefs.TIMEEND.getID()] & SupportMenu.USER_MASK;
             _interval = integerParams[integerPrefs.INTERVAL.getID()] * 1000;
             _days = integerParams[integerPrefs.DAYS.getID()];
+            _gpsAccury = doubleParams[doublePrefs.ACCURY.getID()];
+            _devMode = booleanParams[booleanPrefs.DEVELOP_MODE.getID()];
             if (isInitialize == 2) {
                 startForeground(_notifyId, getNotification(true, getString(R.string.service_tracking_message)).build());
                 if (VERSION.SDK_INT > 22) {
@@ -320,19 +339,20 @@ public class ServiceGpsTracking extends Service {
 
                 String Action = intent.getStringExtra(GpsTracking.RECEIVER_ACTION);
                 int[] IntegerParams = intent.getIntArrayExtra(GpsTracking.NUMERIC_PARAMS);
+                double[] DoubleParams = intent.getDoubleArrayExtra(GpsTracking.DOUBLE_PARAMS);
                 boolean[] BooleanParams = intent.getBooleanArrayExtra(GpsTracking.BOOLEAN_PARAMS);
                 ArrayList<String> StringParams = intent.getStringArrayListExtra(GpsTracking.STRING_PARAMS);
                 if (Action.equals(GpsTracking.RENEW_PREFERENCES)) {
                     boolean isTTStartedBefore = _isTickTimerStarted;
                     startTickTimer(false);
-                    setNewPreference(0, IntegerParams, BooleanParams, StringParams);
+                    setNewPreference(0, IntegerParams, DoubleParams, BooleanParams, StringParams);
                     startTickTimer(isTTStartedBefore);
                 }
                 if (Action.equals(GpsTracking.CHECK_PREFERENCES)) {
-                    setNewPreference(1, IntegerParams, BooleanParams, StringParams);
+                    setNewPreference(1, IntegerParams, DoubleParams, BooleanParams, StringParams);
                 }
                 if (Action.equals(GpsTracking.SET_PREFERENCES)) {
-                    setNewPreference(2, IntegerParams, BooleanParams, StringParams);
+                    setNewPreference(2, IntegerParams, DoubleParams, BooleanParams, StringParams);
                 }
             }
         };
@@ -410,7 +430,7 @@ public class ServiceGpsTracking extends Service {
     private Boolean isBettherLocation(Location location){
 
         if(!location.hasAccuracy() ||
-                location.getAccuracy() > MAX_COEFFICIENT_CURRENCY_LOCATION ){
+                (location.getAccuracy() > _gpsAccury && _gpsAccury > 0.0)  ){
              return false;
         }
         if (_currentBestLocation == null) {

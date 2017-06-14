@@ -30,7 +30,8 @@ public class Consts {
     public final static String MIN_TIME_SYNK_TRACK_NAME = "minTimeSyncTrack";
     public final static String USING_SYNK_TRACK = "usingSyncTrack";
     public final static String DEVELOP_MODE = "developMode";
-    public final static String MIN_CURRENT_ACCURACY = "min_current_accuracy";
+    public final static String USING_GPSTRACKING = "usingGpsTrackin";
+    public final static String MIN_CURRENT_ACCURACY = "gpsTrackingMinAcuuracy";
 
     // GPS
     public static final long MIN_DISTANCE_WRITE_TRACK = 20; //30 meters  //20 - impression  40???

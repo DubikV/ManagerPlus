@@ -7,6 +7,7 @@ import com.gmail.vanyadubik.managerplus.activity.GalleryActivity;
 import com.gmail.vanyadubik.managerplus.activity.MapActivity;
 import com.gmail.vanyadubik.managerplus.activity.MapTrackerActivity;
 import com.gmail.vanyadubik.managerplus.activity.SettingsActivity;
+import com.gmail.vanyadubik.managerplus.activity.SettingsLocationActivity;
 import com.gmail.vanyadubik.managerplus.activity.StartActivity;
 import com.gmail.vanyadubik.managerplus.activity.VisitDetailActivity;
 import com.gmail.vanyadubik.managerplus.fragment.ClientListFragment;
@@ -77,6 +78,8 @@ public interface DIComponent {
     void inject(ServiceGpsTracking serviceGpsTracking);
 
     void inject(SyncIntentTrackService syncIntentTrackService);
+
+    void inject(SettingsLocationActivity settingsLocationActivity);
 
     void inject(SyncIntentService syncIntentService);
 }

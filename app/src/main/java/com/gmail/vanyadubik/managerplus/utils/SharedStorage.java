@@ -32,6 +32,10 @@ public class SharedStorage {
         return context.getSharedPreferences(APP_PREFS, 0).getLong(key, defValue);
     }
 
+    public static double getDouble(Context context, String key, double defValue) {
+        return Double.longBitsToDouble(getLong(context, key, Double.doubleToLongBits(defValue)));
+    }
+
     public static void setString(Context context, String key, String value) {
         Editor editor = context.getSharedPreferences(APP_PREFS, 0).edit();
         editor.putString(key, value);
@@ -53,6 +57,12 @@ public class SharedStorage {
     public static void setLong(Context context, String key, long value) {
         Editor editor = context.getSharedPreferences(APP_PREFS, 0).edit();
         editor.putLong(key, value);
+        editor.commit();
+    }
+
+    public static void setDouble(Context context, String key, double value) {
+        Editor editor = context.getSharedPreferences(APP_PREFS, 0).edit();
+        editor.putLong(key, Double.doubleToRawLongBits(value));
         editor.commit();
     }
 }

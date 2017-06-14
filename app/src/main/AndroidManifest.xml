@@ -131,6 +131,10 @@
             android:label="@string/action_settings">
         </activity>
         <activity
+            android:name=".activity.SettingsLocationActivity"
+            android:label="@string/action_settings_location">
+        </activity>
+        <activity
             android:name=".activity.ClientDetailActivity">
         </activity>
         <activity

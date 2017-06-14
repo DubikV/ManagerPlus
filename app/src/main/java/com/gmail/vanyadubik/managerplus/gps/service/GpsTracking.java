@@ -6,23 +6,31 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.SystemClock;
+
+import com.gmail.vanyadubik.managerplus.utils.SharedStorage;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
-import com.gmail.vanyadubik.managerplus.utils.SharedStorage;
+
+import static com.gmail.vanyadubik.managerplus.common.Consts.DEVELOP_MODE;
 
 public class GpsTracking {
+    public static final String PREF_INTERVAL = "gpsTrackingInterval";
+    public static final String PREF_TIME_START = "gpsTrackingTimeStart";
+    public static final String PREF_TIME_END = "gpsTrackingTimeEND";
+    public static final String PREF_DAYS = "gpsTrackingDays";
+    public final static String PREF_ACCURACY = "gpsTrackingMinAcuuracy";
+    public static final String RENEW_PREFERENCES = "initializer_have_new_preferences";
+    public static final String SET_PREFERENCES = "send_preferences_to_service";
+    public static final String CHECK_PREFERENCES = "initializer_wait_for_check_preferences";
     static final String BOOLEAN_PARAMS = "boolean_shared_preferences";
-    static final String CHECK_PREFERENCES = "initializer_wait_for_check_preferences";
     static final String INITIALIZER_ACTION = "gps.service.GpsTracking.initializerBroadcaster";
     static final String LONG_PARAMS = "long_shared_preferences_from_service";
     static final String NUMERIC_PARAMS = "numeric_shared_preferences";
-    static final String PREF_INTERVAL = "gpsTrackingInterval";
-    static final String PREF_PERIOD = "gpsTrackingPeriod";
+    static final String DOUBLE_PARAMS = "double_shared_preferences";
     static final String RECEIVER_ACTION = "brc_receiver_action";
-    static final String RENEW_PREFERENCES = "initializer_have_new_preferences";
     static final String SERVICE_ACTION = "gps.service.serviceGpsTracking.serviceBroadcaster";
-    static final String SET_PREFERENCES = "send_preferences_to_service";
     static final String STRING_PARAMS = "string_shared_preferences";
     static final String STRING_PARAMS_FROM_SERVICE = "string_shared_preferences_from_service";
     static final String SERVICE_GPS_NOTIFY = "fromServiceGpsTrackingNotify";
@@ -30,17 +38,15 @@ public class GpsTracking {
     private final String LAST_LATITUDE_KEY;
     private final String LAST_LOCATIONSOURCE_KEY;
     private final String LAST_LONGITUDE_KEY;
-    private final String PREF_DAYS;
     private final String PREF_ENABLE;
     private final String PREF_GPSTIME;
     private final String PREF_ISLOCATIONSOURCE;
     private final String PREF_LOCATIONSOURCE;
     private final String PREF_PASSIVECONNECTION;
-    private final String PREF_TIME_START;
-    private final String PREF_TIME_END;
     private boolean[] _booleanParams;
     private Context _context;
     private int[] _integerParams;
+    private double[] _doubleParams;
     private boolean _isReceiverRegistered;
     private boolean _isStarted;
     private ArrayList<String> _stringParams;
@@ -51,18 +57,17 @@ public class GpsTracking {
         double _latitude;
         int _locationSource;
         double _longitude;
-        double _speed;
 
         GpsData(Context context) {
             long longTime = SharedStorage.getLong(context, LAST_DATE_KEY, 0);
             Calendar timeStamp = Calendar.getInstance();
             timeStamp.setTimeInMillis(longTime);
             _date = String.format(Locale.US, "%d:%d:%d %d:%d",
-                    new Object[]{Integer.valueOf(timeStamp.get(1)),
-                            Integer.valueOf(timeStamp.get(2) + 1),
-                            Integer.valueOf(timeStamp.get(5)),
-                            Integer.valueOf(timeStamp.get(11)),
-                            Integer.valueOf(timeStamp.get(12))});
+                    new Object[]{Integer.valueOf(timeStamp.get(Calendar.YEAR)),
+                            Integer.valueOf(timeStamp.get(Calendar.MONTH) + 1),
+                            Integer.valueOf(timeStamp.get(Calendar.DAY_OF_MONTH)),
+                            Integer.valueOf(timeStamp.get(Calendar.HOUR_OF_DAY)),
+                            Integer.valueOf(timeStamp.get(Calendar.MINUTE))});
 
             _longitude = Double.parseDouble(SharedStorage.getString(context, LAST_LONGITUDE_KEY, "0"));
             _latitude = Double.parseDouble(SharedStorage.getString(context, LAST_LATITUDE_KEY, "0"));
@@ -73,7 +78,8 @@ public class GpsTracking {
     enum booleanPrefs {
         GPS_TIME(0),
         LOCATION_SOURCE(1),
-        PASSIVE_CONNECTION(2);
+        PASSIVE_CONNECTION(2),
+        DEVELOP_MODE(3),;
 
         private int _prefId;
 
@@ -91,12 +97,25 @@ public class GpsTracking {
         TIMEEND(1),
         INTERVAL(2),
         DAYS(3),
-        PERIOD(4),
-        INDEX_LOCATION_SOURCE(5);
+        INDEX_LOCATION_SOURCE(4);
 
         private int _prefId;
 
         private integerPrefs(int prefId) {
+            _prefId = prefId;
+        }
+
+        public int getID() {
+            return _prefId;
+        }
+    }
+
+    enum doublePrefs {
+        ACCURY(0);
+
+        private int _prefId;
+
+        private doublePrefs(int prefId) {
             _prefId = prefId;
         }
 
@@ -136,12 +155,10 @@ public class GpsTracking {
             return _prefId;
         }
     }
+
     public GpsTracking(Context context) {
         PREF_ENABLE = "gpsTrackingEnable";
         PREF_LOCATIONSOURCE = "LocationSource";
-        PREF_DAYS = "gpsTrackingDays";
-        PREF_TIME_START = "gpsTrackingTimeStart";
-        PREF_TIME_END = "gpsTrackingTimeEND";
         PREF_GPSTIME = "gpsTrackingGpsTime";
         PREF_ISLOCATIONSOURCE = "IsWriteLocationSource";
         PREF_PASSIVECONNECTION = "gpsTrackingIsPassiveConnection";
@@ -152,6 +169,7 @@ public class GpsTracking {
         _isStarted = false;
         _isReceiverRegistered = false;
         _integerParams = new int[7];
+        _doubleParams = new double[2];
         _booleanParams = new boolean[5];
         _stringParams = new ArrayList();
         _context = context;
@@ -173,10 +191,11 @@ public class GpsTracking {
         return false;
     }
 
-    private void sendNewPreferences(String intentAction) {
+    public void sendNewPreferences(String intentAction) {
         readGpsTrackingSettings(true);
         Intent intent = new Intent(SERVICE_ACTION);
         intent.putExtra(NUMERIC_PARAMS, _integerParams);
+        intent.putExtra(DOUBLE_PARAMS, _doubleParams);
         intent.putExtra(BOOLEAN_PARAMS, _booleanParams);
         intent.putExtra(STRING_PARAMS, _stringParams);
         intent.putExtra(RECEIVER_ACTION, intentAction);
@@ -204,7 +223,7 @@ public class GpsTracking {
         SharedStorage.setBoolean(getContext(), PREF_ENABLE, Boolean.valueOf(true));
         setReceiver();
         getContext().startService(new Intent(getContext(), ServiceGpsTracking.class));
-        SystemClock.sleep(300);
+        SystemClock.sleep(100);
         sendNewPreferences(SET_PREFERENCES);
         return true;
     }
@@ -262,10 +281,6 @@ public class GpsTracking {
             isUpdated = true;
             SharedStorage.setInteger(getContext(), PREF_DAYS, days);
         }
-        if (period != SharedStorage.getInteger(getContext(), PREF_PERIOD, 0)) {
-            isUpdated = true;
-            SharedStorage.setInteger(getContext(), PREF_PERIOD, period);
-        }
         if (locationSource != SharedStorage.getInteger(getContext(), PREF_LOCATIONSOURCE, 1)) {
             isUpdated = true;
             SharedStorage.setInteger(getContext(), PREF_LOCATIONSOURCE, locationSource);
@@ -291,25 +306,27 @@ public class GpsTracking {
     }
 
     private void readGpsTrackingSettings(boolean isRenew) {
-        int interval = SharedStorage.getInteger(getContext(), PREF_INTERVAL, 5);
-        int timeStart = SharedStorage.getInteger(getContext(), PREF_TIME_START, 480);
-        int timeEnd = SharedStorage.getInteger(getContext(), PREF_TIME_END, 1320);
-        int days = SharedStorage.getInteger(getContext(), PREF_DAYS, 7);
-        int period = SharedStorage.getInteger(getContext(), PREF_PERIOD, 3);
+        int interval = SharedStorage.getInteger(getContext(), PREF_INTERVAL, 0);
+        int timeStart = SharedStorage.getInteger(getContext(), PREF_TIME_START, 0);
+        int timeEnd = SharedStorage.getInteger(getContext(), PREF_TIME_END, 0);
+        int days = SharedStorage.getInteger(getContext(), PREF_DAYS, 0);
+        double accury = SharedStorage.getDouble(getContext(), PREF_ACCURACY, 0.0);
         int indexLocationSource = SharedStorage.getInteger(getContext(), PREF_LOCATIONSOURCE, 1);
         boolean bGpsTime = SharedStorage.getBoolean(getContext(), PREF_GPSTIME, true);
         boolean bIsLocationSource = SharedStorage.getBoolean(getContext(), PREF_ISLOCATIONSOURCE, true);
         boolean passiveConnection = SharedStorage.getBoolean(getContext(), PREF_PASSIVECONNECTION, true);
+        boolean devMode = SharedStorage.getBoolean(getContext(), DEVELOP_MODE, false);
         if (isRenew) {
             _integerParams[integerPrefs.TIMESTART.getID()] = timeStart;
             _integerParams[integerPrefs.TIMEEND.getID()] = timeEnd;
             _integerParams[integerPrefs.INTERVAL.getID()] = interval;
             _integerParams[integerPrefs.DAYS.getID()] = days;
-            _integerParams[integerPrefs.PERIOD.getID()] = period;
             _integerParams[integerPrefs.INDEX_LOCATION_SOURCE.getID()] = indexLocationSource;
+            _doubleParams[doublePrefs.ACCURY.getID()] = accury;
             _booleanParams[booleanPrefs.GPS_TIME.getID()] = bGpsTime;
             _booleanParams[booleanPrefs.LOCATION_SOURCE.getID()] = bIsLocationSource;
             _booleanParams[booleanPrefs.PASSIVE_CONNECTION.getID()] = passiveConnection;
+            _booleanParams[booleanPrefs.DEVELOP_MODE.getID()] = devMode;
             return;
         }
     }
