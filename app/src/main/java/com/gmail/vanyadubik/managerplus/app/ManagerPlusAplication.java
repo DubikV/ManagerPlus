@@ -52,8 +52,6 @@ public class ManagerPlusAplication extends Application{
 
     private void startServices(){
 
-        //startService(new Intent(this, GPSTrackerService.class));
-        //startService(new Intent(this, GPSTrackerServiceAndroidAPI.class));
         GpsTracking gpsTracking = new GpsTracking(getApplicationContext());
         gpsTracking.startGpsTracking();
 

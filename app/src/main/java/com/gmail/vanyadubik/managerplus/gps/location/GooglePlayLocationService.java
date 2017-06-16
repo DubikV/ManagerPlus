@@ -20,10 +20,10 @@ import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
 
-public class GoogleLocationService implements GoogleApiClient.ConnectionCallbacks,
+public class GooglePlayLocationService implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener{
 
-    private GoogleLocationUpdateListener googleLocationUpdateListener;
+    private GooglePlayLocationUpdateListener googlePlayLocationUpdateListener;
     private Context mContext;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -32,8 +32,8 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
     private static long timeInterval, fastesInterval, distance;
 
 
-    public GoogleLocationService(Context mContext, GoogleLocationUpdateListener googleLocationUpdateListener) {
-        this.googleLocationUpdateListener = googleLocationUpdateListener;
+    public GooglePlayLocationService(Context mContext, GooglePlayLocationUpdateListener googlePlayLocationUpdateListener) {
+        this.googlePlayLocationUpdateListener = googlePlayLocationUpdateListener;
         this.mContext = mContext;
         buildGoogleApiClient();
     }
@@ -92,13 +92,13 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
                 Log.i(TAGLOG_GPS, "Google play service not updated");
 
             }
-            googleLocationUpdateListener.cannotReceiveLocationUpdates("Google play service not updated");
+            googlePlayLocationUpdateListener.cannotReceiveLocationUpdates("Google play service not updated");
         }
 
         @Override
         public void onLocationChanged(Location location) {
 
-            googleLocationUpdateListener.updateLocation(location);
+            googlePlayLocationUpdateListener.updateLocation(location);
         }
 
     private static boolean locationEnabled(Context context) {
@@ -135,14 +135,14 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
      */
         if (servicesConnected(mContext)) {
             if (locationEnabled(mContext)) {
-                googleLocationUpdateListener.canReceiveLocationUpdates();
+                googlePlayLocationUpdateListener.canReceiveLocationUpdates();
                 startLocationUpdates();
             } else {
-                googleLocationUpdateListener.cannotReceiveLocationUpdates("Unable to get your location.Please turn on your device Gps");
+                googlePlayLocationUpdateListener.cannotReceiveLocationUpdates("Unable to get your location.Please turn on your device Gps");
                 Log.e(TAGLOG_GPS, "Unable to get your location.Please turn on your device Gps");
             }
         } else {
-            googleLocationUpdateListener.cannotReceiveLocationUpdates("Google play service not available");
+            googlePlayLocationUpdateListener.cannotReceiveLocationUpdates("Google play service not available");
             Log.e(TAGLOG_GPS, "Google play service not available");
         }
     }
@@ -155,7 +155,7 @@ public class GoogleLocationService implements GoogleApiClient.ConnectionCallback
     //start location updates
     public void startLocationUpdates() {
 
-        googleLocationUpdateListener.startLocation(LocationServices.FusedLocationApi.getLastLocation(
+        googlePlayLocationUpdateListener.startLocation(LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient));
 
         if (ActivityCompat.checkSelfPermission(mContext, ACCESS_FINE_LOCATION) !=

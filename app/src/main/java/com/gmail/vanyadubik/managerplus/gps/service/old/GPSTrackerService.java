@@ -16,8 +16,8 @@ import android.util.Log;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.StartActivity;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
-import com.gmail.vanyadubik.managerplus.gps.location.GoogleLocationService;
-import com.gmail.vanyadubik.managerplus.gps.location.GoogleLocationUpdateListener;
+import com.gmail.vanyadubik.managerplus.gps.location.GooglePlayLocationService;
+import com.gmail.vanyadubik.managerplus.gps.location.GooglePlayLocationUpdateListener;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.utils.GPSTaskUtils;
@@ -51,7 +51,7 @@ public class GPSTrackerService extends Service {
 
     private Context mContext;
 
-    private GoogleLocationService googleLocationService;
+    private GooglePlayLocationService googlePlayLocationService;
     private Location currentBestLocation;
     private SimpleDateFormat dateFormat;
     private double minCurrentAccury;
@@ -87,7 +87,7 @@ public class GPSTrackerService extends Service {
             minCurrentAccury = MAX_COEFFICIENT_CURRENCY_LOCATION;
 //        }
 
-        googleLocationService.startUpdates();
+        googlePlayLocationService.startUpdates();
 
         return START_REDELIVER_INTENT;
     }
@@ -96,10 +96,10 @@ public class GPSTrackerService extends Service {
     public void onDestroy() {
         super.onDestroy();
 
-        if (googleLocationService != null) {
-            googleLocationService.stopLocationUpdates();
+        if (googlePlayLocationService != null) {
+            googlePlayLocationService.stopLocationUpdates();
         }
-        googleLocationService.closeGoogleApi();
+        googlePlayLocationService.closeGoogleApi();
 
         mNotificationManager.cancel(DEFAULT_NOTIFICATION_GPS_TRACER_ID);
         stopForeground(true);
@@ -107,7 +107,7 @@ public class GPSTrackerService extends Service {
 
     private void createLocationService(){
 
-        googleLocationService = new GoogleLocationService(this, new GoogleLocationUpdateListener() {
+        googlePlayLocationService = new GooglePlayLocationService(this, new GooglePlayLocationUpdateListener() {
             @Override
             public void canReceiveLocationUpdates() {
             }
@@ -152,10 +152,10 @@ public class GPSTrackerService extends Service {
             }
 
         });
-        googleLocationService.setTypePriorityConnection(TYPE_PRIORITY_CONNECTION_GPS);
-        googleLocationService.setTimeInterval(MIN_TIME_WRITE_TRACK);
-        googleLocationService.setFastesInterval(MIN_SPEED_WRITE_LOCATION);
-        googleLocationService.setDistance(MIN_DISTANCE_WRITE_TRACK);
+        googlePlayLocationService.setTypePriorityConnection(TYPE_PRIORITY_CONNECTION_GPS);
+        googlePlayLocationService.setTimeInterval(MIN_TIME_WRITE_TRACK);
+        googlePlayLocationService.setFastesInterval(MIN_SPEED_WRITE_LOCATION);
+        googlePlayLocationService.setDistance(MIN_DISTANCE_WRITE_TRACK);
 
     }
 

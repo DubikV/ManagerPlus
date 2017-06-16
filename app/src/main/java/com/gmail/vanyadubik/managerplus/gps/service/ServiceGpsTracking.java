@@ -153,8 +153,8 @@ public class ServiceGpsTracking extends Service {
                     String message = dateFormat.format(timeStamp.getTime().getTime()) + " |F "
                             + _location.getProvider() + ": "
                             + new DecimalFormat("#.#").format(_location.getAccuracy()) + " |"
-                            + "\n " + new DecimalFormat("#.####").format(_location.getLatitude())
-                            + "\n: " + new DecimalFormat("#.####").format(_location.getLongitude());
+                            + " " + new DecimalFormat("#.####").format(_location.getLatitude())
+                            + ": " + new DecimalFormat("#.####").format(_location.getLongitude());
 
                     notifyBuilder = getNotification(true, message);
                     startForeground(_notifyId, notifyBuilder.build());
@@ -165,8 +165,8 @@ public class ServiceGpsTracking extends Service {
                     String message = dateFormat.format(timeStamp.getTime().getTime()) + " "
                             + _location.getProvider() + ": "
                             + new DecimalFormat("#.#").format(_location.getAccuracy()) + " |"
-                            + "\n " + new DecimalFormat("#.####").format(_location.getLatitude())
-                            + "\n: " + new DecimalFormat("#.####").format(_location.getLongitude());
+                            + " " + new DecimalFormat("#.####").format(_location.getLatitude())
+                            + ": " + new DecimalFormat("#.####").format(_location.getLongitude());
 
                     notifyBuilder = getNotification(true, message);
                     startForeground(_notifyId, notifyBuilder.build());

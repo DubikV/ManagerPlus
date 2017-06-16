@@ -24,8 +24,8 @@ import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
-import com.gmail.vanyadubik.managerplus.gps.location.GoogleLocationService;
-import com.gmail.vanyadubik.managerplus.gps.location.GoogleLocationUpdateListener;
+import com.gmail.vanyadubik.managerplus.gps.location.GooglePlayLocationService;
+import com.gmail.vanyadubik.managerplus.gps.location.GooglePlayLocationUpdateListener;
 import com.gmail.vanyadubik.managerplus.service.navigationtrack.NavigationTrack;
 import com.gmail.vanyadubik.managerplus.service.navigationtrack.NavigationUpdateListener;
 import com.gmail.vanyadubik.managerplus.service.navigationtrack.ParamNavigationTrack;
@@ -84,7 +84,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
     private SharedPreferences mPreferences;
     private GoogleMap mMap;
     private SupportMapFragment locationMapFragment;
-    private GoogleLocationService googleLocationService;
+    private GooglePlayLocationService googlePlayLocationService;
     private Location lastCurrentLocation, locationCheckNavigation, oldCurrentLocation;
     private Marker mCurrLocationMarker, mOtherLocationMarker;
     private Polyline polylineTrack;
@@ -110,7 +110,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
         mPreferences = getPreferences(Context.MODE_PRIVATE);
         developeMode = SharedStorage.getBoolean(getApplicationContext(), DEVELOP_MODE, false);
 
-        googleLocationService = new GoogleLocationService(this, new GoogleLocationUpdateListener() {
+        googlePlayLocationService = new GooglePlayLocationService(this, new GooglePlayLocationUpdateListener() {
             @Override
             public void canReceiveLocationUpdates() {
             }
@@ -160,11 +160,11 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
             }
 
         });
-        googleLocationService.setTypePriorityConnection(TYPE_PRIORITY_CONNECTION_GPS);
-        googleLocationService.setTimeInterval(MIN_TIME_WRITE_TRACK);
-        googleLocationService.setFastesInterval(MIN_SPEED_WRITE_LOCATION);
-        googleLocationService.setDistance(MIN_DISTANCE_MAP);
-        googleLocationService.startUpdates();
+        googlePlayLocationService.setTypePriorityConnection(TYPE_PRIORITY_CONNECTION_GPS);
+        googlePlayLocationService.setTimeInterval(MIN_TIME_WRITE_TRACK);
+        googlePlayLocationService.setFastesInterval(MIN_SPEED_WRITE_LOCATION);
+        googlePlayLocationService.setDistance(MIN_DISTANCE_MAP);
+        googlePlayLocationService.startUpdates();
 
         moveMarker = true;
         setUpMap();
@@ -342,7 +342,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
     protected void onResume() {
         super.onResume();
 
-        googleLocationService.startLocationUpdates();
+        googlePlayLocationService.startLocationUpdates();
 
         waybill = dataRepository.getLastWaybill();
 
@@ -380,17 +380,17 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (googleLocationService != null) {
-            googleLocationService.stopLocationUpdates();
+        if (googlePlayLocationService != null) {
+            googlePlayLocationService.stopLocationUpdates();
         }
-        googleLocationService.closeGoogleApi();
+        googlePlayLocationService.closeGoogleApi();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (googleLocationService != null) {
-            googleLocationService.stopLocationUpdates();
+        if (googlePlayLocationService != null) {
+            googlePlayLocationService.stopLocationUpdates();
         }
 
         mPreferences.edit().putInt(MAP_TTACK_ZOOM_PREF, sbZoom.getProgress()).apply();

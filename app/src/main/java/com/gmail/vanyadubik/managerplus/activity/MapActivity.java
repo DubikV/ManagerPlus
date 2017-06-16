@@ -25,8 +25,8 @@ import android.widget.Toast;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
-import com.gmail.vanyadubik.managerplus.gps.location.GoogleLocationService;
-import com.gmail.vanyadubik.managerplus.gps.location.GoogleLocationUpdateListener;
+import com.gmail.vanyadubik.managerplus.gps.location.GooglePlayLocationService;
+import com.gmail.vanyadubik.managerplus.gps.location.GooglePlayLocationUpdateListener;
 import com.gmail.vanyadubik.managerplus.utils.GPSTaskUtils;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -76,7 +76,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private SharedPreferences mPreferences;
     private GoogleMap mMap;
     private SupportMapFragment locationMapFragment;
-    private GoogleLocationService googleLocationService;
+    private GooglePlayLocationService googlePlayLocationService;
     private Location lastCurrentLocation;
     private Marker mCurrLocationMarker;
     private Bundle extras;
@@ -95,7 +95,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         mPreferences = getPreferences(Context.MODE_PRIVATE);
 
-        googleLocationService = new GoogleLocationService(this, new GoogleLocationUpdateListener() {
+        googlePlayLocationService = new GooglePlayLocationService(this, new GooglePlayLocationUpdateListener() {
             @Override
             public void canReceiveLocationUpdates() {
             }
@@ -123,11 +123,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
 
         });
-        googleLocationService.setTypePriorityConnection(TYPE_PRIORITY_CONNECTION_GPS);
-        googleLocationService.setTimeInterval(MIN_TIME_WRITE_TRACK);
-        googleLocationService.setFastesInterval(MIN_SPEED_WRITE_LOCATION);
-        googleLocationService.setDistance(MIN_DISTANCE_MAP);
-        googleLocationService.startUpdates();
+        googlePlayLocationService.setTypePriorityConnection(TYPE_PRIORITY_CONNECTION_GPS);
+        googlePlayLocationService.setTimeInterval(MIN_TIME_WRITE_TRACK);
+        googlePlayLocationService.setFastesInterval(MIN_SPEED_WRITE_LOCATION);
+        googlePlayLocationService.setDistance(MIN_DISTANCE_MAP);
+        googlePlayLocationService.startUpdates();
 
         typeShow = 0;
 
@@ -290,7 +290,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onResume() {
         super.onResume();
 
-        googleLocationService.startLocationUpdates();
+        googlePlayLocationService.startLocationUpdates();
 
         extras = getIntent().getExtras();
 
@@ -423,17 +423,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (googleLocationService != null) {
-            googleLocationService.stopLocationUpdates();
+        if (googlePlayLocationService != null) {
+            googlePlayLocationService.stopLocationUpdates();
         }
-        googleLocationService.closeGoogleApi();
+        googlePlayLocationService.closeGoogleApi();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (googleLocationService != null) {
-            googleLocationService.stopLocationUpdates();
+        if (googlePlayLocationService != null) {
+            googlePlayLocationService.stopLocationUpdates();
         }
 
         mPreferences.edit().putInt(MAP_ZOOM_PREF, sbZoom.getProgress()).apply();
