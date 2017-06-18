@@ -30,11 +30,13 @@ public class AndroidPlayLocationService {
 
     private static int typePriorityConnection;
     private static long timeInterval, fastesInterval, distance;
+    private boolean isStarted;
 
     public AndroidPlayLocationService(Context mContext,
                                       final AndroidPlayLocationUpdateListener androidPlayLocationUpdateListener) {
         this.mContext = mContext;
         this.androidPlayLocationUpdateListener = androidPlayLocationUpdateListener;
+        this.isStarted = false;
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext);
         mLocationCallback = new LocationCallback() {
@@ -67,6 +69,9 @@ public class AndroidPlayLocationService {
         this.distance = distance;
     }
 
+    public boolean isStarted() {
+        return isStarted;
+    }
 
     private void createLocationRequest() {
         mLocationRequest = new LocationRequest();
@@ -106,6 +111,7 @@ public class AndroidPlayLocationService {
         try {
             mFusedLocationClient.requestLocationUpdates(mLocationRequest,
                     mLocationCallback, Looper.myLooper());
+            isStarted = true;
         } catch (SecurityException unlikely) {
             setRequestingLocationUpdates(false);
             Log.e(TAGLOG_GPS, "Lost location permission. Could not request updates. " + unlikely);
@@ -117,6 +123,7 @@ public class AndroidPlayLocationService {
         try {
             mFusedLocationClient.removeLocationUpdates(mLocationCallback);
             setRequestingLocationUpdates(false);
+            isStarted = false;
         } catch (SecurityException unlikely) {
             setRequestingLocationUpdates(true);
             Log.e(TAGLOG_GPS, "Lost location permission. Could not remove updates. " + unlikely);

@@ -1,19 +1,7 @@
 [
     {
-        "merged": "D:\\Android\\Android Project\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\slide_date_time_picker.xml",
-        "source": "D:\\Android\\Android Project\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\bundles\\debug\\res\\layout\\slide_date_time_picker.xml"
-    },
-    {
         "merged": "E:\\Android Aplications\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\custom_tab.xml",
         "source": "E:\\Android Aplications\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\bundles\\debug\\res\\layout\\custom_tab.xml"
-    },
-    {
-        "merged": "D:\\Android\\Android Aplications\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\slide_date_time_picker.xml",
-        "source": "D:\\Android\\Android Aplications\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\bundles\\debug\\res\\layout\\slide_date_time_picker.xml"
-    },
-    {
-        "merged": "D:\\Android\\Android Aplications\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\custom_tab.xml",
-        "source": "D:\\Android\\Android Aplications\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\bundles\\debug\\res\\layout\\custom_tab.xml"
     },
     {
         "merged": "E:\\Android Aplications\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\slide_date_time_picker.xml",
@@ -26,25 +14,5 @@
     {
         "merged": "E:\\Android Aplications\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\fragment_date.xml",
         "source": "E:\\Android Aplications\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\bundles\\debug\\res\\layout\\fragment_date.xml"
-    },
-    {
-        "merged": "D:\\Android\\Android Project\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\custom_tab.xml",
-        "source": "D:\\Android\\Android Project\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\bundles\\debug\\res\\layout\\custom_tab.xml"
-    },
-    {
-        "merged": "D:\\Android\\Android Aplications\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\fragment_date.xml",
-        "source": "D:\\Android\\Android Aplications\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\bundles\\debug\\res\\layout\\fragment_date.xml"
-    },
-    {
-        "merged": "D:\\Android\\Android Project\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\fragment_time.xml",
-        "source": "D:\\Android\\Android Project\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\bundles\\debug\\res\\layout\\fragment_time.xml"
-    },
-    {
-        "merged": "D:\\Android\\Android Project\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\fragment_date.xml",
-        "source": "D:\\Android\\Android Project\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\bundles\\debug\\res\\layout\\fragment_date.xml"
-    },
-    {
-        "merged": "D:\\Android\\Android Aplications\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\fragment_time.xml",
-        "source": "D:\\Android\\Android Aplications\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\bundles\\debug\\res\\layout\\fragment_time.xml"
     }
 ]

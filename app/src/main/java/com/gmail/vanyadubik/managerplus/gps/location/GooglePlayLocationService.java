@@ -30,11 +30,13 @@ public class GooglePlayLocationService implements GoogleApiClient.ConnectionCall
 
     private static int typePriorityConnection;
     private static long timeInterval, fastesInterval, distance;
+    private boolean isStarted;
 
 
     public GooglePlayLocationService(Context mContext, GooglePlayLocationUpdateListener googlePlayLocationUpdateListener) {
         this.googlePlayLocationUpdateListener = googlePlayLocationUpdateListener;
         this.mContext = mContext;
+        this.isStarted = false;
         buildGoogleApiClient();
     }
 
@@ -52,6 +54,10 @@ public class GooglePlayLocationService implements GoogleApiClient.ConnectionCall
 
     public void setDistance(long distance) {
         this.distance = distance;
+    }
+
+    public boolean isStarted() {
+        return isStarted;
     }
 
     private void buildGoogleApiClient() {
@@ -167,6 +173,7 @@ public class GooglePlayLocationService implements GoogleApiClient.ConnectionCall
         if (mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi
                     .requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+            isStarted = true;
         }
     }
 
@@ -174,6 +181,7 @@ public class GooglePlayLocationService implements GoogleApiClient.ConnectionCall
         if (mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi
                     .removeLocationUpdates(mGoogleApiClient, this);
+            isStarted = false;
         }
     }
 

@@ -14,7 +14,6 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,12 +26,15 @@ import android.util.Log;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.StartActivity;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
-import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.integerPrefs;
+import com.gmail.vanyadubik.managerplus.gps.location.GooglePlayLocationService;
+import com.gmail.vanyadubik.managerplus.gps.location.GooglePlayLocationUpdateListener;
 import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.booleanPrefs;
 import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.doublePrefs;
+import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.integerPrefs;
 import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.serviceStringPrefs;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
+import com.google.android.gms.location.LocationRequest;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -63,8 +65,7 @@ public class ServiceGpsTracking extends Service {
     private boolean _isNotificationEnabled;
     private boolean _isTickTimerStarted;
     private boolean _devMode;
-    private LocationListener _locListener;
-    private LocationManager _locManager;
+    private GooglePlayLocationService _googlePlayLocationService;
     private NotificationManager _notificationManager;
     private int _notifyId;
     private BroadcastReceiver serviceReceiver;
@@ -189,43 +190,6 @@ public class ServiceGpsTracking extends Service {
             tickHandler.postDelayed(tickTimer, (long) intervalRun);
         }
 
-    }
-
-    private class GpsTrackingLocationListener implements LocationListener {
-        private GpsTrackingLocationListener() {
-        }
-
-        private void onGpsStatusChanged(int status) {
-            if (status != 2) {
-                _location = null;
-            }
-        }
-
-        public void onLocationChanged(Location location) {
-            if (location != null) {
-                _location = location;
-                _gpsLocationSource = Provider.FromName(location.getProvider()).getIndex();
-                if (_gpsStatus != 2) {
-                    _gpsStatus = 2;
-                    onGpsStatusChanged(_gpsStatus);
-                }
-            }
-        }
-
-        public void onProviderDisabled(String provider) {
-            _gpsStatus = 0;
-            onGpsStatusChanged(_gpsStatus);
-            renewNotification(1);
-        }
-
-        public void onProviderEnabled(String provider) {
-            _gpsStatus = 2;
-            onGpsStatusChanged(_gpsStatus);
-            renewNotification(1);
-        }
-
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-        }
     }
 
     public ServiceGpsTracking() {
@@ -366,31 +330,44 @@ public class ServiceGpsTracking extends Service {
 
     private void updateProvider(boolean isStart) {
         if (isStart) {
-            if (_locManager == null) {
-                Provider provider = Provider.FromIndex(0);
-                _locManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-                _locListener = new GpsTrackingLocationListener();
-                if (provider == Provider.PASSIVE) {
-                    List<String> providerList = _locManager.getAllProviders();
-                    if ( Build.VERSION.SDK_INT >= 23 &&
-                            ContextCompat.checkSelfPermission( this, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED &&
-                            ContextCompat.checkSelfPermission( this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        return;
+            if (_googlePlayLocationService == null) {
+                _googlePlayLocationService = new GooglePlayLocationService(this, new GooglePlayLocationUpdateListener() {
+                    @Override
+                    public void canReceiveLocationUpdates() {
                     }
-                    if (providerList.contains(Provider.PROVIDER_GPS)) {
-                        _locManager.requestLocationUpdates(Provider.GPS.getName(), 0, 0.0f, _locListener);
+
+                    @Override
+                    public void cannotReceiveLocationUpdates(String exception) {
+                        Log.e(TAGLOG_GPS, exception);
                     }
-                    if (providerList.contains(Provider.PROVIDER_NETWORK)) {
-                        _locManager.requestLocationUpdates(Provider.NETWORK.getName(), 0, 0.0f, _locListener);
-                        return;
+
+                    @Override
+                    public void updateLocation(Location location) {
+                        if (location != null) {
+                            _location = location;
+                            _gpsLocationSource = Provider.FromName(location.getProvider()).getIndex();
+                        }
                     }
-                    return;
-                }
-                _locManager.requestLocationUpdates(provider.getName(), 0, 0.0f, _locListener);
+
+                    @Override
+                    public void startLocation(Location location) {
+                    }
+
+                });
+                _googlePlayLocationService.setTypePriorityConnection(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                _googlePlayLocationService.setTimeInterval(0);
+                _googlePlayLocationService.setFastesInterval(0);
+                _googlePlayLocationService.setDistance(0);
+
             }
-        } else if (_locManager != null) {
-            _locManager.removeUpdates(_locListener);
-            _locManager = null;
+
+            if(!_googlePlayLocationService.isStarted()){
+                _googlePlayLocationService.startLocationUpdates();
+            }
+        } else if(_googlePlayLocationService != null) {
+            _googlePlayLocationService.stopLocationUpdates();
+            _googlePlayLocationService.closeGoogleApi();
+            _googlePlayLocationService = null;
         }
     }
 

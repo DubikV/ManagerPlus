@@ -22,10 +22,12 @@ public class AndroidLocationService implements LocationListener {
     protected LocationManager locationManager;
     private boolean isGPSEnabled, isNetworkEnabled;
     private static long timeInterval, distance;
+    private boolean isStarted;
 
     public AndroidLocationService(Context mContext, AndroidLocationUpdateListener androidLocationUpdateListener) {
         this.androidLocationUpdateListener = androidLocationUpdateListener;
         this.mContext = mContext;
+        this.isStarted = false;
 
         isGPSEnabled = isNetworkEnabled  = false;
 
@@ -40,6 +42,9 @@ public class AndroidLocationService implements LocationListener {
         this.distance = distance;
     }
 
+    public boolean isStarted() {
+        return isStarted;
+    }
 
     private void  buildlocationManager() {
 
@@ -81,6 +86,8 @@ public class AndroidLocationService implements LocationListener {
 
                 androidLocationUpdateListener.cannotReceiveLocationUpdates("isGPSEnabled = " + isGPSEnabled +"; isNetworkEnabled = " + isNetworkEnabled);
 
+                isStarted = true;
+
             }else {
 
                 if (isGPSEnabled) {
@@ -90,6 +97,7 @@ public class AndroidLocationService implements LocationListener {
                             distance,
                             this);
                     Log.d(TAGLOG_GPS, "GPS used");
+                    isStarted = true;
                     if (locationManager != null) {
                         location = locationManager
                                 .getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -107,6 +115,7 @@ public class AndroidLocationService implements LocationListener {
                                 distance,
                                 this);
                         Log.d(TAGLOG_GPS, "Network used");
+                        isStarted = true;
                         if (locationManager != null) {
                             location = locationManager
                                     .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -121,6 +130,7 @@ public class AndroidLocationService implements LocationListener {
         } catch (Exception e) {
             e.printStackTrace();
             androidLocationUpdateListener.cannotReceiveLocationUpdates("Android location service not updated");
+            isStarted = false;
         }
     }
 
@@ -129,6 +139,8 @@ public class AndroidLocationService implements LocationListener {
         if (locationManager != null) {
             locationManager.removeUpdates(AndroidLocationService.this);
         }
+
+        isStarted = false;
     }
 
     @Override
