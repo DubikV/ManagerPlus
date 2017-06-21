@@ -16,6 +16,7 @@ import android.widget.Switch;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking;
+import com.gmail.vanyadubik.managerplus.gps.service.TypeServiceGPS;
 import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
 import com.gmail.vanyadubik.managerplus.task.TaskSchedure;
 import com.gmail.vanyadubik.managerplus.utils.ActivityUtils;
@@ -39,6 +40,7 @@ import static com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.PREF_DAYS
 import static com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.PREF_INTERVAL;
 import static com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.PREF_TIME_END;
 import static com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.PREF_TIME_START;
+import static com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.PREF_TYPE_SERVICE;
 
 public class SettingsLocationActivity extends AppCompatActivity {
 
@@ -48,7 +50,7 @@ public class SettingsLocationActivity extends AppCompatActivity {
     private EditText mTimeWriteTrack, mTimeStartTrack, mTimeEndTrack, minCurrentAccuracyGPS, mTimeSyncTrack;
     private View signInButton, returnButton, minTimeTrackSyncLayout, settingsLocationLayout;
     private Switch using_auto_sync_trackSwitch, using_gps_tracking;
-    private Spinner mSpinner;
+    private Spinner mSpinner, typeGPSTrackingSpinner;
     private List<String> listSetDays = new ArrayList<String>();
     private Boolean usingGPSTracker;
 
@@ -151,6 +153,19 @@ public class SettingsLocationActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(R.layout.item_with_spinner);
         mSpinner.setAdapter(adapter);
 
+        typeGPSTrackingSpinner = (Spinner) findViewById(R.id.typegpstracking_spinner);
+
+        List<String> listType = new ArrayList<>();
+        listType.add(TypeServiceGPS.SERVICE_GPS_ANDROID.getName());
+        listType.add(TypeServiceGPS.SERVICE_GPS_ANDROID_PLAY.getName());
+        listType.add(TypeServiceGPS.SERVICE_GPS_GOOGLE_PLAY.getName());
+
+        adapter = new ArrayAdapter<String>(this,
+                R.layout.item_with_spinner,listType);
+
+        adapter.setDropDownViewResource(R.layout.item_with_spinner);
+        typeGPSTrackingSpinner.setAdapter(adapter);
+
         returnButton = findViewById(R.id.ret_login_button);
         returnButton.setFocusable(true);
         returnButton.setFocusableInTouchMode(true);
@@ -211,6 +226,9 @@ public class SettingsLocationActivity extends AppCompatActivity {
 
         String days = String.valueOf(SharedStorage.getInteger(getApplicationContext(), PREF_DAYS, 7));
         mSpinner.setSelection(listSetDays.indexOf(days));
+
+        int indexTypeGps = SharedStorage.getInteger(getApplicationContext(), PREF_TYPE_SERVICE, 1);
+        typeGPSTrackingSpinner.setSelection(indexTypeGps);
 
         if(SharedStorage.getBoolean(getApplicationContext(), USING_SYNK_TRACK, true)){
             long period = SharedStorage.getLong(getApplicationContext(), MIN_TIME_SYNK_TRACK_NAME, MIN_TIME_SYNK_TRACK);
@@ -324,6 +342,7 @@ public class SettingsLocationActivity extends AppCompatActivity {
         SharedStorage.setInteger(getApplicationContext(), PREF_TIME_END, minutesEnd);
         SharedStorage.setDouble(getApplicationContext(),  PREF_ACCURACY, Double.valueOf(String.valueOf(minCurrentAccuracyGPS.getText())));
         SharedStorage.setInteger(getApplicationContext(), PREF_DAYS, Integer.valueOf(String.valueOf(mSpinner.getSelectedItem().toString())));
+        SharedStorage.setInteger(getApplicationContext(), PREF_TYPE_SERVICE, TypeServiceGPS.getIndexbyName(mSpinner.getSelectedItem().toString()));
 
         if(usingGPSTracker){
             GpsTracking gpsTracking = new GpsTracking(getApplicationContext());

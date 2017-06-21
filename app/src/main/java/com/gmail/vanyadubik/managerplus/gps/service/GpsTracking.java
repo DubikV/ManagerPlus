@@ -25,10 +25,11 @@ public class GpsTracking {
     public static final String PREF_TIME_START = "gpsTrackingTimeStart";
     public static final String PREF_TIME_END = "gpsTrackingTimeEND";
     public static final String PREF_DAYS = "gpsTrackingDays";
-    public final static String PREF_ACCURACY = "gpsTrackingMinAcuuracy";
+    public static final String PREF_ACCURACY = "gpsTrackingMinAcuuracy";
     public static final String RENEW_PREFERENCES = "initializer_have_new_preferences";
     public static final String SET_PREFERENCES = "send_preferences_to_service";
     public static final String CHECK_PREFERENCES = "initializer_wait_for_check_preferences";
+    public static final String PREF_TYPE_SERVICE = "type_gps_service";
     static final String BOOLEAN_PARAMS = "boolean_shared_preferences";
     static final String INITIALIZER_ACTION = "gps.service.GpsTracking.initializerBroadcaster";
     static final String LONG_PARAMS = "long_shared_preferences_from_service";
@@ -106,7 +107,8 @@ public class GpsTracking {
         TIMEEND(1),
         INTERVAL(2),
         DAYS(3),
-        INDEX_LOCATION_SOURCE(4);
+        INDEX_LOCATION_SOURCE(4),
+        TYPE_SERVICE(5);
 
         private int _prefId;
 
@@ -231,7 +233,7 @@ public class GpsTracking {
         _isStarted = true;
         SharedStorage.setBoolean(getContext(), PREF_ENABLE, Boolean.valueOf(true));
         setReceiver();
-        getContext().startService(new Intent(getContext(), SERVICE_GPS_GOOGLE_PLAY.getServiceClass()));
+        getContext().startService(new Intent(getContext(), ServiceGpsTracking.class));
         SystemClock.sleep(100);
         sendNewPreferences(SET_PREFERENCES);
         return true;
@@ -244,15 +246,7 @@ public class GpsTracking {
             _isReceiverRegistered = false;
             getContext().unregisterReceiver(gpsTrackingReceiver);
         }
-        if(serviceUtils.isServiceRunning(TypeServiceGPS.SERVICE_GPS_ANDROID.getServiceClass())) {
-            getContext().stopService(new Intent(getContext(), TypeServiceGPS.SERVICE_GPS_ANDROID.getServiceClass()));
-        }
-        if(serviceUtils.isServiceRunning(TypeServiceGPS.SERVICE_GPS_ANDROID_PLAY.getServiceClass())) {
-            getContext().stopService(new Intent(getContext(), TypeServiceGPS.SERVICE_GPS_ANDROID_PLAY.getServiceClass()));
-        }
-        if(serviceUtils.isServiceRunning(TypeServiceGPS.SERVICE_GPS_GOOGLE_PLAY.getServiceClass())) {
-            getContext().stopService(new Intent(getContext(), TypeServiceGPS.SERVICE_GPS_GOOGLE_PLAY.getServiceClass()));
-        }
+        getContext().stopService(new Intent(getContext(), ServiceGpsTracking.class));
     }
 
     private int getGpsTrackingStatus() {
@@ -327,8 +321,9 @@ public class GpsTracking {
         int timeStart = SharedStorage.getInteger(getContext(), PREF_TIME_START, 0);
         int timeEnd = SharedStorage.getInteger(getContext(), PREF_TIME_END, 0);
         int days = SharedStorage.getInteger(getContext(), PREF_DAYS, 0);
-        double accury = SharedStorage.getDouble(getContext(), PREF_ACCURACY, 0.0);
         int indexLocationSource = SharedStorage.getInteger(getContext(), PREF_LOCATIONSOURCE, 1);
+        int typeService = SharedStorage.getInteger(getContext(), PREF_TYPE_SERVICE, 0);
+        double accury = SharedStorage.getDouble(getContext(), PREF_ACCURACY, 0.0);
         boolean bGpsTime = SharedStorage.getBoolean(getContext(), PREF_GPSTIME, true);
         boolean bIsLocationSource = SharedStorage.getBoolean(getContext(), PREF_ISLOCATIONSOURCE, true);
         boolean passiveConnection = SharedStorage.getBoolean(getContext(), PREF_PASSIVECONNECTION, true);
@@ -339,6 +334,7 @@ public class GpsTracking {
             _integerParams[integerPrefs.INTERVAL.getID()] = interval;
             _integerParams[integerPrefs.DAYS.getID()] = days;
             _integerParams[integerPrefs.INDEX_LOCATION_SOURCE.getID()] = indexLocationSource;
+            _integerParams[integerPrefs.TYPE_SERVICE.getID()] = typeService;
             _doubleParams[doublePrefs.ACCURY.getID()] = accury;
             _booleanParams[booleanPrefs.GPS_TIME.getID()] = bGpsTime;
             _booleanParams[booleanPrefs.LOCATION_SOURCE.getID()] = bIsLocationSource;

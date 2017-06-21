@@ -2,18 +2,16 @@ package com.gmail.vanyadubik.managerplus.gps.service;
 
 public enum TypeServiceGPS{
 
-    SERVICE_GPS_ANDROID(1,"Android Location", ServiceGpsTrackingAndroid.class),
-    SERVICE_GPS_ANDROID_PLAY(2, "Android Play Location", ServiceGpsTrackingAndroidPlay.class),
-    SERVICE_GPS_GOOGLE_PLAY(3, "Google Play Location", ServiceGpsTrackingGooglePlay.class);
+    SERVICE_GPS_ANDROID(1,"Android Location"),
+    SERVICE_GPS_ANDROID_PLAY(2, "Android Play Location"),
+    SERVICE_GPS_GOOGLE_PLAY(3, "Google Play Location");
 
     private int index;
     private String name;
-    private Class<?> serviceClass;
 
-    private TypeServiceGPS(int index, String name, Class<?> serviceClass) {
+    private TypeServiceGPS(int index, String name) {
         this.index = index;
         this.name = name;
-        this.serviceClass = serviceClass;
     }
 
     public int getIndex() {
@@ -24,11 +22,7 @@ public enum TypeServiceGPS{
         return name;
     }
 
-    public Class<?> getServiceClass() {
-        return serviceClass;
-    }
-
-    public String getNamebyIndex(int index) {
+    public static String getNamebyIndex(int index) {
         if(index == 1){
             return SERVICE_GPS_ANDROID.getName();
         }else if(index == 2){
@@ -39,16 +33,15 @@ public enum TypeServiceGPS{
         return "";
     }
 
-    public Class<?> getClassbyIndex(int index) {
-        if(index == 1){
-            return SERVICE_GPS_ANDROID.getServiceClass();
-        }else if(index == 2){
-            return SERVICE_GPS_ANDROID_PLAY.getServiceClass();
-        }else if(index == 3){
-            return SERVICE_GPS_GOOGLE_PLAY.getServiceClass();
+    public static int getIndexbyName(String name) {
+        if(name.equals(SERVICE_GPS_ANDROID.getName())){
+            return SERVICE_GPS_ANDROID.getIndex();
+        }else if(name.equals(SERVICE_GPS_ANDROID_PLAY.getName())){
+            return SERVICE_GPS_ANDROID_PLAY.getIndex();
+        }else if(name.equals(SERVICE_GPS_GOOGLE_PLAY.getName())){
+            return SERVICE_GPS_GOOGLE_PLAY.getIndex();
         }
-        return null;
+        return 0;
     }
-
 }
 

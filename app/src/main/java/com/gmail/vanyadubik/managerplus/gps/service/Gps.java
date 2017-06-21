@@ -36,7 +36,6 @@ public class Gps {
     private LocationManager manager;
     private Handler onGpsStatusChange;
 
-    /* renamed from: ru.agentplus.agentp2.Gps.1 */
     class C02751 extends Handler {
         C02751() {
         }

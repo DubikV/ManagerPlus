@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
+import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking;
+import com.gmail.vanyadubik.managerplus.gps.service.TypeServiceGPS;
 import com.gmail.vanyadubik.managerplus.model.ParameterInfo;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.utils.ActivityUtils;
@@ -30,6 +32,8 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.DEVELOP_MODE;
 import static com.gmail.vanyadubik.managerplus.common.Consts.LOGIN;
 import static com.gmail.vanyadubik.managerplus.common.Consts.PASSWORD;
 import static com.gmail.vanyadubik.managerplus.common.Consts.SERVER;
+import static com.gmail.vanyadubik.managerplus.common.Consts.USING_GPSTRACKING;
+import static com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.PREF_TYPE_SERVICE;
 
 public class SettingsActivity extends AppCompatActivity {
     @Inject
@@ -176,9 +180,12 @@ public class SettingsActivity extends AppCompatActivity {
         dataRepository.insertUserSetting(new ParameterInfo(LOGIN, String.valueOf(mLoginView.getText())));
         dataRepository.insertUserSetting(new ParameterInfo(PASSWORD, String.valueOf(mPasswordView.getText())));
 
-        SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences(SharedStorage.APP_PREFS, 0).edit();
-        editor.putBoolean(DEVELOP_MODE, using_develop_modeSwitch.isChecked());
-        editor.commit();
+        SharedStorage.setBoolean(getApplicationContext(), DEVELOP_MODE, using_develop_modeSwitch.isChecked());
+
+        if(SharedStorage.getBoolean(getApplicationContext(), USING_GPSTRACKING, false)){
+            GpsTracking gpsTracking = new GpsTracking(getApplicationContext());
+            gpsTracking.sendNewPreferences(GpsTracking.RENEW_PREFERENCES);
+        }
 
         finish();
     }

@@ -34,6 +34,7 @@
     <string name="action_settings_location">Налаштування GPS трекінгу</string>
     <string name="settings_period_gps_traking">Період роботи GPS трекінгу в день</string>
     <string name="settings_days_gps_traking">Дні роботи GPS трекінгу на тиждень</string>
+    <string name="settings_type_gps_traking">Тип сервісу GPS трекінгу</string>
     <string name="settings_period_from">Період з</string>
     <string name="settings_period_to">Період по</string>
 

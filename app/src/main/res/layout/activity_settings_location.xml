@@ -46,6 +46,34 @@
                 android:orientation="vertical">
 
                 <LinearLayout
+                    android:id="@+id/type_gps_tracking_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/typegpstracking_spinner_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/settings_type_gps_traking"
+                        android:textColor="@color/zxing_result_view"
+                        android:textSize="@dimen/text_size_medium" />
+
+                    <Spinner
+                        android:id="@+id/typegpstracking_spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:layout_weight="3" />
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/min_time_gpstracking_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -61,7 +89,7 @@
                         android:layout_weight="1"
                         android:text="@string/min_time_gps_traking"
                         android:textColor="@color/zxing_result_view"
-                        android:textSize="@dimen/text_size_medium"/>
+                        android:textSize="@dimen/text_size_medium" />
 
                     <EditText
                         android:id="@+id/min_time_gpstracking_edit_taxt"
@@ -72,11 +100,12 @@
                         android:layout_weight="3"
                         android:background="@color/colorWhite"
 
-                        android:inputType="number"/>
+                        android:inputType="number" />
 
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/time_gps_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="10dp"
@@ -92,7 +121,7 @@
                         android:paddingBottom="10dp"
                         android:text="@string/settings_period_gps_traking"
                         android:textColor="@color/zxing_result_view"
-                        android:textSize="@dimen/text_size_medium"/>
+                        android:textSize="@dimen/text_size_medium" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -116,7 +145,7 @@
                                 android:layout_weight="1"
                                 android:text="@string/settings_period_from"
                                 android:textColor="@color/zxing_result_view"
-                                android:textSize="@dimen/text_size_medium"/>
+                                android:textSize="@dimen/text_size_medium" />
 
                             <EditText
                                 android:id="@+id/starttime_gpstracking_edit_taxt"
@@ -127,7 +156,7 @@
                                 android:layout_weight="3"
                                 android:background="@color/colorWhite"
                                 android:inputType="time"
-                                android:maxLength="5"/>
+                                android:maxLength="5" />
 
                         </LinearLayout>
 
@@ -147,7 +176,7 @@
                                 android:layout_weight="1"
                                 android:text="@string/settings_period_to"
                                 android:textColor="@color/zxing_result_view"
-                                android:textSize="@dimen/text_size_medium"/>
+                                android:textSize="@dimen/text_size_medium" />
 
                             <EditText
                                 android:id="@+id/endtime_gpstracking_edit_taxt"
@@ -157,8 +186,8 @@
                                 android:layout_centerVertical="true"
                                 android:layout_weight="3"
                                 android:background="@color/colorWhite"
-                                android:maxLength="5"
-                                android:inputType="time"/>
+                                android:inputType="time"
+                                android:maxLength="5" />
 
                         </LinearLayout>
 
@@ -167,8 +196,10 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/gpstracking_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginBottom="10dp"
                     android:layout_marginTop="10dp"
                     android:orientation="horizontal">
 
@@ -179,7 +210,7 @@
                         android:layout_weight="1"
                         android:text="@string/settings_days_gps_traking"
                         android:textColor="@color/zxing_result_view"
-                        android:textSize="@dimen/text_size_medium"/>
+                        android:textSize="@dimen/text_size_medium" />
 
                     <Spinner
                         android:id="@+id/gpstracking_spinner"
@@ -187,7 +218,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
                         android:layout_centerVertical="true"
-                        android:layout_weight="3"/>
+                        android:layout_weight="3" />
 
                 </LinearLayout>
 

@@ -16,9 +16,7 @@ import com.gmail.vanyadubik.managerplus.fragment.VisitListFragment;
 import com.gmail.vanyadubik.managerplus.fragment.VisitPlanFragment;
 import com.gmail.vanyadubik.managerplus.fragment.WaybillListFragment;
 import com.gmail.vanyadubik.managerplus.fragment.WorkPlaseFragment;
-import com.gmail.vanyadubik.managerplus.gps.service.ServiceGpsTrackingAndroid;
-import com.gmail.vanyadubik.managerplus.gps.service.ServiceGpsTrackingAndroidPlay;
-import com.gmail.vanyadubik.managerplus.gps.service.ServiceGpsTrackingGooglePlay;
+import com.gmail.vanyadubik.managerplus.gps.service.ServiceGpsTracking;
 import com.gmail.vanyadubik.managerplus.gps.service.old.GPSTrackerService;
 import com.gmail.vanyadubik.managerplus.gps.service.old.GPSTrackerServiceAndroidAPI;
 import com.gmail.vanyadubik.managerplus.modules.ActivityUtilsApiModule;
@@ -77,11 +75,7 @@ public interface DIComponent {
 
     void inject(GPSTrackerServiceAndroidAPI gpsTrackerServiceAndroidAPI);
 
-    void inject(ServiceGpsTrackingAndroid serviceGpsTrackingAndroid);
-
-    void inject(ServiceGpsTrackingAndroidPlay serviceGpsTrackingAndroidPlay);
-
-    void inject(ServiceGpsTrackingGooglePlay serviceGpsTrackingGooglePlay);
+    void inject(ServiceGpsTracking serviceGpsTracking);
 
     void inject(SyncIntentTrackService syncIntentTrackService);
 
