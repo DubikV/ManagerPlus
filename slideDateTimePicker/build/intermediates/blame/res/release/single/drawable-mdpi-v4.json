@@ -2,5 +2,9 @@
     {
         "merged": "E:\\Android Aplications\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\res\\merged\\release\\drawable-mdpi-v4\\selection_divider.9.png",
         "source": "E:\\Android Aplications\\ManagerPlus\\slideDateTimePicker\\src\\main\\res\\drawable-mdpi\\selection_divider.9.png"
+    },
+    {
+        "merged": "D:\\Android\\Android Project\\ManagerPlus\\slideDateTimePicker\\build\\intermediates\\res\\merged\\release\\drawable-mdpi-v4\\selection_divider.9.png",
+        "source": "D:\\Android\\Android Project\\ManagerPlus\\slideDateTimePicker\\src\\main\\res\\drawable-mdpi\\selection_divider.9.png"
     }
 ]

@@ -7,15 +7,20 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.SystemClock;
 
+import com.gmail.vanyadubik.managerplus.utils.ServiceUtils;
 import com.gmail.vanyadubik.managerplus.utils.SharedStorage;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEVELOP_MODE;
+import static com.gmail.vanyadubik.managerplus.gps.service.TypeServiceGPS.SERVICE_GPS_GOOGLE_PLAY;
 
 public class GpsTracking {
+
     public static final String PREF_INTERVAL = "gpsTrackingInterval";
     public static final String PREF_TIME_START = "gpsTrackingTimeStart";
     public static final String PREF_TIME_END = "gpsTrackingTimeEND";
@@ -34,6 +39,10 @@ public class GpsTracking {
     static final String STRING_PARAMS = "string_shared_preferences";
     static final String STRING_PARAMS_FROM_SERVICE = "string_shared_preferences_from_service";
     static final String SERVICE_GPS_NOTIFY = "fromServiceGpsTrackingNotify";
+
+    @Inject
+    ServiceUtils serviceUtils;
+
     private final String LAST_DATE_KEY;
     private final String LAST_LATITUDE_KEY;
     private final String LAST_LOCATIONSOURCE_KEY;
@@ -222,7 +231,7 @@ public class GpsTracking {
         _isStarted = true;
         SharedStorage.setBoolean(getContext(), PREF_ENABLE, Boolean.valueOf(true));
         setReceiver();
-        getContext().startService(new Intent(getContext(), ServiceGpsTracking.class));
+        getContext().startService(new Intent(getContext(), SERVICE_GPS_GOOGLE_PLAY.getServiceClass()));
         SystemClock.sleep(100);
         sendNewPreferences(SET_PREFERENCES);
         return true;
@@ -235,7 +244,15 @@ public class GpsTracking {
             _isReceiverRegistered = false;
             getContext().unregisterReceiver(gpsTrackingReceiver);
         }
-        getContext().stopService(new Intent(getContext(), ServiceGpsTracking.class));
+        if(serviceUtils.isServiceRunning(TypeServiceGPS.SERVICE_GPS_ANDROID.getServiceClass())) {
+            getContext().stopService(new Intent(getContext(), TypeServiceGPS.SERVICE_GPS_ANDROID.getServiceClass()));
+        }
+        if(serviceUtils.isServiceRunning(TypeServiceGPS.SERVICE_GPS_ANDROID_PLAY.getServiceClass())) {
+            getContext().stopService(new Intent(getContext(), TypeServiceGPS.SERVICE_GPS_ANDROID_PLAY.getServiceClass()));
+        }
+        if(serviceUtils.isServiceRunning(TypeServiceGPS.SERVICE_GPS_GOOGLE_PLAY.getServiceClass())) {
+            getContext().stopService(new Intent(getContext(), TypeServiceGPS.SERVICE_GPS_GOOGLE_PLAY.getServiceClass()));
+        }
     }
 
     private int getGpsTrackingStatus() {

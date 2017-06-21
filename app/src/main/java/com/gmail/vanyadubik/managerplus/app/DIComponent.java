@@ -16,7 +16,11 @@ import com.gmail.vanyadubik.managerplus.fragment.VisitListFragment;
 import com.gmail.vanyadubik.managerplus.fragment.VisitPlanFragment;
 import com.gmail.vanyadubik.managerplus.fragment.WaybillListFragment;
 import com.gmail.vanyadubik.managerplus.fragment.WorkPlaseFragment;
-import com.gmail.vanyadubik.managerplus.gps.service.ServiceGpsTracking;
+import com.gmail.vanyadubik.managerplus.gps.service.ServiceGpsTrackingAndroid;
+import com.gmail.vanyadubik.managerplus.gps.service.ServiceGpsTrackingAndroidPlay;
+import com.gmail.vanyadubik.managerplus.gps.service.ServiceGpsTrackingGooglePlay;
+import com.gmail.vanyadubik.managerplus.gps.service.old.GPSTrackerService;
+import com.gmail.vanyadubik.managerplus.gps.service.old.GPSTrackerServiceAndroidAPI;
 import com.gmail.vanyadubik.managerplus.modules.ActivityUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.DataApiModule;
 import com.gmail.vanyadubik.managerplus.modules.ErrorUtilsApiModule;
@@ -25,8 +29,6 @@ import com.gmail.vanyadubik.managerplus.modules.NetworkUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.PhoneUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.PhotoFileUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.ServiceUtilsApiModule;
-import com.gmail.vanyadubik.managerplus.gps.service.old.GPSTrackerService;
-import com.gmail.vanyadubik.managerplus.gps.service.old.GPSTrackerServiceAndroidAPI;
 import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
 import com.gmail.vanyadubik.managerplus.task.SyncIntentService;
 
@@ -75,7 +77,11 @@ public interface DIComponent {
 
     void inject(GPSTrackerServiceAndroidAPI gpsTrackerServiceAndroidAPI);
 
-    void inject(ServiceGpsTracking serviceGpsTracking);
+    void inject(ServiceGpsTrackingAndroid serviceGpsTrackingAndroid);
+
+    void inject(ServiceGpsTrackingAndroidPlay serviceGpsTrackingAndroidPlay);
+
+    void inject(ServiceGpsTrackingGooglePlay serviceGpsTrackingGooglePlay);
 
     void inject(SyncIntentTrackService syncIntentTrackService);
 

@@ -11,7 +11,7 @@ public class ServiceUtils {
         this.mContext = mContext;
     }
 
-    private boolean isServiceRunning(Class<?> serviceClass) {
+    public boolean isServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
 
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
