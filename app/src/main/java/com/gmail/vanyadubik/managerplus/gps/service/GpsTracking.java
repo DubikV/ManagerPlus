@@ -17,7 +17,6 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEVELOP_MODE;
-import static com.gmail.vanyadubik.managerplus.gps.service.TypeServiceGPS.SERVICE_GPS_GOOGLE_PLAY;
 
 public class GpsTracking {
 

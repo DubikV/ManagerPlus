@@ -153,23 +153,23 @@ public class ServiceGpsTracking extends Service {
             if (!isStoped) {
 
                 if (_devMode) {
-                    String message = dateFormat.format(timeStamp.getTime().getTime()) + " |F "
-                            + new DecimalFormat("#.#").format(_location.getAccuracy()) + " |"
-                            + " " + new DecimalFormat("#.####").format(_location.getLatitude())
-                            + " : " + new DecimalFormat("#.####").format(_location.getLongitude());
+//                    String message = dateFormat.format(timeStamp.getTime().getTime()) + " |F "
+//                            + new DecimalFormat("#.#").format(_location.getAccuracy()) + " |"
+//                            + " " + new DecimalFormat("#.####").format(_location.getLatitude())
+//                            + " : " + new DecimalFormat("#.####").format(_location.getLongitude());
 
-                    notifyBuilder = getNotification(true, message);
+                    notifyBuilder = getNotification(true, getMessageNotify(_location, timeStamp.getTime().getTime(), true));
                     startForeground(_notifyId, notifyBuilder.build());
                 }
 
                 if (isBettherLocation(_location)) {
 
-                    String message = dateFormat.format(timeStamp.getTime().getTime()) + " "
-                            + new DecimalFormat("#.#").format(_location.getAccuracy()) + " |"
-                            + " " + new DecimalFormat("#.####").format(_location.getLatitude())
-                            + " : " + new DecimalFormat("#.####").format(_location.getLongitude());
+//                    String message = dateFormat.format(timeStamp.getTime().getTime()) + " "
+//                            + new DecimalFormat("#.#").format(_location.getAccuracy()) + " |"
+//                            + " " + new DecimalFormat("#.####").format(_location.getLatitude())
+//                            + " : " + new DecimalFormat("#.####").format(_location.getLongitude());
 
-                    notifyBuilder = getNotification(true, message);
+                    notifyBuilder = getNotification(true, getMessageNotify(_location, timeStamp.getTime().getTime(), false));
                     startForeground(_notifyId, notifyBuilder.build());
 
                     saveLastLocation(timeStamp, _location.getLatitude(), _location.getLongitude(), _gpsLocationSource);
@@ -187,6 +187,27 @@ public class ServiceGpsTracking extends Service {
             tickHandler.postDelayed(tickTimer, (long) intervalRun);
         }
 
+    }
+
+    private String getMessageNotify(Location location, long time, boolean devMode){
+        String nameService;
+        if (devMode) {
+            if (_typeService == TypeServiceGPS.SERVICE_GPS_ANDROID.getIndex()) {
+                nameService = " |F |A ";
+            } else if (_typeService == TypeServiceGPS.SERVICE_GPS_ANDROID_PLAY.getIndex()) {
+                nameService = " |F |AP ";
+            } else if (_typeService == TypeServiceGPS.SERVICE_GPS_GOOGLE_PLAY.getIndex()) {
+                nameService = " |F |GP ";
+            } else {
+                nameService = " |F |E ";
+            }
+        }else {
+            nameService = " ";
+        }
+        return dateFormat.format(time) + nameService
+                + new DecimalFormat("#.#").format(location.getAccuracy()) + " |"
+                + " " + new DecimalFormat("#.####").format(location.getLatitude())
+                + " : " + new DecimalFormat("#.####").format(location.getLongitude());
     }
 
     public ServiceGpsTracking() {
@@ -516,9 +537,6 @@ public class ServiceGpsTracking extends Service {
                 }
                 return;
             }
-
-            Builder notifyBuilder = getNotification(false, getString(R.string.service_tracking_error_message));
-            startForeground(_notifyId, notifyBuilder.build());
 
         } else {
 

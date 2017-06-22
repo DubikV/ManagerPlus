@@ -227,7 +227,7 @@ public class SettingsLocationActivity extends AppCompatActivity {
         String days = String.valueOf(SharedStorage.getInteger(getApplicationContext(), PREF_DAYS, 7));
         mSpinner.setSelection(listSetDays.indexOf(days));
 
-        int indexTypeGps = SharedStorage.getInteger(getApplicationContext(), PREF_TYPE_SERVICE, 1);
+        int indexTypeGps = SharedStorage.getInteger(getApplicationContext(), PREF_TYPE_SERVICE, 0);
         typeGPSTrackingSpinner.setSelection(indexTypeGps);
 
         if(SharedStorage.getBoolean(getApplicationContext(), USING_SYNK_TRACK, true)){
@@ -342,7 +342,7 @@ public class SettingsLocationActivity extends AppCompatActivity {
         SharedStorage.setInteger(getApplicationContext(), PREF_TIME_END, minutesEnd);
         SharedStorage.setDouble(getApplicationContext(),  PREF_ACCURACY, Double.valueOf(String.valueOf(minCurrentAccuracyGPS.getText())));
         SharedStorage.setInteger(getApplicationContext(), PREF_DAYS, Integer.valueOf(String.valueOf(mSpinner.getSelectedItem().toString())));
-        SharedStorage.setInteger(getApplicationContext(), PREF_TYPE_SERVICE, TypeServiceGPS.getIndexbyName(mSpinner.getSelectedItem().toString()));
+        SharedStorage.setInteger(getApplicationContext(), PREF_TYPE_SERVICE, TypeServiceGPS.getIndexbyName(typeGPSTrackingSpinner.getSelectedItem().toString()));
 
         if(usingGPSTracker){
             GpsTracking gpsTracking = new GpsTracking(getApplicationContext());

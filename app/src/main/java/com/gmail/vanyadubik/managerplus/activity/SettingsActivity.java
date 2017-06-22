@@ -1,7 +1,6 @@
 package com.gmail.vanyadubik.managerplus.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.gps.service.GpsTracking;
-import com.gmail.vanyadubik.managerplus.gps.service.TypeServiceGPS;
 import com.gmail.vanyadubik.managerplus.model.ParameterInfo;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.utils.ActivityUtils;
@@ -33,7 +31,6 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.LOGIN;
 import static com.gmail.vanyadubik.managerplus.common.Consts.PASSWORD;
 import static com.gmail.vanyadubik.managerplus.common.Consts.SERVER;
 import static com.gmail.vanyadubik.managerplus.common.Consts.USING_GPSTRACKING;
-import static com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.PREF_TYPE_SERVICE;
 
 public class SettingsActivity extends AppCompatActivity {
     @Inject
