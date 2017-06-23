@@ -69,6 +69,7 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.TILT_CAMERA_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TIME_MAP_ANIMATE_CAMERA;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TYPE_PRIORITY_CONNECTION_GPS;
 import static com.gmail.vanyadubik.managerplus.common.Consts.WIDTH_POLYLINE_MAP;
+import static com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.PREF_ACCURACY;
 
 public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -138,7 +139,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
                 }
 
                 if ( gpsTaskUtils.isBetterLocation(location, lastCurrentLocation,
-                        MIN_TIME_WRITE_TRACK, minCurrentAccury) ) {
+                        MIN_TIME_WRITE_TRACK, minCurrentAccury, MIN_DISTANCE_MAP) ) {
 
                     oldCurrentLocation = lastCurrentLocation;
 
@@ -327,10 +328,8 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
                 .color(getResources().getColor(R.color.colorPrimary))
                 .geodesic(true);
 
-        if (waybill!=null) {
-            DownloadTrack downloadTask = new DownloadTrack();
-            downloadTask.execute(waybill == null ? LocalDateTime.now().toDate() : waybill.getDateStart());
-        }
+        DownloadTrack downloadTask = new DownloadTrack();
+        downloadTask.execute(waybill == null ? LocalDateTime.now().toDate() : waybill.getDateStart());
 
         setOtherMarkers();
 
@@ -355,12 +354,13 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
             return;
         }
 
-//        try {
-//            Double accuracy = Double.valueOf(dataRepository.getUserSetting(MIN_CURRENT_ACCURACY));
-//            minCurrentAccury =  accuracy > MAX_COEFFICIENT_CURRENCY_LOCATION ? accuracy : MAX_COEFFICIENT_CURRENCY_LOCATION;
-//        }catch(Exception e){
-            minCurrentAccury = MAX_COEFFICIENT_CURRENCY_LOCATION;
-//        }
+        minCurrentAccury = SharedStorage.getDouble(getApplicationContext(),
+                    PREF_ACCURACY, MAX_COEFFICIENT_CURRENCY_LOCATION);
+
+        if(mMap != null){
+            DownloadTrack downloadTask = new DownloadTrack();
+            downloadTask.execute(waybill == null ? LocalDateTime.now().toDate() : waybill.getDateStart());
+        }
 
         Date dateEnd = waybill.getDateEnd();
         if (dateEnd.getTime() < 1000) {

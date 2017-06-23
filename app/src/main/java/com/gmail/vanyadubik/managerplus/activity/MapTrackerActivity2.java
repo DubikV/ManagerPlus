@@ -59,6 +59,7 @@ import static com.gmail.vanyadubik.managerplus.R.id.map;
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEVELOP_MODE;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MAX_COEFFICIENT_CURRENCY_LOCATION;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_LOCATION_MAP_CHECK_NAVIGATION;
+import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_MAP;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_TIME_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_ZOOM_TITLE_MAP;
@@ -130,7 +131,7 @@ public class MapTrackerActivity2 extends AppCompatActivity implements OnMapReady
                 }
 
                 if ( gpsTaskUtils.isBetterLocation(location, lastCurrentLocation,
-                        MIN_TIME_WRITE_TRACK, minCurrentAccury) ) {
+                        MIN_TIME_WRITE_TRACK, minCurrentAccury, MIN_DISTANCE_MAP) ) {
 
                     oldCurrentLocation = lastCurrentLocation;
 

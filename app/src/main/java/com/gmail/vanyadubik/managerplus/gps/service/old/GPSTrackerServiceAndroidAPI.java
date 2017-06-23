@@ -125,7 +125,7 @@ public class GPSTrackerServiceAndroidAPI extends Service {
 //                }
 
                 if ( gpsTaskUtils.isBetterLocation(location, currentBestLocation,
-                        MIN_TIME_WRITE_TRACK, minCurrentAccury) ) {
+                        MIN_TIME_WRITE_TRACK, minCurrentAccury, MIN_DISTANCE_WRITE_TRACK) ) {
 
                     currentBestLocation = location;
                 }

@@ -111,7 +111,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
                 if ( gpsTaskUtils.isBetterLocation(location, lastCurrentLocation,
-                        MIN_TIME_WRITE_TRACK, MAX_COEFFICIENT_CURRENCY_LOCATION) ) {
+                        MIN_TIME_WRITE_TRACK, MAX_COEFFICIENT_CURRENCY_LOCATION, MIN_DISTANCE_MAP) ) {
                     lastCurrentLocation = location;
                 }
                 insertMarker(lastCurrentLocation);

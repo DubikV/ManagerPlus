@@ -10,8 +10,6 @@ import android.provider.Settings;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.gps.kalmanfilter.KalmanFilterLocation;
 
-import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
-
 public class GPSTaskUtils {
 
     private static Context context;
@@ -21,7 +19,7 @@ public class GPSTaskUtils {
     }
 
     public boolean isBetterLocation(Location location, Location currentBestLocation,
-                                        Long minTime, Double maxCoefficient) {
+                                        Long minTime, Double maxCoefficient, long minDistance) {
 
         if (currentBestLocation == null) {
             return true;
@@ -39,7 +37,7 @@ public class GPSTaskUtils {
 //        if (!location.hasSpeed()|| location.getSpeed() <= 0) {
 //            return false;
 //        }
-        if(currentBestLocation.distanceTo(location) < MIN_DISTANCE_WRITE_TRACK){
+        if(currentBestLocation.distanceTo(location) < minDistance){
             return false;
         }
 
