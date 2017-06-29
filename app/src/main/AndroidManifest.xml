@@ -35,63 +35,20 @@
             android:enabled="true"
             android:exported="false"
             android:process=":GPSSending"/>
-        <!--<service-->
-            <!--android:name=".service.gps.GPSTrackerService"-->
-            <!--android:enabled="true"-->
-            <!--android:exported="true"-->
-            <!--android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />-->
-            <!--</intent-filter>-->
-        <!--</service>-->
-        <!--<receiver-->
-        <!--android:name=".service.gps.GPSTrackerReceiver"-->
-        <!--android:permission="android.permission.RECEIVE_BOOT_COMPLETED"-->
-        <!--android:enabled="true">-->
 
-            <!--<intent-filter>-->
-               <!--<action android:name="android.intent.action.BOOT_COMPLETED" />-->
-               <!--<action android:name="android.intent.action.QUICKBOOT_POWERON" />-->
-               <!--<action android:name="android.intent.action.REBOOT"/>-->
-               <!--<category android:name="android.intent.category.DEFAULT" />-->
-            <!--</intent-filter>-->
-
-        <!--</receiver>-->
-
-        <!--<receiver android:name="com.gmail.vanyadubik.managerplus.gps.service.old.RepeatingAlarmService">-->
-            <!--<intent-filter android:priority="1">-->
-                 <!--<action android:name="com.blah.something.ALARM_RECIEVED" />-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
-
-        <!--<receiver android:name="com.gmail.vanyadubik.managerplus.gps.service.OnBootReceiver"-->
-            <!--android:permission="android.permission.RECEIVE_BOOT_COMPLETED"-->
-            <!--android:enabled="true">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.BOOT_COMPLETED" />-->
-                <!--<action android:name="android.intent.action.QUICKBOOT_POWERON" />-->
-                <!--<action android:name="android.intent.action.REBOOT"/>-->
-                <!--<category android:name="android.intent.category.DEFAULT" />-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
-
-        <!--<service-->
-                <!--android:name=".gps.service.ServiceGpsTracking"-->
-                <!--android:enabled="true"-->
-                <!--android:exported="true"-->
-                <!--android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">-->
-                <!--<intent-filter>-->
-                        <!--<action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />-->
-                <!--</intent-filter>-->
-        <!--</service>-->
-
-        <receiver android:name="gps.service.OnBootReceiver">
+        <receiver android:name=".gps.service.OnBootReceiver"
+                  android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
+                  android:enabled="true"
+                  android:exported="true"
+                  android:label="BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.ACTION_SHUTDOWN" />
                 <action android:name="android.intent.action.QUICKBOOT_POWEROFF" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="android.intent.action.REBOOT"/>
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
         <service
@@ -102,8 +59,8 @@
        </service>
 
         <activity
-            android:theme="@style/Theme.Transparent"
-            android:name="gps.service.GpsTrackingNotification"
+            android:name=".gps.service.GpsTrackingNotification"
+            android:theme="@style/Theme_Transparent"
             android:exported="true"
             android:configChanges="keyboardHidden">
         </activity>

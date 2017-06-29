@@ -47,6 +47,8 @@ import javax.inject.Inject;
 import static com.gmail.vanyadubik.managerplus.common.Consts.DEFAULT_NOTIFICATION_GPS_TRACER_ID;
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_DISTANCE_WRITE_TRACK;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
+import static com.gmail.vanyadubik.managerplus.gps.service.GpsTrackingNotification.ERROR_LOCATION_GPS;
+import static com.gmail.vanyadubik.managerplus.gps.service.GpsTrackingNotification.ERROR_SETTING_GPS;
 
 public class ServiceGpsTracking extends Service {
 
@@ -153,21 +155,12 @@ public class ServiceGpsTracking extends Service {
             if (!isStoped) {
 
                 if (_devMode) {
-//                    String message = dateFormat.format(timeStamp.getTime().getTime()) + " |F "
-//                            + new DecimalFormat("#.#").format(_location.getAccuracy()) + " |"
-//                            + " " + new DecimalFormat("#.####").format(_location.getLatitude())
-//                            + " : " + new DecimalFormat("#.####").format(_location.getLongitude());
 
                     notifyBuilder = getNotification(true, getMessageNotify(_location, timeStamp.getTime().getTime(), true));
                     startForeground(_notifyId, notifyBuilder.build());
                 }
 
                 if (isBettherLocation(_location)) {
-
-//                    String message = dateFormat.format(timeStamp.getTime().getTime()) + " "
-//                            + new DecimalFormat("#.#").format(_location.getAccuracy()) + " |"
-//                            + " " + new DecimalFormat("#.####").format(_location.getLatitude())
-//                            + " : " + new DecimalFormat("#.####").format(_location.getLongitude());
 
                     notifyBuilder = getNotification(true, getMessageNotify(_location, timeStamp.getTime().getTime(), false));
                     startForeground(_notifyId, notifyBuilder.build());
@@ -181,8 +174,11 @@ public class ServiceGpsTracking extends Service {
                 }
 
             }
-            if (intervalRun < 1000) {
+            if (intervalRun < _interval) {
                 intervalRun = _interval;
+                if (intervalRun < 1000) {
+                    intervalRun = 1000;
+                }
             }
             tickHandler.postDelayed(tickTimer, (long) intervalRun);
         }
@@ -242,22 +238,24 @@ public class ServiceGpsTracking extends Service {
 
     private Builder getNotification(boolean isOk, String message) {
 
+        Intent notificationIntent;
+        PendingIntent pendingIntent;
+
         _isNotificationEnabled = true;
 
-        Intent notificationIntent = new Intent(this, StartActivity.class);
-        notificationIntent.setAction(Intent.ACTION_MAIN);
-        notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        if(isOk) {
+            notificationIntent = new Intent(this, StartActivity.class);
+            notificationIntent.setAction(Intent.ACTION_MAIN);
+            notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
-                notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        if(!isOk){
+            pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
+                    notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }else{
             notificationIntent = new Intent(this, GpsTrackingNotification.class);
-            notificationIntent.setAction(Intent.ACTION_VIEW);
-            notificationIntent.putExtra(GpsTracking.SERVICE_GPS_NOTIFY, true);
+            notificationIntent.putExtra(GpsTracking.SERVICE_GPS_NOTIFY, _location == null ? ERROR_LOCATION_GPS : ERROR_SETTING_GPS);
 
             pendingIntent = PendingIntent.
-                    getActivity(getApplicationContext(), 0, notificationIntent, 0);
+                    getActivity(getApplicationContext(), 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
         Bitmap notificationLargeIconBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
@@ -283,7 +281,7 @@ public class ServiceGpsTracking extends Service {
         int time = (timeStamp.get(Calendar.HOUR_OF_DAY) * 60) + timeStamp.get(Calendar.MINUTE);
         if (_interval != 0 && ((LocationManager)getSystemService(LOCATION_SERVICE)).isProviderEnabled(Provider.PROVIDER_GPS)) {
             if ((isInitialize == 0 || isInitialize == 1) && (_startTime == _endTime ||
-                    (time >= _startTime && time < _endTime))) {
+                    (time >= _startTime && time < _endTime)) && _typeService < 3) {
                 return;
             }
         }

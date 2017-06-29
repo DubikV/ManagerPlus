@@ -3,7 +3,6 @@ package com.gmail.vanyadubik.managerplus.activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -20,21 +19,15 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.TabFragmentVisit;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.TabFragmentWaybill;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.fragment.ClientListFragment;
-import com.gmail.vanyadubik.managerplus.gps.location.AndroidPlayLocationService;
-import com.gmail.vanyadubik.managerplus.gps.location.AndroidPlayLocationUpdateListener;
+import com.gmail.vanyadubik.managerplus.gps.service.GpsTrackingNotification;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
-import com.google.android.gms.location.LocationResult;
-
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 
 import javax.inject.Inject;
 
@@ -92,39 +85,7 @@ public class StartActivity extends AppCompatActivity{
         }
 
         if (id == R.id.action_startServiceLocation) {
-            AndroidPlayLocationService andrPlayLocService =
-                    new AndroidPlayLocationService(getApplicationContext(),
-                            new AndroidPlayLocationUpdateListener() {
-                                @Override
-                                public void canReceiveLocationUpdates() {
-
-                                }
-
-                                @Override
-                                public void cannotReceiveLocationUpdates(String exception) {
-
-                                }
-
-                                @Override
-                                public void updateLocation(LocationResult locationResult) {
-                                    Location location = locationResult.getLastLocation();
-
-                                    String message = new SimpleDateFormat("dd/MM HH:mm:ss").format(location.getTime()) + " |F "
-                                            + location.getProvider() + ": "
-                                            + new DecimalFormat("#.#").format(location.getAccuracy()) + " |"
-                                            + " " + new DecimalFormat("#.####").format(location.getLatitude())
-                                            + ": " + new DecimalFormat("#.####").format(location.getLongitude());
-
-                                    Toast.makeText(StartActivity.this, message, Toast.LENGTH_SHORT).show();
-
-                                }
-
-                                @Override
-                                public void startLocation(Location location) {
-
-                                }
-                            });
-            andrPlayLocService.startLocationUpdates();
+            startActivity(new Intent(this, GpsTrackingNotification.class).putExtra("fromServiceGpsTrackingNotify", true));
             return true;
         }
 

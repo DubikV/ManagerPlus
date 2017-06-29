@@ -43,12 +43,12 @@
     <string name="gps_is_enabled_open_settings">На пристрої вимкнене визначення місцезнаходження.</string>
     <string name="gps_is_disabled">Вимкнений GPS</string>
     <string name="gps_tracer_name">GPS Tracker</string>
-    <string name="button_goto_gps_settings">Перейти в налаштування</string>
     <string name="service_tracking_error_message">Некорректні налаштування GPS-трекингу</string>
     <string name="service_tracking_error_location">Невизначено координати GPS</string>
     <string name="service_tracking_error_accu_location">Неточні координати GPS</string>
     <string name="service_tracking_error_database">Помилка бази даних</string>
-    <string name="service_tracking_null_interval">"» Не заданий інтервал запису "</string>
+    <string name="service_tracking_null_interval">"» Не заданий інтервал запису GPS треку"</string>
+    <string name="service_tracking_null_type">"» Не вибрано тип GPS треку"</string>
     <string name="service_tracking_message">Виконується запись GPS-треку</string>
 
     <!-- Phone -->

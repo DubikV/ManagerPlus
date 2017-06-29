@@ -49,7 +49,7 @@
         <item name="android:textSize">26dp</item>
     </style>
 
-    <style name="Theme.Transparent" parent="@android:style/Theme.Black">
+    <style name="Theme_Transparent" parent="@android:style/Theme.Black">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">true</item>
