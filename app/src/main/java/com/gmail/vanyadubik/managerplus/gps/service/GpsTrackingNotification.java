@@ -13,6 +13,10 @@ import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.SettingsLocationActivity;
 import com.gmail.vanyadubik.managerplus.utils.SharedStorage;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Locale;
 
 import static com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.PREF_TYPE_SERVICE;
@@ -68,22 +72,44 @@ public class GpsTrackingNotification extends Activity {
         int typeMessage = getIntent().getIntExtra(GpsTracking.SERVICE_GPS_NOTIFY, 0);
         if (typeMessage > 0) {
             getIntent().removeExtra(GpsTracking.SERVICE_GPS_NOTIFY);
-            boolean isGPSEnabled = ((LocationManager) getSystemService(LOCATION_SERVICE)).isProviderEnabled(Provider.PROVIDER_GPS);
             Locale locale = Locale.US;
-            String str = "%s%s%s";
-            Object[] objArr = new Object[4];
-            objArr[0] = SharedStorage.getInteger(this, GpsTracking.PREF_INTERVAL, 0) == 0 ? getResources().getString(R.string.service_tracking_null_interval) : "";
-            objArr[1] = !isGPSEnabled ? getResources().getString(R.string.gps_is_disabled) : "";
-            objArr[2] = SharedStorage.getInteger(getApplicationContext(), PREF_TYPE_SERVICE, 0) > 2 ? getResources().getString(R.string.service_tracking_null_type) : "";
-            String notifyText = String.format(locale, str, objArr);
             Builder builder = new Builder(this);
-            builder.setTitle(R.string.service_tracking_error_message).setMessage(notifyText).setCancelable(false).setNegativeButton(R.string.questions_answer_ok, new DissmisButton());
-            if (!isGPSEnabled) {
-                builder.setNeutralButton(R.string.action_settings, new SettingsButton());
-            }else{
-                builder.setNeutralButton(R.string.action_settings, new SettingsAppButton());
+            String notifyText;
+            if (typeMessage == 2) {
+                GpsTracking gpsTracking = new GpsTracking(this);
+                GpsTracking.GpsData gpsData = gpsTracking.getLastGpsData();
+                notifyText = getResources().getString(R.string.service_tracking_last_gps);
+                if(gpsData == null){
+                    notifyText = notifyText + ": " + getResources().getString(R.string.not_found);
+                }else {
+                    notifyText = notifyText + ": "
+                            + "\n" + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(gpsData._date)
+                            + "\n" + new DecimalFormat("#.####").format(gpsData._latitude) +
+                            " : " + new DecimalFormat("#.####").format(gpsData._longitude);
+                }
+                builder.setTitle(R.string.service_tracking_error_location).
+                        setMessage(notifyText).setCancelable(false).
+                        setNegativeButton(R.string.questions_answer_ok, new DissmisButton());
+            }else {
+                boolean isGPSEnabled = ((LocationManager) getSystemService(LOCATION_SERVICE)).isProviderEnabled(Provider.PROVIDER_GPS);
+                String str = "%s%s%s";
+                Object[] objArr = new Object[4];
+                objArr[0] = SharedStorage.getInteger(this, GpsTracking.PREF_INTERVAL, 0) == 0 ? getResources().getString(R.string.service_tracking_null_interval) : "";
+                objArr[1] = !isGPSEnabled ? getResources().getString(R.string.gps_is_disabled) : "";
+                objArr[2] = SharedStorage.getInteger(getApplicationContext(), PREF_TYPE_SERVICE, 0) > 2 ? getResources().getString(R.string.service_tracking_null_type) : "";
+                notifyText = String.format(locale, str, objArr);
+                builder.setTitle(R.string.service_tracking_error_message).
+                        setMessage(notifyText).setCancelable(false).
+                        setNegativeButton(R.string.questions_answer_ok, new DissmisButton());
+
+                if (!isGPSEnabled) {
+                    builder.setNeutralButton(R.string.action_settings, new SettingsButton());
+                } else {
+                    builder.setNeutralButton(R.string.action_settings, new SettingsAppButton());
+                }
             }
             builder.create().show();
         }
    }
+
 }

@@ -47,9 +47,11 @@
     <string name="service_tracking_error_location">Невизначено координати GPS</string>
     <string name="service_tracking_error_accu_location">Неточні координати GPS</string>
     <string name="service_tracking_error_database">Помилка бази даних</string>
-    <string name="service_tracking_null_interval">"» Не заданий інтервал запису GPS треку"</string>
-    <string name="service_tracking_null_type">"» Не вибрано тип GPS треку"</string>
+    <string name="service_tracking_null_interval">Не заданий інтервал запису GPS треку</string>
+    <string name="service_tracking_null_type">Не вибрано тип GPS треку</string>
     <string name="service_tracking_message">Виконується запись GPS-треку</string>
+    <string name="service_tracking_last_gps">Останні записані координати</string>
+    <string name="not_found">не знайдено</string>
 
     <!-- Phone -->
     <string name="phone_sms_send">СМС відправлено!</string>

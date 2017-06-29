@@ -61,23 +61,14 @@ public class GpsTracking {
     private ArrayList<String> _stringParams;
     private BroadcastReceiver gpsTrackingReceiver;
 
-    private class GpsData {
-        String _date;
+    protected class GpsData {
+        long _date;
         double _latitude;
         int _locationSource;
         double _longitude;
 
         GpsData(Context context) {
-            long longTime = SharedStorage.getLong(context, LAST_DATE_KEY, 0);
-            Calendar timeStamp = Calendar.getInstance();
-            timeStamp.setTimeInMillis(longTime);
-            _date = String.format(Locale.US, "%d:%d:%d %d:%d",
-                    new Object[]{Integer.valueOf(timeStamp.get(Calendar.YEAR)),
-                            Integer.valueOf(timeStamp.get(Calendar.MONTH) + 1),
-                            Integer.valueOf(timeStamp.get(Calendar.DAY_OF_MONTH)),
-                            Integer.valueOf(timeStamp.get(Calendar.HOUR_OF_DAY)),
-                            Integer.valueOf(timeStamp.get(Calendar.MINUTE))});
-
+            _date = SharedStorage.getLong(context, LAST_DATE_KEY, 0);
             _longitude = Double.parseDouble(SharedStorage.getString(context, LAST_LONGITUDE_KEY, "0"));
             _latitude = Double.parseDouble(SharedStorage.getString(context, LAST_LATITUDE_KEY, "0"));
             _locationSource = Integer.parseInt(SharedStorage.getString(context, LAST_LOCATIONSOURCE_KEY, "0"));
@@ -262,7 +253,7 @@ public class GpsTracking {
                 (String) stringParams.get(serviceStringPrefs.LOCATION_SOURCE.getID()));
     }
 
-    private GpsData getLastGpsData() {
+    protected GpsData getLastGpsData() {
         if (SharedStorage.getLong(getContext(), LAST_DATE_KEY, 0) == 0) {
             return null;
         }
