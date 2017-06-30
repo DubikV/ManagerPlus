@@ -65,6 +65,11 @@ public class ManagerPlusAplication extends Application{
                     .interval(interval == 0 ? MIN_TIME_SYNK_TRACK : interval)
                     .build();
             taskTrackerSync.startTask();
+        }else {
+            TaskSchedure taskTrackerSync = new TaskSchedure.Builder(SyncIntentTrackService.class, getApplicationContext())
+                    .jobID(GPS_SYNK_SERVISE_JOB_ID)
+                    .build();
+            taskTrackerSync.removeTask();
         }
     }
 

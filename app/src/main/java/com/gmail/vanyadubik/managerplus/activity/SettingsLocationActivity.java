@@ -324,6 +324,11 @@ public class SettingsLocationActivity extends AppCompatActivity {
                         .build();
                 taskTrackerSync.startTask();
             }
+        }else{
+            TaskSchedure taskTrackerSync = new TaskSchedure.Builder(SyncIntentTrackService.class, getApplicationContext())
+                    .jobID(GPS_SYNK_SERVISE_JOB_ID)
+                    .build();
+            taskTrackerSync.removeTask();
         }
 
         SharedStorage.setBoolean(getApplicationContext(), USING_GPSTRACKING, using_gps_tracking.isChecked());

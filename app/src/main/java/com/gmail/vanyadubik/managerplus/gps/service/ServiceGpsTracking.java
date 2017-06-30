@@ -607,6 +607,11 @@ public class ServiceGpsTracking extends Service {
         }
         if(_currentBestLocation.distanceTo(location) > MIN_DISTANCE_WRITE_TRACK){
 
+            if(((int)(_currentBestLocation.getLatitude()*10000)== (int)(location.getLatitude()*10000)) ||
+                    ((int)(_currentBestLocation.getLongitude()*10000)== (int)(location.getLongitude()*10000))) {
+                return false;
+            }
+
             _currentBestLocation = location;
 
             return true;

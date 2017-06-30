@@ -11,8 +11,6 @@ import com.gmail.vanyadubik.managerplus.utils.ServiceUtils;
 import com.gmail.vanyadubik.managerplus.utils.SharedStorage;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -239,7 +237,7 @@ public class GpsTracking {
         getContext().stopService(new Intent(getContext(), ServiceGpsTracking.class));
     }
 
-    private int getGpsTrackingStatus() {
+    public int getGpsTrackingStatus() {
         return SharedStorage.getBoolean(getContext(), PREF_ENABLE, false) ? 1 : 0;
     }
 
