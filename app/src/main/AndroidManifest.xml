@@ -115,7 +115,9 @@
         <activity
             android:name=".activity.ImageActivity">
         </activity>
-
+        <activity
+            android:name=".activity.SearchActivity">
+        </activity>
     </application>
 
 </manifest>

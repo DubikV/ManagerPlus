@@ -328,9 +328,10 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
                 .color(getResources().getColor(R.color.colorPrimary))
                 .geodesic(true);
 
-        DownloadTrack downloadTask = new DownloadTrack();
-        downloadTask.execute(waybill == null ? LocalDateTime.now().toDate() : waybill.getDateStart());
-
+        if (waybill != null) {
+            DownloadTrack downloadTask = new DownloadTrack();
+            downloadTask.execute(waybill == null ? LocalDateTime.now().toDate() : waybill.getDateStart());
+        }
         setOtherMarkers();
 
         setPolylineTrack();
@@ -357,7 +358,7 @@ public class MapTrackerActivity extends AppCompatActivity implements OnMapReadyC
         minCurrentAccury = SharedStorage.getDouble(getApplicationContext(),
                     PREF_ACCURACY, MAX_COEFFICIENT_CURRENCY_LOCATION);
 
-        if(mMap != null){
+        if(mMap != null && waybill != null){
             DownloadTrack downloadTask = new DownloadTrack();
             downloadTask.execute(waybill == null ? LocalDateTime.now().toDate() : waybill.getDateStart());
         }

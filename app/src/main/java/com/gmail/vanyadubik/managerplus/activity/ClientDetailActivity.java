@@ -57,7 +57,7 @@ public class ClientDetailActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
 
         if (extras != null) {
-            String externalId = extras.getString(ClientContract.CLIENT_ID);
+            String externalId = extras.getString(ClientContract.EXTERNAL_ID);
             client = dataRepository.getClient(externalId);
         }else{
             client = Client_Element.builder()

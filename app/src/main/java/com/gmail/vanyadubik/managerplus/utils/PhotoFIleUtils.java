@@ -52,6 +52,7 @@ public class PhotoFIleUtils {
                     new PhotoItem(
                             getNameFileFromPath(absolutePathOfImage),
                             absolutePathOfImage,
+                            "",
                             new File(absolutePathOfImage)));
         }
         return listOfAllImages;

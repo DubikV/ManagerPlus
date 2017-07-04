@@ -178,7 +178,7 @@ public class VisitDetailActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         Date date = LocalDateTime.now().toDate();
         if (extras != null) {
-            String externalId = extras.getString(MobileManagerContract.VisitContract.VISIT_ID);
+            String externalId = extras.getString(MobileManagerContract.VisitContract.EXTERNAL_ID);
             visit = dataRepository.getVisit(externalId);
 
             if (visit != null) {
@@ -194,7 +194,7 @@ public class VisitDetailActivity extends AppCompatActivity {
                 visit = Visit_Document.builder()
                         .externalId("app-" + UUID.randomUUID().toString())
                         .build();
-                date = new Date(extras.getLong(MobileManagerContract.VisitContract.VISIT_DATE));
+                date = new Date(extras.getLong(MobileManagerContract.VisitContract.DATE));
                 mDetailDateView.setText(dateFormatter.format(date));
             }
 

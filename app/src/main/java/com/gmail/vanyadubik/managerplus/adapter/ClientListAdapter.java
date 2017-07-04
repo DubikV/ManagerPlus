@@ -61,7 +61,7 @@ public class ClientListAdapter extends BaseAdapter {
             public void onClick(View v) {
                 v.getContext().startActivity(
                         new Intent(context, ClientDetailActivity.class)
-                                .putExtra(MobileManagerContract.ClientContract.CLIENT_ID, client.getExternalId()));
+                                .putExtra(MobileManagerContract.ClientContract.EXTERNAL_ID, client.getExternalId()));
             }
         });
 

@@ -1,26 +1,34 @@
 package com.gmail.vanyadubik.managerplus.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Gallery;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.adapter.AddedPhotoGalleryAdapter;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
+import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
 import com.gmail.vanyadubik.managerplus.model.PhotoItem;
 import com.gmail.vanyadubik.managerplus.model.db.element.Photo_Element;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
+import com.gmail.vanyadubik.managerplus.utils.ElementUtils;
 import com.gmail.vanyadubik.managerplus.utils.PhotoFIleUtils;
 import com.squareup.picasso.Picasso;
 
@@ -37,6 +45,7 @@ import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.activity.ImageActivity.IMAGE_FULL_NAME;
 import static com.gmail.vanyadubik.managerplus.activity.ImageActivity.IMAGE_NAME;
+import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_IMAGE;
 
 public class AddedPhotosActivity extends AppCompatActivity {
@@ -53,6 +62,8 @@ public class AddedPhotosActivity extends AppCompatActivity {
     DataRepository dataRepository;
     @Inject
     PhotoFIleUtils photoFileUtils;
+    @Inject
+    ElementUtils elementUtils;
 
     private ImageView selectedImage;
     private Gallery gallery;
@@ -65,6 +76,7 @@ public class AddedPhotosActivity extends AppCompatActivity {
     private String holderName, holderId;
     private SimpleDateFormat dateFormat;
     private File pathPictureDir;
+    private Photo_Element selected_photo;
 
 
     @Override
@@ -102,6 +114,123 @@ public class AddedPhotosActivity extends AppCompatActivity {
         mData = new ArrayList<>();
         dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         pathPictureDir = photoFileUtils.getPictureDir();
+
+        FloatingActionButton deletePhoto = (FloatingActionButton)
+                findViewById(R.id.delete_added_photo);
+        deletePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAGLOG, "Press button 'delete photo'");
+
+                if(selectedPhoto == null){
+                    Toast.makeText(getApplicationContext(),
+                            getResources().getString(R.string.not_selected_photo), Toast.LENGTH_SHORT)
+                            .show();
+                    return;
+                }
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(AddedPhotosActivity.this);
+                builder.setTitle(getString(R.string.action_foto));
+                builder.setMessage(getString(R.string.deleted_selected_element));
+
+                builder.setPositiveButton(getString(R.string.questions_answer_yes), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        Toast.makeText(getApplicationContext(),
+                                elementUtils.deleteElement(selected_photo, MobileManagerContract.PhotoContract.TABLE_NAME), Toast.LENGTH_SHORT)
+                                .show();
+
+                        initData();
+                    }
+                });
+
+                builder.setNegativeButton(getString(R.string.questions_answer_no), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+
+                // TODO (start stub): to set size text in AlertDialog
+                TextView textView = (TextView) alert.findViewById(android.R.id.message);
+                textView.setTextSize(getResources().getDimension(R.dimen.alert_text_size));
+                Button button1 = (Button) alert.findViewById(android.R.id.button1);
+                button1.setTextSize(getResources().getDimension(R.dimen.alert_text_size));
+                Button button2 = (Button) alert.findViewById(android.R.id.button2);
+                button2.setTextSize(getResources().getDimension(R.dimen.alert_text_size));
+                // TODO: (end stub) ------------------
+
+            }
+        });
+
+        FloatingActionButton insertInfo = (FloatingActionButton)
+                findViewById(R.id.insert_info);
+        insertInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAGLOG, "Press button 'insert info'");
+
+                if(selectedPhoto == null){
+                    Toast.makeText(getApplicationContext(),
+                            getResources().getString(R.string.not_selected_photo), Toast.LENGTH_SHORT)
+                            .show();
+                    return;
+                }
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(AddedPhotosActivity.this);
+                builder.setTitle(getString(R.string.action_foto));
+                builder.setMessage(getString(R.string.input_info_about_photo));
+                final EditText input = new EditText(AddedPhotosActivity.this);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+                input.setLayoutParams(lp);
+                builder.setView(input);
+                input.setText(selected_photo.getInfo());
+
+                builder.setPositiveButton(getString(R.string.questions_answer_yes), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        String info = input.getText().toString();
+
+                        if(info==null || info.isEmpty()){
+                            return;
+                        }
+
+                        if(selected_photo== null){
+                            return;
+                        }
+                        selected_photo.setInfo(info);
+
+                        dataRepository.setElementByExternalId(MobileManagerContract.PhotoContract.TABLE_NAME, selected_photo);
+
+                        initData();
+                    }
+                });
+
+                builder.setNegativeButton(getString(R.string.questions_answer_no), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+
+                // TODO (start stub): to set size text in AlertDialog
+                TextView textView = (TextView) alert.findViewById(android.R.id.message);
+                textView.setTextSize(getResources().getDimension(R.dimen.alert_text_size));
+                Button button1 = (Button) alert.findViewById(android.R.id.button1);
+                button1.setTextSize(getResources().getDimension(R.dimen.alert_text_size));
+                Button button2 = (Button) alert.findViewById(android.R.id.button2);
+                button2.setTextSize(getResources().getDimension(R.dimen.alert_text_size));
+                // TODO: (end stub) ------------------
+            }
+        });
 
     }
 
@@ -181,6 +310,7 @@ public class AddedPhotosActivity extends AppCompatActivity {
             return;
         }
 
+        mData.clear();
         if (addedPhotos.size() == 0){
             Toast.makeText(getApplicationContext(),
                     getResources().getString(R.string.photo_not_found), Toast.LENGTH_LONG)
@@ -188,7 +318,6 @@ public class AddedPhotosActivity extends AppCompatActivity {
             selectedImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_image));
             mTitle.setText(getResources().getString(R.string.photo_not_found));
         }else {
-            mData.clear();
             for (Photo_Element photo_element : addedPhotos) {
                 PhotoItem photoItem = initPhotoFile(photo_element);
                 if (photoItem != null) {
@@ -200,20 +329,24 @@ public class AddedPhotosActivity extends AppCompatActivity {
                             .show();
                 }
             }
-            if (mData.size()==0){
-                return;
+            if (mData.size()!=0){
+                int selected = 0;
+                gallery.setSelected(true);
+                gallery.setSelection(selected);
+                selectedPhoto = mData.get(selected);
+                initSelectedPhoto();
             }
-            int selected = 0;
-            gallery.setSelected(true);
-            gallery.setSelection(selected);
-            selectedPhoto = mData.get(selected);
-            initSelectedPhoto();
-            mAdapter = new AddedPhotoGalleryAdapter(AddedPhotosActivity.this, mData);
-            gallery.setAdapter(mAdapter);
         }
+        mAdapter = new AddedPhotoGalleryAdapter(AddedPhotosActivity.this, mData);
+        gallery.setAdapter(mAdapter);
     }
 
     private void initSelectedPhoto(){
+
+        selected_photo = (Photo_Element) dataRepository.
+                getElementByExternaID(MobileManagerContract.PhotoContract.TABLE_NAME,
+                        selectedPhoto.getExternalId());
+
         Picasso.with(AddedPhotosActivity.this)
                 .load(selectedPhoto.getFile())
                 .placeholder(getResources().getDrawable(android.R.drawable.ic_menu_gallery))
@@ -233,6 +366,7 @@ public class AddedPhotosActivity extends AppCompatActivity {
                         getResources().getString(R.string.added_foto_date) + ": " +
                         dateFormat.format(photo_element.getCreateDate().getTime()),
                 filePhoto.getAbsolutePath(),
+                photo_element.getExternalId(),
                 filePhoto);
     }
 

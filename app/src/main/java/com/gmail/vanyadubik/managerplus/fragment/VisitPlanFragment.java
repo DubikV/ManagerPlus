@@ -1,7 +1,5 @@
 package com.gmail.vanyadubik.managerplus.fragment;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -97,7 +95,7 @@ public class VisitPlanFragment extends Fragment implements FragmentBecameVisible
                 selectedDate.set(Calendar.HOUR_OF_DAY, 0);
                 selectedDate.set(Calendar.MINUTE, 0);
                 selectedDate.set(Calendar.SECOND, 0);
-                intent.putExtra(MobileManagerContract.VisitContract.VISIT_DATE, selectedDate.getTime().getTime());
+                intent.putExtra(MobileManagerContract.VisitContract.DATE, selectedDate.getTime().getTime());
                 startActivity(intent);
             }
         });

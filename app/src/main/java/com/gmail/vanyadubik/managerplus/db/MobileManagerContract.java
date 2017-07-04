@@ -53,16 +53,16 @@ public class MobileManagerContract {
 
         public static final String TABLE_NAME = "waybill_list";
 
-        public static final String WAYBILL_ID = "waybill_id";
-        public static final String WAYBILL_DELETED = "deleted";
-        public static final String WAYBILL_INDB = "incdb";
-        public static final String WAYBILL_DATE = "date";
-        public static final String WAYBILL_DATE_START = "date_start";
-        public static final String WAYBILL_DATE_END = "date_end";
-        public static final String WAYBILL_POINT_START = "point_start";
-        public static final String WAYBILL_POINT_END = "point_end";
-        public static final String WAYBILL_ODOMETER_START = "odometer_start";
-        public static final String WAYBILL_ODOMETER_END = "odometer_end";
+        public static final String EXTERNAL_ID = "external_id";
+        public static final String DELETED = "deleted";
+        public static final String INDB = "incdb";
+        public static final String DATE = "date";
+        public static final String DATE_START = "date_start";
+        public static final String DATE_END = "date_end";
+        public static final String POINT_START = "point_start";
+        public static final String POINT_END = "point_end";
+        public static final String ODOMETER_START = "odometer_start";
+        public static final String ODOMETER_END = "odometer_end";
 
         public static final Uri CONTENT_URI =
                 Uri.withAppendedPath(
@@ -82,14 +82,14 @@ public class MobileManagerContract {
                         + TABLE_NAME;
 
         public static final String[] PROJECTION_ALL =
-                {_ID, WAYBILL_ID, WAYBILL_DELETED, WAYBILL_INDB, WAYBILL_DATE, WAYBILL_DATE_START,
-                        WAYBILL_DATE_END, WAYBILL_POINT_START, WAYBILL_POINT_END,
-                        WAYBILL_ODOMETER_START, WAYBILL_ODOMETER_END};
+                {_ID, EXTERNAL_ID, DELETED, INDB, DATE, DATE_START,
+                        DATE_END, POINT_START, POINT_END,
+                        ODOMETER_START, ODOMETER_END};
 
         public static final String[] UNIQUE_COLUMNS =
-                {WAYBILL_ID};
+                {EXTERNAL_ID};
 
-        public static final String DEFAULT_SORT_ORDER = WAYBILL_DATE_START + " ASC";
+        public static final String DEFAULT_SORT_ORDER = DATE_START + " ASC";
 
 
     }
@@ -98,16 +98,16 @@ public class MobileManagerContract {
 
         public static final String TABLE_NAME = "visit_list";
 
-        public static final String VISIT_ID = "visit_id";
-        public static final String VISIT_DELETED = "deleted";
-        public static final String VISIT_INDB = "incdb";
-        public static final String VISIT_DATE = "date";
-        public static final String VISIT_DATE_VISIT = "date_visit";
-        public static final String VISIT_CLIENT = "visit_client";
-        public static final String VISIT_POINT_CREATE = "point_create";
-        public static final String VISIT_POINT_VISIT = "point_visit";
+        public static final String EXTERNAL_ID = "external_id";
+        public static final String DELETED = "deleted";
+        public static final String INDB = "incdb";
+        public static final String DATE = "date";
+        public static final String DATE_VISIT = "date_visit";
+        public static final String CLIENT = "visit_client";
+        public static final String POINT_CREATE = "point_create";
+        public static final String POINT_VISIT = "point_visit";
         public static final String VISIT_TYPE = "visit_type";
-        public static final String VISIT_INFORMATION = "visit_info";
+        public static final String INFORMATION = "visit_info";
 
         public static final Uri CONTENT_URI =
                 Uri.withAppendedPath(
@@ -127,14 +127,14 @@ public class MobileManagerContract {
                         + TABLE_NAME;
 
         public static final String[] PROJECTION_ALL =
-                {_ID, VISIT_ID, VISIT_DELETED, VISIT_INDB, VISIT_DATE, VISIT_DATE_VISIT,
-                        VISIT_CLIENT, VISIT_POINT_CREATE, VISIT_POINT_VISIT, VISIT_TYPE,
-                        VISIT_INFORMATION};
+                {_ID, EXTERNAL_ID, DELETED, INDB, DATE, DATE_VISIT,
+                        CLIENT, POINT_CREATE, POINT_VISIT, VISIT_TYPE,
+                        INFORMATION};
 
         public static final String[] UNIQUE_COLUMNS =
-                {VISIT_ID};
+                {EXTERNAL_ID};
 
-        public static final String DEFAULT_SORT_ORDER = VISIT_DATE + " ASC";
+        public static final String DEFAULT_SORT_ORDER = DATE + " ASC";
 
 
     }
@@ -143,13 +143,13 @@ public class MobileManagerContract {
 
         public static final String TABLE_NAME = "client_list";
 
-        public static final String CLIENT_ID = "client_id";
-        public static final String CLIENT_DELETED = "deleted";
-        public static final String CLIENT_INDB = "incdb";
-        public static final String CLIENT_NAME = "name";
-        public static final String CLIENT_ADDRESS = "address";
-        public static final String CLIENT_PHONE = "phone";
-        public static final String CLIENT_POSITION = "position";
+        public static final String EXTERNAL_ID = "external_id";
+        public static final String DELETED = "deleted";
+        public static final String INDB = "incdb";
+        public static final String NAME = "name";
+        public static final String ADDRESS = "address";
+        public static final String PHONE = "phone";
+        public static final String POSITION = "position";
 
         public static final Uri CONTENT_URI =
                 Uri.withAppendedPath(
@@ -169,13 +169,13 @@ public class MobileManagerContract {
                         + TABLE_NAME;
 
         public static final String[] PROJECTION_ALL =
-                {_ID, CLIENT_ID, CLIENT_DELETED, CLIENT_INDB, CLIENT_NAME, CLIENT_ADDRESS,
-                        CLIENT_PHONE, CLIENT_POSITION};
+                {_ID, EXTERNAL_ID, DELETED, INDB, NAME, ADDRESS,
+                        PHONE, POSITION};
 
         public static final String[] UNIQUE_COLUMNS =
-                {CLIENT_ID};
+                {EXTERNAL_ID};
 
-        public static final String DEFAULT_SORT_ORDER = CLIENT_NAME + " ASC";
+        public static final String DEFAULT_SORT_ORDER = NAME + " ASC";
 
     }
 

@@ -40,31 +40,31 @@ public class ModelConverter {
 
     static ContentValues convertClient(Client_Element client) {
         ContentValues values = new ContentValues();
-        values.put(ClientContract.CLIENT_ID, client.getExternalId());
-        values.put(ClientContract.CLIENT_DELETED, client.isDeleted());
-        values.put(ClientContract.CLIENT_INDB, client.isInDB());
-        values.put(ClientContract.CLIENT_NAME, client.getName());
-        values.put(ClientContract.CLIENT_ADDRESS, client.getAddress());
-        values.put(ClientContract.CLIENT_PHONE, client.getPhone());
-        values.put(ClientContract.CLIENT_POSITION, client.getPositionLP());
+        values.put(ClientContract.EXTERNAL_ID, client.getExternalId());
+        values.put(ClientContract.DELETED, client.isDeleted());
+        values.put(ClientContract.INDB, client.isInDB());
+        values.put(ClientContract.NAME, client.getName());
+        values.put(ClientContract.ADDRESS, client.getAddress());
+        values.put(ClientContract.PHONE, client.getPhone());
+        values.put(ClientContract.POSITION, client.getPositionLP());
         return values;
     }
 
     static ContentValues convertWaybill(Waybill_Document waybill) {
         ContentValues values = new ContentValues();
-        values.put(WaybillContract.WAYBILL_ID, waybill.getExternalId());
-        values.put(WaybillContract.WAYBILL_DELETED, waybill.isDeleted());
-        values.put(WaybillContract.WAYBILL_INDB, waybill.isInDB());
-        values.put(WaybillContract.WAYBILL_DATE, waybill.getDate()== null?
+        values.put(WaybillContract.EXTERNAL_ID, waybill.getExternalId());
+        values.put(WaybillContract.DELETED, waybill.isDeleted());
+        values.put(WaybillContract.INDB, waybill.isInDB());
+        values.put(WaybillContract.DATE, waybill.getDate()== null?
                 null: waybill.getDate().getTime());
-        values.put(WaybillContract.WAYBILL_DATE_START, waybill.getDateStart()== null?
+        values.put(WaybillContract.DATE_START, waybill.getDateStart()== null?
                 null: waybill.getDateStart().getTime());
-        values.put(WaybillContract.WAYBILL_DATE_END, waybill.getDateEnd()== null?
+        values.put(WaybillContract.DATE_END, waybill.getDateEnd()== null?
                 null: waybill.getDateEnd().getTime());
-        values.put(WaybillContract.WAYBILL_POINT_START, waybill.getStartLP());
-        values.put(WaybillContract.WAYBILL_POINT_END, waybill.getEndLP());
-        values.put(WaybillContract.WAYBILL_ODOMETER_START, waybill.getStartOdometer());
-        values.put(WaybillContract.WAYBILL_ODOMETER_END, waybill.getEndOdometer());
+        values.put(WaybillContract.POINT_START, waybill.getStartLP());
+        values.put(WaybillContract.POINT_END, waybill.getEndLP());
+        values.put(WaybillContract.ODOMETER_START, waybill.getStartOdometer());
+        values.put(WaybillContract.ODOMETER_END, waybill.getEndOdometer());
         return values;
     }
 
@@ -99,18 +99,18 @@ public class ModelConverter {
 
     static ContentValues convertVisit(Visit_Document visit) {
         ContentValues values = new ContentValues();
-        values.put(VisitContract.VISIT_ID, visit.getExternalId());
-        values.put(VisitContract.VISIT_DELETED, visit.isDeleted());
-        values.put(VisitContract.VISIT_INDB, visit.isInDB());
-        values.put(VisitContract.VISIT_DATE, visit.getDate()== null?
+        values.put(VisitContract.EXTERNAL_ID, visit.getExternalId());
+        values.put(VisitContract.DELETED, visit.isDeleted());
+        values.put(VisitContract.INDB, visit.isInDB());
+        values.put(VisitContract.DATE, visit.getDate()== null?
                 null: visit.getDate().getTime());
-        values.put(VisitContract.VISIT_DATE_VISIT, visit.getDateVisit()== null?
+        values.put(VisitContract.DATE_VISIT, visit.getDateVisit()== null?
                 null: visit.getDateVisit().getTime());
-        values.put(VisitContract.VISIT_CLIENT, visit.getClientExternalId());
-        values.put(VisitContract.VISIT_POINT_CREATE, visit.getCreateLP());
-        values.put(VisitContract.VISIT_POINT_VISIT, visit.getVisitLP());
+        values.put(VisitContract.CLIENT, visit.getClientExternalId());
+        values.put(VisitContract.POINT_CREATE, visit.getCreateLP());
+        values.put(VisitContract.POINT_VISIT, visit.getVisitLP());
         values.put(VisitContract.VISIT_TYPE, visit.getTypeVisit());
-        values.put(VisitContract.VISIT_INFORMATION, visit.getInformation());
+        values.put(VisitContract.INFORMATION, visit.getInformation());
         return values;
     }
 
@@ -135,45 +135,45 @@ public class ModelConverter {
     static Waybill_Document buildWaybill(Cursor cursor) {
         return Waybill_Document.builder()
                 .id(cursor.getInt(cursor.getColumnIndex(WaybillContract._ID)))
-                .externalId(cursor.getString(cursor.getColumnIndex(WaybillContract.WAYBILL_ID)))
-                .deleted(cursor.getInt(cursor.getColumnIndex(WaybillContract.WAYBILL_DELETED))== 1)
-                .inDB(cursor.getInt(cursor.getColumnIndex(WaybillContract.WAYBILL_INDB))== 1)
-                .date(convertDate(cursor, WaybillContract.WAYBILL_DATE))
-                .dateStart(convertDate(cursor, WaybillContract.WAYBILL_DATE_START))
-                .dateEnd(convertDate(cursor, WaybillContract.WAYBILL_DATE_END))
-                .startLP(cursor.getInt(cursor.getColumnIndex(WaybillContract.WAYBILL_POINT_START)))
-                .endLP(cursor.getInt(cursor.getColumnIndex(WaybillContract.WAYBILL_POINT_START)))
-                .startOdometer(cursor.getInt(cursor.getColumnIndex(WaybillContract.WAYBILL_ODOMETER_START)))
-                .endOdometer(cursor.getInt(cursor.getColumnIndex(WaybillContract.WAYBILL_ODOMETER_END)))
+                .externalId(cursor.getString(cursor.getColumnIndex(WaybillContract.EXTERNAL_ID)))
+                .deleted(cursor.getInt(cursor.getColumnIndex(WaybillContract.DELETED))== 1)
+                .inDB(cursor.getInt(cursor.getColumnIndex(WaybillContract.INDB))== 1)
+                .date(convertDate(cursor, WaybillContract.DATE))
+                .dateStart(convertDate(cursor, WaybillContract.DATE_START))
+                .dateEnd(convertDate(cursor, WaybillContract.DATE_END))
+                .startLP(cursor.getInt(cursor.getColumnIndex(WaybillContract.POINT_START)))
+                .endLP(cursor.getInt(cursor.getColumnIndex(WaybillContract.POINT_START)))
+                .startOdometer(cursor.getInt(cursor.getColumnIndex(WaybillContract.ODOMETER_START)))
+                .endOdometer(cursor.getInt(cursor.getColumnIndex(WaybillContract.ODOMETER_END)))
                 .build();
     }
 
     static Visit_Document buildVisit(Cursor cursor) {
         return Visit_Document.builder()
                 .id(cursor.getInt(cursor.getColumnIndex(VisitContract._ID)))
-                .externalId(cursor.getString(cursor.getColumnIndex(VisitContract.VISIT_ID)))
-                .deleted(cursor.getInt(cursor.getColumnIndex(VisitContract.VISIT_DELETED))== 1)
-                .inDB(cursor.getInt(cursor.getColumnIndex(VisitContract.VISIT_INDB))== 1)
-                .date(convertDate(cursor, VisitContract.VISIT_DATE))
-                .dateVisit(convertDate(cursor, VisitContract.VISIT_DATE_VISIT))
-                .clientExternalId(cursor.getString(cursor.getColumnIndex(VisitContract.VISIT_CLIENT)))
-                .createLP(cursor.getInt(cursor.getColumnIndex(VisitContract.VISIT_POINT_CREATE)))
-                .visitLP(cursor.getInt(cursor.getColumnIndex(VisitContract.VISIT_POINT_VISIT)))
+                .externalId(cursor.getString(cursor.getColumnIndex(VisitContract.EXTERNAL_ID)))
+                .deleted(cursor.getInt(cursor.getColumnIndex(VisitContract.DELETED))== 1)
+                .inDB(cursor.getInt(cursor.getColumnIndex(VisitContract.INDB))== 1)
+                .date(convertDate(cursor, VisitContract.DATE))
+                .dateVisit(convertDate(cursor, VisitContract.DATE_VISIT))
+                .clientExternalId(cursor.getString(cursor.getColumnIndex(VisitContract.CLIENT)))
+                .createLP(cursor.getInt(cursor.getColumnIndex(VisitContract.POINT_CREATE)))
+                .visitLP(cursor.getInt(cursor.getColumnIndex(VisitContract.POINT_VISIT)))
                 .typeVisit(cursor.getString(cursor.getColumnIndex(VisitContract.VISIT_TYPE)))
-                .information(cursor.getString(cursor.getColumnIndex(VisitContract.VISIT_INFORMATION)))
+                .information(cursor.getString(cursor.getColumnIndex(VisitContract.INFORMATION)))
                 .build();
     }
 
     static Client_Element buildClient(Cursor cursor) {
         return Client_Element.builder()
                 .id(cursor.getInt(cursor.getColumnIndex(ClientContract._ID)))
-                .externalId(cursor.getString(cursor.getColumnIndex(ClientContract.CLIENT_ID)))
-                .deleted(cursor.getInt(cursor.getColumnIndex(ClientContract.CLIENT_DELETED))== 1)
-                .inDB(cursor.getInt(cursor.getColumnIndex(ClientContract.CLIENT_INDB))== 1)
-                .name(cursor.getString(cursor.getColumnIndex(ClientContract.CLIENT_NAME)))
-                .address(cursor.getString(cursor.getColumnIndex(ClientContract.CLIENT_ADDRESS)))
-                .phone(cursor.getString(cursor.getColumnIndex(ClientContract.CLIENT_PHONE)))
-                .positionLP(cursor.getInt(cursor.getColumnIndex(ClientContract.CLIENT_POSITION)))
+                .externalId(cursor.getString(cursor.getColumnIndex(ClientContract.EXTERNAL_ID)))
+                .deleted(cursor.getInt(cursor.getColumnIndex(ClientContract.DELETED))== 1)
+                .inDB(cursor.getInt(cursor.getColumnIndex(ClientContract.INDB))== 1)
+                .name(cursor.getString(cursor.getColumnIndex(ClientContract.NAME)))
+                .address(cursor.getString(cursor.getColumnIndex(ClientContract.ADDRESS)))
+                .phone(cursor.getString(cursor.getColumnIndex(ClientContract.PHONE)))
+                .positionLP(cursor.getInt(cursor.getColumnIndex(ClientContract.POSITION)))
                 .build();
     }
 

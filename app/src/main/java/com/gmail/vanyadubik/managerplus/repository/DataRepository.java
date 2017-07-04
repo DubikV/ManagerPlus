@@ -1,11 +1,13 @@
 package com.gmail.vanyadubik.managerplus.repository;
 
 import com.gmail.vanyadubik.managerplus.model.ParameterInfo;
-import com.gmail.vanyadubik.managerplus.model.db.document.Fuel_Document;
-import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
+import com.gmail.vanyadubik.managerplus.model.db.document.Document;
+import com.gmail.vanyadubik.managerplus.model.db.document.Fuel_Document;
 import com.gmail.vanyadubik.managerplus.model.db.document.Visit_Document;
 import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
+import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
+import com.gmail.vanyadubik.managerplus.model.db.element.Element;
 import com.gmail.vanyadubik.managerplus.model.db.element.Photo_Element;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
 import com.google.android.gms.maps.model.LatLng;
@@ -60,6 +62,10 @@ public interface DataRepository {
 
     List<Photo_Element> getPhotoByElement(String nameElement, String idElement);
 
+    Element getElementByExternaID(String nameElement, String externalId);
+
+    Document getDocumentByExternaID(String nameDocument, String externalId);
+
     void insertTrackPoint(LocationPoint locationPoint);
 
     void SetTrackListUloadedLocationTrack(Date dateFrom, Date dateBy);
@@ -82,4 +88,11 @@ public interface DataRepository {
 
     void insertPhoto(Photo_Element photo);
 
+    void setElementByExternalId(String nameElement, Element element);
+
+    void setDocumentByExternalId(String nameElement, Document document);
+
+    void deletedElement(String nameElement, String externalId);
+
+    void clearDataBase();
 }

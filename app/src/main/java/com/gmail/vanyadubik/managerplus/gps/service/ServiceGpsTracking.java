@@ -129,12 +129,18 @@ public class ServiceGpsTracking extends Service {
                 updateProvider(true);
             }
 
-            if (_location == null || isStoped ||
-                    !(((LocationManager) getSystemService(LOCATION_SERVICE)).isProviderEnabled(Provider.PROVIDER_GPS))) {
-                Log.i(TAGLOG_GPS, "The current position is not recorded, the coordinates received incorrectly");
-                notifyBuilder = getNotification(false, getString(R.string.service_tracking_error_location));
+            if ( !isStoped && !((LocationManager) getSystemService(LOCATION_SERVICE)).isProviderEnabled(Provider.PROVIDER_GPS)) {
+                Log.i(TAGLOG_GPS, "GPS is disabled");
+                notifyBuilder = getNotification(false, getString(R.string.gps_is_disabled));
                 startForeground(_notifyId, notifyBuilder.build());
                 isStoped = true;
+            }
+
+            if (!isStoped && _location == null) {
+                    Log.i(TAGLOG_GPS, "The current position is not recorded, the coordinates received incorrectly");
+                    notifyBuilder = getNotification(false, getString(R.string.service_tracking_error_location));
+                    startForeground(_notifyId, notifyBuilder.build());
+                    isStoped = true;
             }
 
             if (!(dataRepository != null || isStoped)) {
@@ -162,7 +168,7 @@ public class ServiceGpsTracking extends Service {
 
                 if (isBettherLocation(_location)) {
 
-                    notifyBuilder = getNotification(true, getMessageNotify(_location, timeStamp.getTime().getTime(), false));
+                    notifyBuilder = getNotification(true, getString(R.string.service_tracking_message));
                     startForeground(_notifyId, notifyBuilder.build());
 
                     saveLastLocation(timeStamp, _location.getLatitude(), _location.getLongitude(), _gpsLocationSource);

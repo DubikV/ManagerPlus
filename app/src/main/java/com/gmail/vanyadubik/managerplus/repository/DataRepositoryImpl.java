@@ -7,11 +7,13 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import com.gmail.vanyadubik.managerplus.model.ParameterInfo;
+import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
+import com.gmail.vanyadubik.managerplus.model.db.document.Document;
 import com.gmail.vanyadubik.managerplus.model.db.document.Fuel_Document;
+import com.gmail.vanyadubik.managerplus.model.db.document.Visit_Document;
 import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
-import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
-import com.gmail.vanyadubik.managerplus.model.db.document.Visit_Document;
+import com.gmail.vanyadubik.managerplus.model.db.element.Element;
 import com.gmail.vanyadubik.managerplus.model.db.element.Photo_Element;
 import com.gmail.vanyadubik.managerplus.model.map.MarkerMap;
 import com.google.android.gms.maps.model.LatLng;
@@ -22,21 +24,22 @@ import java.util.Date;
 import java.util.List;
 
 import static com.gmail.vanyadubik.managerplus.common.Consts.MIN_SIZE_TRACK_LIST_UPLOAD;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.ChangingContrack;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.ClientContract;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.FuelContract;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.LocationPointContract;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.PhotoContract;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.TrackListContract;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.UserSettings;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.UsingCarContrack;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.VisitContract;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.WaybillContract;
-import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.UsingCarContrack;
-import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.ChangingContrack;
-import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.FuelContract;
 import static com.gmail.vanyadubik.managerplus.repository.ModelConverter.buildClient;
 import static com.gmail.vanyadubik.managerplus.repository.ModelConverter.buildFuelDoc;
 import static com.gmail.vanyadubik.managerplus.repository.ModelConverter.buildPhoto;
 import static com.gmail.vanyadubik.managerplus.repository.ModelConverter.buildVisit;
+import static com.gmail.vanyadubik.managerplus.repository.ModelConverter.buildWaybill;
 import static com.gmail.vanyadubik.managerplus.repository.ModelConverter.convertLocationPoint;
-import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.PhotoContract;
 
 public class DataRepositoryImpl implements DataRepository{
 
@@ -44,6 +47,57 @@ public class DataRepositoryImpl implements DataRepository{
 
     public DataRepositoryImpl(ContentResolver contentResolver) {
         this.contentResolver = contentResolver;
+    }
+
+    private Uri getContentUriByName(String nameElement){
+        switch (nameElement.toLowerCase()) {
+            case WaybillContract.TABLE_NAME:
+                return WaybillContract.CONTENT_URI;
+            case VisitContract.TABLE_NAME:
+                return VisitContract.CONTENT_URI;
+            case ClientContract.TABLE_NAME:
+                return ClientContract.CONTENT_URI;
+            case FuelContract.TABLE_NAME:
+                return FuelContract.CONTENT_URI;
+            case PhotoContract.TABLE_NAME:
+                return PhotoContract.CONTENT_URI;
+            default:
+                return null;
+        }
+    }
+
+    private String[] getColumsByName(String nameElement){
+        switch (nameElement.toLowerCase()) {
+            case WaybillContract.TABLE_NAME:
+                return WaybillContract.PROJECTION_ALL;
+            case VisitContract.TABLE_NAME:
+                return VisitContract.PROJECTION_ALL;
+            case ClientContract.TABLE_NAME:
+                return ClientContract.PROJECTION_ALL;
+            case FuelContract.TABLE_NAME:
+                return FuelContract.PROJECTION_ALL;
+            case PhotoContract.TABLE_NAME:
+                return PhotoContract.PROJECTION_ALL;
+            default:
+                return null;
+        }
+    }
+
+    private String getSortOrderByName(String nameElement){
+        switch (nameElement.toLowerCase()) {
+            case WaybillContract.TABLE_NAME:
+                return WaybillContract.DEFAULT_SORT_ORDER;
+            case VisitContract.TABLE_NAME:
+                return VisitContract.DEFAULT_SORT_ORDER;
+            case ClientContract.TABLE_NAME:
+                return ClientContract.DEFAULT_SORT_ORDER;
+            case FuelContract.TABLE_NAME:
+                return FuelContract.DEFAULT_SORT_ORDER;
+            case PhotoContract.TABLE_NAME:
+                return PhotoContract.DEFAULT_SORT_ORDER;
+            default:
+                return null;
+        }
     }
 
     @Override
@@ -118,9 +172,9 @@ public class DataRepositoryImpl implements DataRepository{
 
         try (Cursor cursor = contentResolver.query(
                 VisitContract.CONTENT_URI,
-                new String[]{VisitContract.VISIT_CLIENT},
-                VisitContract.VISIT_DATE + ">=" + dateFrom.getTime() + " AND "
-                        + VisitContract.VISIT_DATE + "<=" + dateBy.getTime(),
+                new String[]{VisitContract.CLIENT},
+                VisitContract.DATE + ">=" + dateFrom.getTime() + " AND "
+                        + VisitContract.DATE + "<=" + dateBy.getTime(),
                 new String[]{},
                 VisitContract.DEFAULT_SORT_ORDER)) {
 
@@ -128,7 +182,7 @@ public class DataRepositoryImpl implements DataRepository{
 
             while (cursor.moveToNext()){
 
-                Client_Element client = getClient(cursor.getString(cursor.getColumnIndex(VisitContract.VISIT_CLIENT)));
+                Client_Element client = getClient(cursor.getString(cursor.getColumnIndex(VisitContract.CLIENT)));
 
                 if(client!=null){
                     LocationPoint locationPoint = getLocationPoint(client.getPositionLP());
@@ -149,9 +203,9 @@ public class DataRepositoryImpl implements DataRepository{
         List<MarkerMap> markers;
         try (Cursor cursor = contentResolver.query(
                 VisitContract.CONTENT_URI,
-                new String[]{VisitContract.VISIT_CLIENT},
-                VisitContract.VISIT_DATE + ">=" + dateFrom.getTime() + " AND "
-                        + VisitContract.VISIT_DATE + "<=" + dateBy.getTime(),
+                new String[]{VisitContract.CLIENT},
+                VisitContract.DATE + ">=" + dateFrom.getTime() + " AND "
+                        + VisitContract.DATE + "<=" + dateBy.getTime(),
                 new String[]{},
                 VisitContract.DEFAULT_SORT_ORDER)) {
 
@@ -161,7 +215,7 @@ public class DataRepositoryImpl implements DataRepository{
 
             while (cursor.moveToNext()) {
 
-                Client_Element client = getClient(cursor.getString(cursor.getColumnIndex(VisitContract.VISIT_CLIENT)));
+                Client_Element client = getClient(cursor.getString(cursor.getColumnIndex(VisitContract.CLIENT)));
 
                 if (client != null) {
                     LocationPoint locationPoint = getLocationPoint(client.getPositionLP());
@@ -276,12 +330,12 @@ public class DataRepositoryImpl implements DataRepository{
         }
 
         try (Cursor cursor = contentResolver.query(WaybillContract.CONTENT_URI,
-                WaybillContract.PROJECTION_ALL, WaybillContract.WAYBILL_DATE_START
-                        + " = (select MAX(" + WaybillContract.WAYBILL_DATE_START + ") from " + WaybillContract.TABLE_NAME + ")",
+                WaybillContract.PROJECTION_ALL, WaybillContract.DATE_START
+                        + " = (select MAX(" + WaybillContract.DATE_START + ") from " + WaybillContract.TABLE_NAME + ")",
                 null, WaybillContract.DEFAULT_SORT_ORDER)) {
 
             if (cursor == null || !cursor.moveToFirst()) return null;
-            return ModelConverter.buildWaybill(cursor);
+            return buildWaybill(cursor);
         }
     }
 
@@ -293,7 +347,7 @@ public class DataRepositoryImpl implements DataRepository{
             if (cursor == null) return null;
             List<Waybill_Document> result = new ArrayList<>();
             while (cursor.moveToNext())
-                result.add(ModelConverter.buildWaybill(cursor));
+                result.add(buildWaybill(cursor));
             return result;
         }
     }
@@ -342,8 +396,8 @@ public class DataRepositoryImpl implements DataRepository{
         try (Cursor cursor = contentResolver.query(
                 VisitContract.CONTENT_URI,
                 VisitContract.PROJECTION_ALL,
-                VisitContract.VISIT_DATE + ">=" + dateFrom.getTime() + " AND "
-                        + VisitContract.VISIT_DATE + "<=" + dateBy.getTime(),
+                VisitContract.DATE + ">=" + dateFrom.getTime() + " AND "
+                        + VisitContract.DATE + "<=" + dateBy.getTime(),
                 new String[]{},
                 VisitContract.DEFAULT_SORT_ORDER)) {
 
@@ -359,7 +413,7 @@ public class DataRepositoryImpl implements DataRepository{
     public Client_Element getClient(String externalId) {
         try (Cursor cursor = contentResolver.query(
                 ClientContract.CONTENT_URI,
-                ClientContract.PROJECTION_ALL, ClientContract.CLIENT_ID + "='" + externalId + "'",
+                ClientContract.PROJECTION_ALL, ClientContract.EXTERNAL_ID + "='" + externalId + "'",
                 null, ClientContract.DEFAULT_SORT_ORDER)) {
 
             if (cursor == null) {
@@ -377,7 +431,7 @@ public class DataRepositoryImpl implements DataRepository{
     public Visit_Document getVisit(String externalId) {
         try (Cursor cursor = contentResolver.query(
                 VisitContract.CONTENT_URI,
-                VisitContract.PROJECTION_ALL, VisitContract.VISIT_ID + "='" + externalId + "'",
+                VisitContract.PROJECTION_ALL, VisitContract.EXTERNAL_ID + "='" + externalId + "'",
                 null, VisitContract.DEFAULT_SORT_ORDER)) {
 
             if (cursor == null) {
@@ -461,6 +515,70 @@ public class DataRepositoryImpl implements DataRepository{
             while (cursor.moveToNext())
                 result.add(buildPhoto(cursor));
             return result;
+        }
+    }
+
+    @Override
+    public Element getElementByExternaID(String nameElement, String externalId) {
+        Uri contentUri = getContentUriByName(nameElement);
+        String[] projectionAll = getColumsByName(nameElement);
+        String sortOrder = getSortOrderByName(nameElement);
+        if(contentUri == null || projectionAll == null || sortOrder == null){
+            return null;
+        }
+        try (Cursor cursor = contentResolver.query(
+                contentUri,
+                projectionAll, "external_id='" + externalId + "'",
+                null, sortOrder)) {
+
+            if (cursor == null) {
+                return null;
+            }
+            if (cursor.moveToFirst()) {
+                switch (nameElement.toLowerCase()) {
+                    case ClientContract.TABLE_NAME:
+                        return (Element)buildClient(cursor);
+                    case PhotoContract.TABLE_NAME:
+                        return (Element)buildPhoto(cursor);
+                    default:
+                        return null;
+                }
+            } else {
+                return null;
+            }
+        }
+    }
+
+    @Override
+    public Document getDocumentByExternaID(String nameDocument, String externalId) {
+        Uri contentUri = getContentUriByName(nameDocument);
+        String[] projectionAll = getColumsByName(nameDocument);
+        String sortOrder = getSortOrderByName(nameDocument);
+        if(contentUri == null || projectionAll == null || sortOrder == null){
+            return null;
+        }
+        try (Cursor cursor = contentResolver.query(
+                contentUri,
+                projectionAll, "external_id='" + externalId + "'",
+                null, sortOrder)) {
+
+            if (cursor == null) {
+                return null;
+            }
+            if (cursor.moveToFirst()) {
+                switch (nameDocument.toLowerCase()) {
+                    case WaybillContract.TABLE_NAME:
+                        return (Document)buildWaybill(cursor);
+                    case VisitContract.TABLE_NAME:
+                        return (Document)buildVisit(cursor);
+                    case FuelContract.TABLE_NAME:
+                        return (Document)buildFuelDoc(cursor);
+                    default:
+                        return null;
+                }
+            } else {
+                return null;
+            }
         }
     }
 
@@ -554,4 +672,82 @@ public class DataRepositoryImpl implements DataRepository{
         ContentValues values = ModelConverter.convertPhoto(photo);
         contentResolver.insert(PhotoContract.CONTENT_URI, values);
     }
+
+    @Override
+    public void setElementByExternalId(String nameElement, Element element) {
+        Uri contentUri = getContentUriByName(nameElement);
+        if(contentUri == null){
+            return;
+        }
+        ContentValues values;
+        switch (nameElement.toLowerCase()) {
+            case ClientContract.TABLE_NAME:
+                values = ModelConverter.convertClient((Client_Element)element);
+                break;
+            case PhotoContract.TABLE_NAME:
+                values = ModelConverter.convertPhoto((Photo_Element) element);
+                break;
+            default:
+                values = null;
+                break;
+        }
+        if(values != null) {
+            contentResolver.insert(contentUri, values);
+        }
+
+    }
+
+    @Override
+    public void setDocumentByExternalId(String nameElement, Document document) {
+        Uri contentUri = getContentUriByName(nameElement);
+        if(contentUri == null){
+            return;
+        }
+        ContentValues values;
+        switch (nameElement.toLowerCase()) {
+            case WaybillContract.TABLE_NAME:
+                values = ModelConverter.convertWaybill((Waybill_Document)document);
+                break;
+            case VisitContract.TABLE_NAME:
+                values = ModelConverter.convertVisit((Visit_Document) document);
+                break;
+            case FuelContract.TABLE_NAME:
+                values = ModelConverter.convertFuelDoc((Fuel_Document) document);
+                break;
+            default:
+                values = null;
+                break;
+        }
+        if(values != null) {
+            contentResolver.insert(contentUri, values);
+        }
+    }
+
+    @Override
+    public void deletedElement(String nameElement, String externalId) {
+        Uri contentUri = getContentUriByName(nameElement);
+        if(contentUri == null){
+            return;
+        }
+        contentResolver.delete(contentUri,
+                "external_id='" + externalId + "'"
+                , null);
+
+    }
+
+    @Override
+    public void clearDataBase() {
+        contentResolver.delete(TrackListContract.CONTENT_URI, null, null);
+        contentResolver.delete(WaybillContract.CONTENT_URI, null, null);
+        contentResolver.delete(VisitContract.CONTENT_URI, null, null);
+        contentResolver.delete(ClientContract.CONTENT_URI, null, null);
+        contentResolver.delete(LocationPointContract.CONTENT_URI, null, null);
+        contentResolver.delete(UserSettings.CONTENT_URI, null, null);
+        contentResolver.delete(ChangingContrack.CONTENT_URI, null, null);
+        contentResolver.delete(UsingCarContrack.CONTENT_URI, null, null);
+        contentResolver.delete(FuelContract.CONTENT_URI, null, null);
+        contentResolver.delete(PhotoContract.CONTENT_URI, null, null);
+    }
+
+
 }

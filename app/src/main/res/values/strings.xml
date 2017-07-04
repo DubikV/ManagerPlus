@@ -110,6 +110,19 @@
     <string name="map_coordinates">Координати</string>
     <string name="map_get_location">Отримати координати</string>
 
+    <!--Element-->
+    <string name="error_delete_element_indb">Оскільки елемент знаходиться в базі, його помічено на видалення</string>
+    <string name="deleted_element">Елемент видалено</string>
+    <string name="deleted_selected_element">Видалити вибраний елемент?</string>
+    <string name="error_delete_element">Помилка видалення</string>
+    <string name="close_delete_element">Заборонено удаляти елементи</string>
+
+    <!--Document-->
+    <string name="error_delete_document_indb">Оскільки документ знаходиться в базі, його помічено на видалення</string>
+    <string name="not_selected_document">Не вибрано документ</string>
+    <string name="deleted_document">Документ видалено</string>
+    <string name="deleted_selected_document">Видалити вибраний документ?</string>
+
     <!--Waybill-->
     <string name="waybill_name">Дорожній лист</string>
     <string name="waybill_list_name">Дорожні листи</string>
@@ -161,8 +174,11 @@
     <string name="added_foto">Добавлені фото</string>
     <string name="all_foto_in_device">Всі фотографії на пристрої</string>
     <string name="selected_photo">Вибрано фото</string>
+    <string name="not_selected_photo">Не вибрано фото</string>
     <string name="action_get_photo">Вибрати дане фото?</string>
     <string name="photo_not_found">Фото не знайдено</string>
     <string name="holder_photo_not_specified">Не вказаный власник фото</string>
     <string name="added_foto_date">Дата створення</string>
+    <string name="input_info_about_photo">Введіть додаткову інформацію</string>
+
 </resources>

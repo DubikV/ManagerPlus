@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -34,5 +35,28 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/title"
         android:layout_margin="@dimen/gallery_image_marging"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/delete_added_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="@dimen/marging_button_map"
+        android:layout_marginTop="@dimen/marging_button_map"
+        android:clickable="true"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/ic_delete"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/insert_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/delete_added_photo"
+        android:layout_below="@+id/delete_added_photo"
+        android:layout_marginTop="@dimen/marging_button_map"
+        android:clickable="true"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/ic_three_point_white"/>
 
 </RelativeLayout>

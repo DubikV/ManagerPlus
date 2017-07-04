@@ -62,7 +62,7 @@ public class VisitPlaneListAdapter extends BaseAdapter {
             public void onClick(View v) {
                 v.getContext().startActivity(
                         new Intent(context, VisitDetailActivity.class)
-                                .putExtra(MobileManagerContract.VisitContract.VISIT_ID, visit.getExternalId()));
+                                .putExtra(MobileManagerContract.VisitContract.EXTERNAL_ID, visit.getExternalId()));
             }
         });
 
