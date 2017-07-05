@@ -4,26 +4,32 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.jjobes.slidedatetimepicker.SlideDateTimeListener;
+import com.github.jjobes.slidedatetimepicker.SlideDateTimePicker;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.MapActivity;
-import com.gmail.vanyadubik.managerplus.activity.SearchActivity;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
@@ -37,19 +43,16 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import static android.app.Activity.RESULT_CANCELED;
-import static android.app.Activity.RESULT_OK;
+import static com.gmail.vanyadubik.managerplus.R.id.enddate;
+import static com.gmail.vanyadubik.managerplus.R.id.startdate;
 import static com.gmail.vanyadubik.managerplus.activity.MapActivity.MAP_SHOW_TRACK_DATE_END;
 import static com.gmail.vanyadubik.managerplus.activity.MapActivity.MAP_SHOW_TRACK_DATE_START;
 import static com.gmail.vanyadubik.managerplus.activity.MapActivity.MAP_TYPE;
 import static com.gmail.vanyadubik.managerplus.activity.MapActivity.MAP_TYPE_SHOW_TRACK;
-import static com.gmail.vanyadubik.managerplus.activity.SearchActivity.SEARCH_BY_PERIOD;
-import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_IMAGE;
 
 public class WaybillListFragment extends Fragment implements FragmentBecameVisibleInterface {
 
     private static  final int LAYOUT = R.layout.fragment_waybill_list;
-    private static final int SEARCH_ACTIVITY_WAYBILL_LIST = 997;
 
     @Inject
     DataRepository dataRepository;
@@ -62,7 +65,11 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
     private WaybillListAdapter adapter;
     private FloatingActionButton waybillDelBtn, waybillSearchBtn, waybillAddBtn;
     private Waybill_Document selectedwaybill;
-    private int mSelectedItem;
+    private int mSelectedItem, touchDate;
+    private Date selectPeriodStart, selectPeriodEnd;
+    private Boolean selectionOn;
+    private BottomSheetDialog bottomSheetDialog ;
+    private View textEntryView;
 
     public static WaybillListFragment getInstance() {
 
@@ -77,6 +84,18 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(LAYOUT, container, false);
         ((ManagerPlusAplication) getActivity().getApplication()).getComponent().inject(this);
+
+        selectPeriodStart = new Date();
+        selectPeriodStart.setHours(0);
+        selectPeriodStart.setMinutes(0);
+        selectPeriodStart.setSeconds(0);
+
+        selectPeriodEnd = new Date();
+        selectPeriodEnd.setHours(23);
+        selectPeriodEnd.setMinutes(59);
+        selectPeriodEnd.setSeconds(59);
+
+        selectionOn = false;
 
         listView = (ListView) view.findViewById(R.id.waybill_listview);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -96,7 +115,7 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
                 intent.putExtra(MAP_SHOW_TRACK_DATE_END, String.valueOf(dateEnd.getTime()));
                 startActivity(intent);
                 showButtons(false);
-                setSelected(position);
+                setSelected(list.size());
 
             }
         });
@@ -120,7 +139,6 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
         waybillAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setSelected(list.size());
             }
         });
 
@@ -176,30 +194,39 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
             }
         });
 
+
         waybillSearchBtn = (FloatingActionButton) view.findViewById(R.id.waybill_search_bt);
         waybillSearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), SearchActivity.class);
-                intent.putExtra(SearchActivity.PARAM_SEARCH, SEARCH_BY_PERIOD);
-                startActivityForResult(intent, SEARCH_ACTIVITY_WAYBILL_LIST);
+
+                showButtons(false);
                 setSelected(list.size());
+
+                if (selectionOn) {
+
+                    selectionOn = false;
+
+                    initData();
+
+                    waybillSearchBtn.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_open));
+                    waybillSearchBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+
+                }else {
+                    initSearch();
+
+                    bottomSheetDialog.setContentView(textEntryView);
+
+                    bottomSheetDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+                    bottomSheetDialog.show();
+
+                }
+
             }
         });
 
         return view;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SEARCH_ACTIVITY_WAYBILL_LIST) {
-            if (resultCode == RESULT_OK) {
-            } else if (resultCode == RESULT_CANCELED) {
-                Log.d(TAGLOG_IMAGE, "Camera Cancelled");
-                return;
-            }
-        }
     }
 
     @Override
@@ -210,12 +237,112 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
 
     private void initData(){
 
-        list = dataRepository.getAllWaybill();
+        if(selectionOn == true){
+            list = dataRepository.getWaybillByPeriod(selectPeriodStart, selectPeriodEnd);
+        }else {
+            list = dataRepository.getAllWaybill();
+        }
 
         mSelectedItem = list.size();
 
         adapter = new WaybillListAdapter();
         listView.setAdapter(adapter);
+    }
+
+    private void initSearch(){
+
+        final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+
+        bottomSheetDialog = new BottomSheetDialog(getContext(), R.style.BottomSheetDialog);
+
+        textEntryView = getActivity().getLayoutInflater().inflate(R.layout.dialog_search_period, null);
+
+        final EditText startdateEditText = (EditText) textEntryView.findViewById(startdate);
+        startdateEditText.setText(dateFormatter.format(selectPeriodStart), TextView.BufferType.EDITABLE);
+        final EditText enddateEditText = (EditText) textEntryView.findViewById(enddate);
+        enddateEditText.setText(dateFormatter.format(selectPeriodEnd), TextView.BufferType.EDITABLE);
+
+        final SlideDateTimeListener dateTimeListener = new SlideDateTimeListener() {
+
+            @Override
+            public void onDateTimeSet(Date date) {
+                if (touchDate == 1) {
+                    selectPeriodStart = date;
+                    startdateEditText.setText(dateFormatter.format(date));
+                } else {
+                    selectPeriodEnd = date;
+                    enddateEditText.setText(dateFormatter.format(date));
+                }
+            }
+
+            @Override
+            public void onDateTimeCancel() {
+
+            }
+        };
+
+        startdateEditText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                touchDate = 1;
+
+                new SlideDateTimePicker.Builder(getActivity().getSupportFragmentManager())
+                        .setListener(dateTimeListener)
+                        .setInitialDate(selectPeriodStart)
+                        .setIs24HourTime(true)
+                        .setIndicatorColor(getResources().getColor(R.color.colorPrimary))
+                        .setTheme(SlideDateTimePicker.HOLO_LIGHT)
+                        .build()
+                        .show();
+                return true;
+            }
+        });
+        enddateEditText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                touchDate = 2;
+
+                new SlideDateTimePicker.Builder(getActivity().getSupportFragmentManager())
+                        .setListener(dateTimeListener)
+                        .setInitialDate(selectPeriodEnd)
+                        .setIs24HourTime(true)
+                        .setIndicatorColor(getResources().getColor(R.color.colorPrimary))
+                        .setTheme(SlideDateTimePicker.HOLO_LIGHT)
+                        .build()
+                        .show();
+                return true;
+            }
+        });
+
+        Button okButton = (Button) textEntryView.findViewById(R.id.okButton);
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectionOn = true;
+
+                initData();
+
+                waybillSearchBtn.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_open_color));
+                waybillSearchBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorGrey)));
+
+                bottomSheetDialog.hide();
+            }
+        });
+
+        Button cancelButton = (Button) textEntryView.findViewById(R.id.cancelButton);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectionOn = false;
+
+                initData();
+
+                waybillSearchBtn.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_open));
+                waybillSearchBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+
+                bottomSheetDialog.hide();
+            }
+        });
     }
 
     @Override
@@ -226,6 +353,7 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
     @Override
     public void onBecameVisible() {
         initData();
+        showButtons(false);
     }
 
     @Override
@@ -247,6 +375,8 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
             waybillDelBtn.setVisibility(View.GONE);
         }
     }
+
+
 
     private class WaybillListAdapter extends BaseAdapter {
 

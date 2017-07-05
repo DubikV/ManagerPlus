@@ -96,6 +96,9 @@
     <string name="questions_title_cancel">Скасувати</string>
     <string name="date_picker_title">Виберіть дату</string>
     <string name="time_picker_title">Виберіть час</string>
+    <string name="period_start">Початок періоду:</string>
+    <string name="period_end">Кінець періоду:</string>
+    <string name="enter_period">Введіть період</string>
 
     <!--Name objects-->
     <string name="map_name">Карта</string>

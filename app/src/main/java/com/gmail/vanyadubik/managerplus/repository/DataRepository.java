@@ -42,6 +42,8 @@ public interface DataRepository {
 
     List<Waybill_Document> getAllWaybill();
 
+    List<Waybill_Document> getWaybillByPeriod(Date dateFrom, Date dateBy);
+
     List<Visit_Document> getAllVisit();
 
     List<Client_Element> getAllClients();

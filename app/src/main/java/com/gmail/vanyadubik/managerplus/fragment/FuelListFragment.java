@@ -93,12 +93,6 @@ public class FuelListFragment extends Fragment implements FragmentBecameVisibleI
                 return true;
             }
         });
-        listView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                setSelected(list.size());
-            }
-        });
 
         fuelAddBtn = (FloatingActionButton) view.findViewById(R.id.fuel_add_bt);
         fuelAddBtn.setOnClickListener(new View.OnClickListener() {

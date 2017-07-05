@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@drawable/background_activity"
-              android:orientation="vertical">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/waybill_main_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/background_activity"
+                android:orientation="vertical">
 
     <LinearLayout
         android:orientation="vertical"
@@ -82,14 +83,69 @@
         </LinearLayout>
 
         <ListView
+            android:id="@+id/waybill_listview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/shape_window_body"
-            android:layout_marginRight="@dimen/marging_waybill_cap"
-            android:layout_marginLeft="@dimen/marging_waybill_cap"
             android:layout_marginBottom="@dimen/marging_waybill_cap"
-            android:id="@+id/waybill_listview">
+            android:layout_marginLeft="@dimen/marging_waybill_cap"
+            android:layout_marginRight="@dimen/marging_waybill_cap"
+            android:background="@drawable/shape_window_body"
+            android:focusable="true">
         </ListView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:gravity="left|center_vertical"
+                android:textSize="@dimen/textsize_cap"
+                app:hintTextAppearance="@style/text_size_small_style">
+
+                <EditText
+                    android:id="@+id/startdate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:gravity="right|center_vertical"
+                    android:hint="@string/period_start"
+                    android:inputType="datetime"
+                    android:maxLines="1"
+                    android:textSize="@dimen/textsize_cap"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:gravity="left|center_vertical"
+                android:textSize="@dimen/textsize_cap"
+                app:hintTextAppearance="@style/text_size_small_style">
+
+                <EditText
+                    android:id="@+id/enddate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:gravity="right|center_vertical"
+                    android:hint="@string/period_end"
+                    android:inputType="datetime"
+                    android:maxLines="1"
+                    android:textSize="@dimen/textsize_cap"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -129,6 +185,5 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="@dimen/marging_button_map"
         android:layout_marginBottom="50dp"/>
-
 
 </RelativeLayout>

@@ -23,6 +23,7 @@
     <item name="ic_plus" type="drawable">@drawable/ic_plus</item>
     <item name="ic_delete" type="drawable">@drawable/ic_delete</item>
     <item name="ic_open" type="drawable">@drawable/ic_open</item>
+    <item name="ic_open_color" type="drawable">@drawable/ic_open_color</item>
     <item name="ic_calendar" type="drawable">@drawable/ic_calendar</item>
     <item name="ic_calendar_grey" type="drawable">@drawable/ic_calendar_grey</item>
     <item name="ic_visit" type="drawable">@drawable/ic_visit</item>

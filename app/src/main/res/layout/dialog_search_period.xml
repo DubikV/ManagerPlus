@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="@dimen/height_bottom_dialog"
+              android:layout_marginLeft="@dimen/activity_vertical_margin"
+              android:layout_marginRight="@dimen/activity_vertical_margin"
+              android:orientation="vertical"
+              app:behavior_hideable="true"
+              app:layout_behavior="@string/bottom_sheet_behavior">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_vertical_margin"
+        android:layout_marginRight="@dimen/activity_vertical_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:gravity="center"
+        android:text="@string/enter_period"
+        android:textSize="@dimen/textsize_cap"/>
+
+    <View
+        android:id="@+id/topVerticalDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/gray_holo_dark"/>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_vertical_margin"
+        android:layout_marginRight="@dimen/activity_vertical_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:gravity="left|center_vertical"
+        android:textSize="@dimen/textsize_cap"
+        app:hintTextAppearance="@style/text_size_small_style">
+
+        <EditText
+            android:id="@+id/startdate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:gravity="right|center_vertical"
+            android:hint="@string/period_start"
+            android:inputType="none"
+            android:maxLines="1"
+            android:textSize="@dimen/textsize_cap"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_vertical_margin"
+        android:layout_marginRight="@dimen/activity_vertical_margin"
+        android:gravity="left|center_vertical"
+        android:textSize="@dimen/textsize_cap"
+        app:hintTextAppearance="@style/text_size_small_style">
+
+        <EditText
+            android:id="@+id/enddate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:gravity="right|center_vertical"
+            android:hint="@string/period_end"
+            android:inputType="none"
+            android:maxLines="1"
+            android:textSize="@dimen/textsize_cap"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/okButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/questions_answer_yes"
+            android:textSize="@dimen/textsize_cap"/>
+
+        <!-- The vertical divider line between the two buttons -->
+
+        <View
+            android:id="@+id/buttonVerticalDivider"
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/gray_holo_dark"/>
+
+        <Button
+            android:id="@+id/cancelButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/questions_answer_no"
+            android:textSize="@dimen/textsize_cap"/>
+
+    </LinearLayout>
+
+</LinearLayout>
+

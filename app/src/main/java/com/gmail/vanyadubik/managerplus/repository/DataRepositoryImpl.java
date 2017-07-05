@@ -353,6 +353,24 @@ public class DataRepositoryImpl implements DataRepository{
     }
 
     @Override
+    public List<Waybill_Document> getWaybillByPeriod(Date dateFrom, Date dateBy) {
+        try (Cursor cursor = contentResolver.query(
+                WaybillContract.CONTENT_URI,
+                WaybillContract.PROJECTION_ALL,
+                WaybillContract.DATE_START + ">=" + dateFrom.getTime() + " AND "
+                        + WaybillContract.DATE_START + "<=" + dateBy.getTime(),
+                new String[]{},
+                WaybillContract.DEFAULT_SORT_ORDER)) {
+
+            if (cursor == null) return null;
+            List<Waybill_Document> result = new ArrayList<>();
+            while (cursor.moveToNext())
+                result.add(ModelConverter.buildWaybill(cursor));
+            return result;
+        }
+    }
+
+    @Override
     public List<Visit_Document> getAllVisit() {
         try (Cursor cursor = contentResolver.query(VisitContract.CONTENT_URI,
                 VisitContract.PROJECTION_ALL, null, null, VisitContract.DEFAULT_SORT_ORDER)) {
@@ -618,10 +636,6 @@ public class DataRepositoryImpl implements DataRepository{
     public void insertWaybill(Waybill_Document waybill) {
         ContentValues values = ModelConverter.convertWaybill(waybill);
         contentResolver.insert(WaybillContract.CONTENT_URI, values);
-//        contentResolver.update(WaybillContract.CONTENT_URI,
-//                values,
-//                WaybillContract.WAYBILL_ID + "='" + waybill.getExternalId()+"'",
-//                null);
     }
 
     @Override
