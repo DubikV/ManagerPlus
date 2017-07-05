@@ -19,7 +19,7 @@
         android:layout_marginRight="@dimen/activity_vertical_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:gravity="center"
-        android:text="@string/enter_period"
+        android:text="@string/enter_world_search"
         android:textSize="@dimen/textsize_cap"
         android:textColor="@color/colorPrimary"/>
 
@@ -46,43 +46,17 @@
         android:textColor="@color/colorPrimary">
 
         <EditText
-            android:id="@+id/startdate"
+            android:id="@+id/search_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="false"
             android:gravity="right|center_vertical"
-            android:hint="@string/period_start"
-            android:inputType="none"
+            android:hint="@string/search"
+            android:inputType="text"
             android:maxLines="1"
             android:textSize="@dimen/textsize_cap"
-            android:textColor="@color/colorPrimary"/>
-
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:layout_marginLeft="@dimen/activity_vertical_margin"
-        android:layout_marginRight="@dimen/activity_vertical_margin"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:gravity="left|center_vertical"
-        android:textSize="@dimen/textsize_cap"
-        app:hintTextAppearance="@style/text_size_small_style"
-        android:textColor="@color/colorPrimary">
-
-        <EditText
-            android:id="@+id/enddate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="false"
-            android:gravity="right|center_vertical"
-            android:hint="@string/period_end"
-            android:inputType="none"
-            android:maxLines="1"
-            android:textSize="@dimen/textsize_cap"
-            android:textColor="@color/colorPrimary"/>
+            android:textColor="@color/colorPrimary"
+            android:drawableRight="@drawable/ic_clear"/>
 
     </android.support.design.widget.TextInputLayout>
 

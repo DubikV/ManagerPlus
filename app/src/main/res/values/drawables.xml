@@ -42,4 +42,6 @@
     <item name="ic_add_photo" type="drawable">@drawable/ic_add_photo</item>
     <item name="ic_keyboard_arrow_right" type="drawable">@drawable/ic_keyboard_arrow_right</item>
     <item name="ic_keyboard_arrow_right_white" type="drawable">@drawable/ic_keyboard_arrow_right_white</item>
+    <item name="ic_clear" type="drawable">@drawable/ic_clear</item>
+    <item name="ic_clear_white" type="drawable">@drawable/ic_clear_white</item>
 </resources>

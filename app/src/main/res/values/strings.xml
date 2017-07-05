@@ -99,6 +99,8 @@
     <string name="period_start">Початок періоду:</string>
     <string name="period_end">Кінець періоду:</string>
     <string name="enter_period">Введіть період</string>
+    <string name="search">Пошук:</string>
+    <string name="enter_world_search">Введіть слово для пошуку</string>
 
     <!--Name objects-->
     <string name="map_name">Карта</string>

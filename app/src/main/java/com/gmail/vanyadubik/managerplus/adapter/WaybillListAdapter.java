@@ -9,19 +9,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.model.documents.VisitList;
+import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-public class VisitListAdapter extends BaseAdapter {
+public class WaybillListAdapter extends BaseAdapter {
 
-    private List<VisitList> list;
+    private List<Waybill_Document> list;
     private LayoutInflater layoutInflater;
     private Context context;
     private int mSelectedItem;
 
-    public VisitListAdapter(Context context, List<VisitList> list) {
+    public WaybillListAdapter(Context context, List<Waybill_Document> list) {
         this.list = list;
         this.context = context;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -54,34 +54,36 @@ public class VisitListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null) {
-            view = layoutInflater.inflate(R.layout.visit_list_item, parent, false);
+            view = layoutInflater.inflate(R.layout.waybill_list_item, parent, false);
         }
-        final VisitList visit = getDataTable(position);
 
-        ImageView fuellistImage = (ImageView) view.findViewById(R.id.visit_item_image);
+        Waybill_Document waybill = (Waybill_Document) getItem(position);
+
+        ImageView waybilllistImage = (ImageView) view.findViewById(R.id.waybilllist_image);
         if (getItemId(position) == mSelectedItem) {
-            fuellistImage.setBackground(context.getResources().getDrawable(R.drawable.shape_body_left_selected));
+            waybilllistImage.setBackground(context.getResources().getDrawable(R.drawable.shape_body_left_selected));
         } else {
-            fuellistImage.setBackground(context.getResources().getDrawable(R.drawable.shape_body_left));
+            waybilllistImage.setBackground(context.getResources().getDrawable(R.drawable.shape_body_left));
         }
 
-        TextView date = (TextView) view.findViewById(R.id.visit_item_date);
-        date.setText(new SimpleDateFormat("dd.MM.yyyy HH:mm").format(visit.getDate().getTime()));
-        setBacgrounView(date, (int) getItemId(position));
+        TextView waybilllistDate = (TextView) view.findViewById(R.id.waybilllist_date);
+        waybilllistDate.setText(new SimpleDateFormat("dd.MM.yyyy").format(waybill.getDateStart()));
+        setBacgrounView(waybilllistDate, (int) getItemId(position));
 
-        TextView client = (TextView) view.findViewById(R.id.visit_item_client);
-        client.setText(visit.getClient());
-        setBacgrounView(client, (int) getItemId(position));
+        TextView waybilllistOdStart = (TextView) view.findViewById(R.id.waybilllist_odometer_start);
+        waybilllistOdStart.setText(String.valueOf(waybill.getStartOdometer()));
+        setBacgrounView(waybilllistOdStart, (int) getItemId(position));
 
-        TextView typevisit = (TextView) view.findViewById(R.id.visit_item_typevisit);
-        typevisit.setText(visit.getTypeVisit());
-        setBacgrounView(typevisit, (int) getItemId(position));
+        TextView waybilllistOdEnd = (TextView) view.findViewById(R.id.waybilllist_odometer_end);
+        waybilllistOdEnd.setText(String.valueOf(waybill.getEndOdometer()));
+        setBacgrounView(waybilllistOdEnd, (int) getItemId(position));
+
+        TextView waybilllistKm = (TextView) view.findViewById(R.id.waybilllist_km);
+        waybilllistKm.setText(String.valueOf(waybill.getEndOdometer() == 0 ? 0 :
+                waybill.getEndOdometer()-waybill.getStartOdometer()));
+        setBacgrounView(waybilllistKm, (int) getItemId(position));
 
         return view;
-    }
-
-    private VisitList getDataTable(int position) {
-        return (VisitList) getItem(position);
     }
 
     private void setBacgrounView(TextView view, int position) {
@@ -93,6 +95,5 @@ public class VisitListAdapter extends BaseAdapter {
             view.setTextColor(context.getResources().getColor(R.color.colorPrimary));
         }
     }
-
 
 }

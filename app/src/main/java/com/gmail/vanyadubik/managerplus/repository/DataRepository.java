@@ -42,8 +42,6 @@ public interface DataRepository {
 
     List<Waybill_Document> getAllWaybill();
 
-    List<Waybill_Document> getWaybillByPeriod(Date dateFrom, Date dateBy);
-
     List<Visit_Document> getAllVisit();
 
     List<Client_Element> getAllClients();
@@ -51,6 +49,10 @@ public interface DataRepository {
     List<Fuel_Document> getAllFuel();
 
     List<Visit_Document> getVisitByPeriod(Date dateFrom, Date dateBy);
+
+    List<Waybill_Document> getWaybillByPeriod(Date dateFrom, Date dateBy);
+
+    List<Document> getDocumentsByPeriod(String nameDocument, Date dateFrom, Date dateBy);
 
     Client_Element getClient(String externalId);
 

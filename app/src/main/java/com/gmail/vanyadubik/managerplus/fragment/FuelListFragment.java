@@ -1,30 +1,37 @@
 package com.gmail.vanyadubik.managerplus.fragment;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.jjobes.slidedatetimepicker.SlideDateTimeListener;
+import com.github.jjobes.slidedatetimepicker.SlideDateTimePicker;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.FuelDetailActivity;
+import com.gmail.vanyadubik.managerplus.adapter.FuelListAdapter;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
+import com.gmail.vanyadubik.managerplus.model.db.document.Document;
 import com.gmail.vanyadubik.managerplus.model.db.document.Fuel_Document;
 import com.gmail.vanyadubik.managerplus.model.documents.FuelList;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
@@ -32,9 +39,13 @@ import com.gmail.vanyadubik.managerplus.utils.ElementUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import static com.gmail.vanyadubik.managerplus.R.id.enddate;
+import static com.gmail.vanyadubik.managerplus.R.id.startdate;
 
 public class FuelListFragment extends Fragment implements FragmentBecameVisibleInterface {
     private static  final int LAYOUT = R.layout.fragment_fuel_list;
@@ -50,7 +61,11 @@ public class FuelListFragment extends Fragment implements FragmentBecameVisibleI
     private FuelListAdapter adapter;
     private FloatingActionButton fuelDelBtn, fuelSearchBtn, fuelAddBtn;
     private Fuel_Document selectedfuel;
-    private int mSelectedItem;
+    private int touchDate;
+    private Date selectPeriodStart, selectPeriodEnd;
+    private Boolean selectionOn;
+    private BottomSheetDialog bottomSheetDialog ;
+    private View textEntryView;
 
     public static FuelListFragment getInstance() {
 
@@ -66,6 +81,18 @@ public class FuelListFragment extends Fragment implements FragmentBecameVisibleI
         view = inflater.inflate(LAYOUT, container, false);
         ((ManagerPlusAplication) getActivity().getApplication()).getComponent().inject(this);
 
+        selectPeriodStart = new Date();
+        selectPeriodStart.setHours(0);
+        selectPeriodStart.setMinutes(0);
+        selectPeriodStart.setSeconds(0);
+
+        selectPeriodEnd = new Date();
+        selectPeriodEnd.setHours(23);
+        selectPeriodEnd.setMinutes(59);
+        selectPeriodEnd.setSeconds(59);
+
+        selectionOn = false;
+
         listView = (ListView) view.findViewById(R.id.fuellist_listview);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -77,7 +104,8 @@ public class FuelListFragment extends Fragment implements FragmentBecameVisibleI
                 startActivity(
                         new Intent(getActivity(), FuelDetailActivity.class)
                                 .putExtra(MobileManagerContract.FuelContract.EXTERNAL_ID, selectedfuel.getExternalId()));
-                setSelected(position);
+                showButtons(false);
+                setSelected(list.size());
 
             }
         });
@@ -160,7 +188,29 @@ public class FuelListFragment extends Fragment implements FragmentBecameVisibleI
         fuelSearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                showButtons(false);
                 setSelected(list.size());
+
+                if (selectionOn) {
+
+                    selectionOn = false;
+
+                    initData();
+
+                    fuelSearchBtn.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_open));
+                    fuelSearchBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+
+                }else {
+
+                    initSearch();
+
+                    bottomSheetDialog.setContentView(textEntryView);
+
+                    bottomSheetDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+                    bottomSheetDialog.show();
+
+                }
             }
         });
 
@@ -174,14 +224,29 @@ public class FuelListFragment extends Fragment implements FragmentBecameVisibleI
         initData();
 
         showButtons(false);
+
+        setSelected(list.size());
+
     }
 
     private void initData(){
 
         list = new ArrayList<>();
 
-        List<Fuel_Document> fuellist = dataRepository.getAllFuel();
+        List<Fuel_Document> fuellist = new ArrayList<>();
 
+        if(selectionOn == true){
+            List<Document> listDocuments = dataRepository.
+                    getDocumentsByPeriod(MobileManagerContract.FuelContract.TABLE_NAME,
+                            selectPeriodStart, selectPeriodEnd);
+
+            for (Document document : listDocuments) {
+                fuellist.add((Fuel_Document) document);
+            }
+
+        }else {
+            fuellist = dataRepository.getAllFuel();
+        }
 
         for (Fuel_Document fuel_document : fuellist) {
             list.add(
@@ -192,12 +257,110 @@ public class FuelListFragment extends Fragment implements FragmentBecameVisibleI
                             fuel_document.getLitres()));
         }
 
-        adapter = new FuelListAdapter();
+        adapter = new FuelListAdapter(getActivity(), list);
+        adapter.setmSelectedItem(list.size());
         listView.setAdapter(adapter);
     }
 
+    private void initSearch(){
+
+        final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+
+        bottomSheetDialog = new BottomSheetDialog(getContext(), R.style.BottomSheetDialog);
+
+        textEntryView = getActivity().getLayoutInflater().inflate(R.layout.dialog_search_period, null);
+
+        final EditText startdateEditText = (EditText) textEntryView.findViewById(startdate);
+        startdateEditText.setText(dateFormatter.format(selectPeriodStart), TextView.BufferType.EDITABLE);
+        final EditText enddateEditText = (EditText) textEntryView.findViewById(enddate);
+        enddateEditText.setText(dateFormatter.format(selectPeriodEnd), TextView.BufferType.EDITABLE);
+
+        final SlideDateTimeListener dateTimeListener = new SlideDateTimeListener() {
+
+            @Override
+            public void onDateTimeSet(Date date) {
+                if (touchDate == 1) {
+                    selectPeriodStart = date;
+                    startdateEditText.setText(dateFormatter.format(date));
+                } else {
+                    selectPeriodEnd = date;
+                    enddateEditText.setText(dateFormatter.format(date));
+                }
+            }
+
+            @Override
+            public void onDateTimeCancel() {
+
+            }
+        };
+
+        startdateEditText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                touchDate = 1;
+
+                new SlideDateTimePicker.Builder(getActivity().getSupportFragmentManager())
+                        .setListener(dateTimeListener)
+                        .setInitialDate(selectPeriodStart)
+                        .setIs24HourTime(true)
+                        .setIndicatorColor(getResources().getColor(R.color.colorPrimary))
+                        .setTheme(SlideDateTimePicker.HOLO_LIGHT)
+                        .build()
+                        .show();
+                return true;
+            }
+        });
+        enddateEditText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                touchDate = 2;
+
+                new SlideDateTimePicker.Builder(getActivity().getSupportFragmentManager())
+                        .setListener(dateTimeListener)
+                        .setInitialDate(selectPeriodEnd)
+                        .setIs24HourTime(true)
+                        .setIndicatorColor(getResources().getColor(R.color.colorPrimary))
+                        .setTheme(SlideDateTimePicker.HOLO_LIGHT)
+                        .build()
+                        .show();
+                return true;
+            }
+        });
+
+        Button okButton = (Button) textEntryView.findViewById(R.id.okButton);
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectionOn = true;
+
+                initData();
+
+                fuelSearchBtn.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_open_color));
+                fuelSearchBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorGrey)));
+
+                bottomSheetDialog.hide();
+            }
+        });
+
+        Button cancelButton = (Button) textEntryView.findViewById(R.id.cancelButton);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectionOn = false;
+
+                initData();
+
+                fuelSearchBtn.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_open));
+                fuelSearchBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+
+                bottomSheetDialog.hide();
+            }
+        });
+    }
+
+
     private void setSelected(int position){
-        mSelectedItem = position;
+        adapter.setmSelectedItem(position);
         adapter.notifyDataSetChanged();
     }
 
@@ -228,76 +391,4 @@ public class FuelListFragment extends Fragment implements FragmentBecameVisibleI
 
     }
 
-    private class FuelListAdapter extends BaseAdapter {
-
-        private LayoutInflater layoutInflater;
-
-        public FuelListAdapter() {
-            layoutInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        }
-
-        @Override
-        public int getCount() {
-            return list.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return list.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View view = convertView;
-            if (view == null) {
-                view = layoutInflater.inflate(R.layout.fuel_list_item, parent, false);
-            }
-            final FuelList fuelDoc = (FuelList) getItem(position);
-
-            ImageView fuellistImage = (ImageView) view.findViewById(R.id.imageView_fuellist);
-            if (getItemId(position) == mSelectedItem) {
-                fuellistImage.setBackground(getActivity().getResources().getDrawable(R.drawable.shape_body_left_selected));
-            } else {
-                fuellistImage.setBackground(getActivity().getResources().getDrawable(R.drawable.shape_body_left));
-            }
-
-            TextView date = (TextView) view.findViewById(R.id.fuel_item_data);
-            date.setText(new SimpleDateFormat("dd.MM.yyyy HH:mm").format(fuelDoc.getDate().getTime()));
-            if (getItemId(position) == mSelectedItem) {
-                date.setBackground(getActivity().getResources().getDrawable(R.drawable.shape_body_left_selected));
-                date.setTextColor(getActivity().getResources().getColor(R.color.colorWhite));
-            } else {
-                date.setBackground(getActivity().getResources().getDrawable(R.drawable.shape_body_left));
-                date.setTextColor(getActivity().getResources().getColor(R.color.colorPrimary));
-            }
-
-            TextView typeFuel = (TextView) view.findViewById(R.id.fuel_item_type);
-            typeFuel.setText(fuelDoc.getTypeFuel());
-            if (getItemId(position) == mSelectedItem) {
-                typeFuel.setBackground(getActivity().getResources().getDrawable(R.drawable.shape_body_left_selected));
-                typeFuel.setTextColor(getActivity().getResources().getColor(R.color.colorWhite));
-            } else {
-                typeFuel.setBackground(getActivity().getResources().getDrawable(R.drawable.shape_body_left));
-                typeFuel.setTextColor(getActivity().getResources().getColor(R.color.colorPrimary));
-            }
-
-            TextView litres = (TextView) view.findViewById(R.id.fuel_item_litres);
-            litres.setText(String.valueOf(fuelDoc.getLitres()));
-            if (getItemId(position) == mSelectedItem) {
-                litres.setBackground(getActivity().getResources().getDrawable(R.drawable.shape_body_right_selected));
-                litres.setTextColor(getActivity().getResources().getColor(R.color.colorWhite));
-            } else {
-                litres.setBackground(getActivity().getResources().getDrawable(R.drawable.shape_body_right));
-                litres.setTextColor(getActivity().getResources().getColor(R.color.colorPrimary));
-            }
-
-            return view;
-        }
-
-    }
 }

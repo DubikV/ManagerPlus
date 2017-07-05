@@ -1,7 +1,6 @@
 package com.gmail.vanyadubik.managerplus.fragment;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -18,10 +17,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +27,7 @@ import com.github.jjobes.slidedatetimepicker.SlideDateTimeListener;
 import com.github.jjobes.slidedatetimepicker.SlideDateTimePicker;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.activity.MapActivity;
+import com.gmail.vanyadubik.managerplus.adapter.WaybillListAdapter;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
@@ -65,7 +63,7 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
     private WaybillListAdapter adapter;
     private FloatingActionButton waybillDelBtn, waybillSearchBtn, waybillAddBtn;
     private Waybill_Document selectedwaybill;
-    private int mSelectedItem, touchDate;
+    private int touchDate;
     private Date selectPeriodStart, selectPeriodEnd;
     private Boolean selectionOn;
     private BottomSheetDialog bottomSheetDialog ;
@@ -213,6 +211,7 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
                     waybillSearchBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
 
                 }else {
+
                     initSearch();
 
                     bottomSheetDialog.setContentView(textEntryView);
@@ -243,9 +242,8 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
             list = dataRepository.getAllWaybill();
         }
 
-        mSelectedItem = list.size();
-
-        adapter = new WaybillListAdapter();
+        adapter = new WaybillListAdapter(getActivity(), list);
+        adapter.setmSelectedItem(list.size());
         listView.setAdapter(adapter);
     }
 
@@ -362,7 +360,7 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
     }
 
     private void setSelected(int position){
-        mSelectedItem = position;
+        adapter.setmSelectedItem(position);
         adapter.notifyDataSetChanged();
     }
 
@@ -376,89 +374,4 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
         }
     }
 
-
-
-    private class WaybillListAdapter extends BaseAdapter {
-
-        private LayoutInflater layoutInflater;
-
-        public WaybillListAdapter() {
-            layoutInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        }
-
-        @Override
-        public int getCount() {
-            return list.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return list.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View view = convertView;
-            if (view == null) {
-                view = layoutInflater.inflate(R.layout.waybill_list_item, parent, false);
-            }
-
-            Waybill_Document waybill = (Waybill_Document) getItem(position);
-
-            ImageView waybilllistImage = (ImageView) view.findViewById(R.id.waybilllist_image);
-            if (getItemId(position) == mSelectedItem) {
-                waybilllistImage.setBackground(getActivity().getResources().getDrawable(R.drawable.shape_body_left_selected));
-            } else {
-                waybilllistImage.setBackground(getActivity().getResources().getDrawable(R.drawable.shape_body_left));
-            }
-
-            TextView waybilllistDate = (TextView) view.findViewById(R.id.waybilllist_date);
-            waybilllistDate.setText(new SimpleDateFormat("dd.MM.yyyy").format(waybill.getDateStart()));
-            if (getItemId(position) == mSelectedItem) {
-                waybilllistDate.setBackground(getActivity().getResources().getDrawable(R.drawable.shape_body_left_selected));
-                waybilllistDate.setTextColor(getActivity().getResources().getColor(R.color.colorWhite));
-            } else {
-                waybilllistDate.setBackground(getActivity().getResources().getDrawable(R.drawable.shape_body_left));
-                waybilllistDate.setTextColor(getActivity().getResources().getColor(R.color.colorPrimary));
-            }
-
-            TextView waybilllistOdStart = (TextView) view.findViewById(R.id.waybilllist_odometer_start);
-            waybilllistOdStart.setText(String.valueOf(waybill.getStartOdometer()));
-            if (getItemId(position) == mSelectedItem) {
-                waybilllistOdStart.setBackground(getActivity().getResources().getDrawable(R.drawable.shape_body_left_selected));
-                waybilllistOdStart.setTextColor(getActivity().getResources().getColor(R.color.colorWhite));
-            } else {
-                waybilllistOdStart.setBackground(getActivity().getResources().getDrawable(R.drawable.shape_body_left));
-                waybilllistOdStart.setTextColor(getActivity().getResources().getColor(R.color.colorPrimary));
-            }
-
-            TextView waybilllistOdEnd = (TextView) view.findViewById(R.id.waybilllist_odometer_end);
-            waybilllistOdEnd.setText(String.valueOf(waybill.getEndOdometer()));
-            if (getItemId(position) == mSelectedItem) {
-                waybilllistOdEnd.setBackground(getActivity().getResources().getDrawable(R.drawable.shape_body_left_selected));
-                waybilllistOdEnd.setTextColor(getActivity().getResources().getColor(R.color.colorWhite));
-            } else {
-                waybilllistOdEnd.setBackground(getActivity().getResources().getDrawable(R.drawable.shape_body_left));
-                waybilllistOdEnd.setTextColor(getActivity().getResources().getColor(R.color.colorPrimary));
-            }
-
-            TextView waybilllistKm = (TextView) view.findViewById(R.id.waybilllist_km);
-            waybilllistKm.setText(String.valueOf(waybill.getEndOdometer() == 0 ? 0 :
-                    waybill.getEndOdometer()-waybill.getStartOdometer()));
-            if (getItemId(position) == mSelectedItem) {
-                waybilllistKm.setBackground(getActivity().getResources().getDrawable(R.drawable.shape_body_right_selected));
-                waybilllistKm.setTextColor(getActivity().getResources().getColor(R.color.colorWhite));
-            } else {
-                waybilllistKm.setBackground(getActivity().getResources().getDrawable(R.drawable.shape_body_right));
-                waybilllistKm.setTextColor(getActivity().getResources().getColor(R.color.colorPrimary));
-            }
-
-            return view;
-        }
-    }
 }

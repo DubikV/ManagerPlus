@@ -11,44 +11,34 @@ import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
+import com.gmail.vanyadubik.managerplus.model.db.element.Element;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ClientListAdapter extends BaseAdapter implements Filterable {
+public class NameSearchAdapter extends BaseAdapter implements Filterable {
 
-    private List<Client_Element> modelValues;
-    private List<Client_Element> mOriginalValues;
-    private LayoutInflater layoutInflater;
+    private List<Element> modelValues;
+    private List<Element> mOriginalValues;
     private Context context;
-    private int mSelectedItem;
+    private LayoutInflater layoutInflater;
 
-    public ClientListAdapter(Context context, List<Client_Element> list) {
-        this.mOriginalValues = list;
+    public NameSearchAdapter(Context context, List<Element> modelValues) {
+        this.modelValues = modelValues;
         this.context = context;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
 
-    public int getmSelectedItem() {
-        return mSelectedItem;
-    }
-
-    public void setmSelectedItem(int mSelectedItem) {
-        this.mSelectedItem = mSelectedItem;
-    }
-
-
     @Override
     public int getCount() {
-        return mOriginalValues.size();
+        return modelValues.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mOriginalValues.get(position);
+        return modelValues.get(position);
     }
 
     @Override
@@ -57,36 +47,25 @@ public class ClientListAdapter extends BaseAdapter implements Filterable {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public
+    @NonNull
+    View getView(final int position, View convertView, @NonNull ViewGroup parent) {
         View view = convertView;
         if (view == null) {
-            view = layoutInflater.inflate(R.layout.client_list_item, parent, false);
+            view = layoutInflater.inflate(android.R.layout.simple_list_item_1, parent, false);
         }
-        final Client_Element client = getDataTable(position);
 
-        TextView name = (TextView) view.findViewById(R.id.client_item_name);
-        name.setText(client.getName());
-        setBacgrounView(name, (int) getItemId(position));
+        final Element element = getElement(position);
 
-        TextView phone = (TextView) view.findViewById(R.id.client_item_phone);
-        phone.setText(client.getPhone());
-        setBacgrounView(phone, (int) getItemId(position));
+        TextView infoNameTextView = (TextView) view.findViewById(android.R.id.text1);
+        infoNameTextView.setText(element.getName());
+        infoNameTextView.setTextSize(context.getResources().getDimension(R.dimen.text_size_medium));
 
         return view;
     }
 
-    private Client_Element getDataTable(int position) {
-        return (Client_Element) getItem(position);
-    }
-
-    private void setBacgrounView(TextView view, int position) {
-        if (getItemId(position) == mSelectedItem) {
-            view.setBackground(context.getResources().getDrawable(R.drawable.shape_body_left_selected));
-            view.setTextColor(context.getResources().getColor(R.color.colorWhite));
-        } else {
-            view.setBackground(context.getResources().getDrawable(R.drawable.shape_body_left));
-            view.setTextColor(context.getResources().getColor(R.color.colorPrimary));
-        }
+    private Element getElement(int position) {
+        return (Element) getItem(position);
     }
 
     @NonNull
@@ -98,7 +77,7 @@ public class ClientListAdapter extends BaseAdapter implements Filterable {
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
 
-                modelValues = (ArrayList<Client_Element>) results.values; // has
+                modelValues = (ArrayList<Element>) results.values; // has
 
                 notifyDataSetChanged();
             }
@@ -107,7 +86,7 @@ public class ClientListAdapter extends BaseAdapter implements Filterable {
             protected FilterResults performFiltering(CharSequence constraint) {
                 FilterResults results = new FilterResults(); // Holds the
 
-                List<Client_Element> FilteredArrList = new ArrayList<Client_Element>();
+                List<Element> FilteredArrList = new ArrayList<Element>();
 
                 if (mOriginalValues == null) {
                     mOriginalValues = new ArrayList<>(modelValues); // saves
@@ -122,12 +101,12 @@ public class ClientListAdapter extends BaseAdapter implements Filterable {
                     Locale locale = Locale.getDefault();
                     constraint = constraint.toString().toLowerCase(locale);
                     for (int i = 0; i < mOriginalValues.size(); i++) {
-                        Client_Element client = mOriginalValues.get(i);
+                        Element element = mOriginalValues.get(i);
 
-                        String data = client.getName();
+                        String data = element.getName();
                         if (data.toLowerCase(locale).contains(constraint.toString())) {
 
-                            FilteredArrList.add(client);
+                            FilteredArrList.add(element);
                         }
                     }
                     // set the Filtered result to return
@@ -140,4 +119,6 @@ public class ClientListAdapter extends BaseAdapter implements Filterable {
         };
         return filter;
     }
+
+
 }

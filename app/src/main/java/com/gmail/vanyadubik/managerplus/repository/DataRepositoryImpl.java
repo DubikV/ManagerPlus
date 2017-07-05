@@ -353,24 +353,6 @@ public class DataRepositoryImpl implements DataRepository{
     }
 
     @Override
-    public List<Waybill_Document> getWaybillByPeriod(Date dateFrom, Date dateBy) {
-        try (Cursor cursor = contentResolver.query(
-                WaybillContract.CONTENT_URI,
-                WaybillContract.PROJECTION_ALL,
-                WaybillContract.DATE_START + ">=" + dateFrom.getTime() + " AND "
-                        + WaybillContract.DATE_START + "<=" + dateBy.getTime(),
-                new String[]{},
-                WaybillContract.DEFAULT_SORT_ORDER)) {
-
-            if (cursor == null) return null;
-            List<Waybill_Document> result = new ArrayList<>();
-            while (cursor.moveToNext())
-                result.add(ModelConverter.buildWaybill(cursor));
-            return result;
-        }
-    }
-
-    @Override
     public List<Visit_Document> getAllVisit() {
         try (Cursor cursor = contentResolver.query(VisitContract.CONTENT_URI,
                 VisitContract.PROJECTION_ALL, null, null, VisitContract.DEFAULT_SORT_ORDER)) {
@@ -423,6 +405,59 @@ public class DataRepositoryImpl implements DataRepository{
             List<Visit_Document> result = new ArrayList<>();
             while (cursor.moveToNext())
                 result.add(ModelConverter.buildVisit(cursor));
+            return result;
+        }
+    }
+
+    @Override
+    public List<Waybill_Document> getWaybillByPeriod(Date dateFrom, Date dateBy) {
+        try (Cursor cursor = contentResolver.query(
+                WaybillContract.CONTENT_URI,
+                WaybillContract.PROJECTION_ALL,
+                WaybillContract.DATE_START + ">=" + dateFrom.getTime() + " AND "
+                        + WaybillContract.DATE_START + "<=" + dateBy.getTime(),
+                new String[]{},
+                WaybillContract.DEFAULT_SORT_ORDER)) {
+
+            if (cursor == null) return null;
+            List<Waybill_Document> result = new ArrayList<>();
+            while (cursor.moveToNext())
+                result.add(ModelConverter.buildWaybill(cursor));
+            return result;
+        }
+    }
+
+    @Override
+    public List<Document> getDocumentsByPeriod(String nameDocument, Date dateFrom, Date dateBy) {
+        Uri contentUri = getContentUriByName(nameDocument);
+        String[] projectionAll = getColumsByName(nameDocument);
+        String sortOrder = getSortOrderByName(nameDocument);
+        if(contentUri == null || projectionAll == null || sortOrder == null){
+            return null;
+        }
+        try (Cursor cursor = contentResolver.query(
+                contentUri,
+                projectionAll,
+                "date>=" + dateFrom.getTime() + " AND date<=" + dateBy.getTime(),
+                new String[]{},
+                sortOrder)) {
+
+            if (cursor == null) return null;
+            List<Document> result = new ArrayList<>();
+            while (cursor.moveToNext())
+                switch (nameDocument.toLowerCase()) {
+                    case WaybillContract.TABLE_NAME:
+                        result.add((Document) buildWaybill(cursor));
+                        break;
+                    case VisitContract.TABLE_NAME:
+                        result.add((Document) buildVisit(cursor));
+                        break;
+                    case FuelContract.TABLE_NAME:
+                        result.add((Document) buildFuelDoc(cursor));
+                        break;
+                    default:
+                        break;
+                }
             return result;
         }
     }

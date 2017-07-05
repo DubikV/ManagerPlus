@@ -49,6 +49,6 @@
     <dimen name="gallery_open_image_width">30dp</dimen>
 
     <!--Bottom Dialog-->
-    <dimen name="height_bottom_dialog">270dp</dimen>
+    <dimen name="height_bottom_dialog">300dp</dimen>
 
 </resources>
