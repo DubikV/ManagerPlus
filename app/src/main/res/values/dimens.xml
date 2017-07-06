@@ -11,6 +11,8 @@
     <dimen name="tab_layout_height">15dp</dimen>
     <dimen name="marging_button_map">7dp</dimen>
 
+    <dimen name="activity_list_fab_bottom_margin">30dp</dimen>
+
     <!--Alert-->
     <dimen name="alert_text_size">16dp</dimen>
 

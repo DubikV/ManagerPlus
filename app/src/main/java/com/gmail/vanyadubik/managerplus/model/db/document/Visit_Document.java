@@ -1,4 +1,12 @@
 package com.gmail.vanyadubik.managerplus.model.db.document;
+
+import android.content.Context;
+
+import com.gmail.vanyadubik.managerplus.R;
+import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
+import com.gmail.vanyadubik.managerplus.repository.DataRepository;
+import com.gmail.vanyadubik.managerplus.repository.DataRepositoryImpl;
+
 import java.util.Date;
 
 public class Visit_Document extends Document {
@@ -68,6 +76,26 @@ public class Visit_Document extends Document {
 
     public void setDateVisit(Date dateVisit) {
         this.dateVisit = dateVisit;
+    }
+
+    public void saveInDB(Context context){
+
+        DataRepository dataRepository = new DataRepositoryImpl(context.getContentResolver());
+        dataRepository.insertVisit(this);
+    }
+
+    public String deleteInDB(Context context){
+
+        DataRepository dataRepository = new DataRepositoryImpl(context.getContentResolver());
+
+        if(this.isInDB()) {
+            dataRepository.setDocumentByExternalId(MobileManagerContract.VisitContract.TABLE_NAME, this);
+            return context.getResources().getString(R.string.error_delete_element_indb);
+        }else{
+            dataRepository.deletedElement(MobileManagerContract.VisitContract.TABLE_NAME, this.getExternalId());
+            return context.getResources().getString(R.string.deleted_element);
+        }
+
     }
 
     public static Builder builder() {

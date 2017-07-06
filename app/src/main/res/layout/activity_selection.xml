@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_activity"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/marging_waybill_cap"
+            android:layout_marginRight="@dimen/marging_waybill_cap"
+            android:layout_marginTop="@dimen/marging_waybill_cap"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="left|center_vertical"
+            android:textSize="@dimen/textsize_cap"
+            app:hintTextAppearance="@style/text_size_small_style"
+            android:textColor="@color/colorPrimary"
+            android:background="@drawable/shape_window_body_cap">
+
+            <EditText
+                android:id="@+id/search_textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:gravity="left|center_vertical"
+                android:hint="@string/search"
+                android:inputType="text"
+                android:maxLines="1"
+                android:textSize="@dimen/textsize_cap"
+                android:textColor="@color/colorPrimary"
+                android:drawableEnd="@android:drawable/ic_menu_close_clear_cancel"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/marging_waybill_cap"
+            android:orientation="horizontal"
+            android:background="@drawable/shape_cap_left">
+
+            <TextView
+                android:id="@+id/selection_cap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left|center_horizontal"
+                android:padding="@dimen/pading_edittext_waybill_cap"
+                android:layout_marginLeft="@dimen/marging_waybill_cap"
+                android:text="@string/selected_in_list"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/textsize_table_cap"/>
+
+        </LinearLayout>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_window_body"
+            android:layout_marginRight="@dimen/marging_waybill_cap"
+            android:layout_marginLeft="@dimen/marging_waybill_cap"
+            android:layout_marginBottom="@dimen/marging_waybill_cap"
+            android:id="@+id/selection_listview">
+        </ListView>
+
+    </LinearLayout>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/selection_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/ic_arrow_back"
+        android:layout_marginBottom="@dimen/activity_list_fab_bottom_margin"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="@dimen/marging_button_map"/>
+
+</RelativeLayout>

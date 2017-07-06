@@ -203,7 +203,7 @@ public class VisitListFragment extends Fragment implements FragmentBecameVisible
 
                     selectionOn = false;
 
-                    initData();
+                    adapter.getFilter().filter("");
 
                     visitSearchBtn.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_open));
                     visitSearchBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
@@ -230,7 +230,6 @@ public class VisitListFragment extends Fragment implements FragmentBecameVisible
     public void onResume() {
         super.onResume();
 
-
         initData();
 
         showButtons(false);
@@ -242,14 +241,7 @@ public class VisitListFragment extends Fragment implements FragmentBecameVisible
 
         list = new ArrayList<>();
 
-        List<Visit_Document> visits = new ArrayList<>();
-
-        if(selectionOn == true){
-            visits = dataRepository.getVisitByPeriod(selectPeriodStart, selectPeriodEnd);
-
-        }else {
-            visits = dataRepository.getAllVisit();
-        }
+        List<Visit_Document> visits = dataRepository.getAllVisit();
 
         for (Visit_Document visit : visits) {
             VisitList visitList = new VisitList(visit.getExternalId(), visit.getDate(), visit.getTypeVisit());
@@ -289,6 +281,9 @@ public class VisitListFragment extends Fragment implements FragmentBecameVisible
                     selectPeriodEnd = date;
                     enddateEditText.setText(dateFormatter.format(date));
                 }
+                adapter.getFilter().filter(String.valueOf(selectPeriodStart.getTime())
+                        + adapter.filterDivider
+                        +String.valueOf(selectPeriodEnd.getTime()));
             }
 
             @Override
@@ -336,7 +331,9 @@ public class VisitListFragment extends Fragment implements FragmentBecameVisible
             public void onClick(View v) {
                 selectionOn = true;
 
-                initData();
+                adapter.getFilter().filter(String.valueOf(selectPeriodStart.getTime())
+                        + adapter.filterDivider
+                        +String.valueOf(selectPeriodEnd.getTime()));
 
                 visitSearchBtn.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_open_color));
                 visitSearchBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorGrey)));
@@ -351,7 +348,7 @@ public class VisitListFragment extends Fragment implements FragmentBecameVisible
             public void onClick(View v) {
                 selectionOn = false;
 
-                initData();
+                adapter.getFilter().filter("");
 
                 visitSearchBtn.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_open));
                 visitSearchBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));

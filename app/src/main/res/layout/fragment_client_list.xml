@@ -90,6 +90,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="@dimen/marging_button_map"
-        android:layout_marginBottom="50dp"/>
+        android:layout_marginBottom="@dimen/activity_list_fab_bottom_margin"/>
 
 </RelativeLayout>

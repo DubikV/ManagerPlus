@@ -50,13 +50,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="false"
-            android:gravity="right|center_vertical"
+            android:gravity="left|center_vertical"
             android:hint="@string/search"
             android:inputType="text"
             android:maxLines="1"
             android:textSize="@dimen/textsize_cap"
             android:textColor="@color/colorPrimary"
-            android:drawableRight="@drawable/ic_clear"/>
+            android:drawableEnd="@android:drawable/ic_menu_close_clear_cancel"/>
 
     </android.support.design.widget.TextInputLayout>
 

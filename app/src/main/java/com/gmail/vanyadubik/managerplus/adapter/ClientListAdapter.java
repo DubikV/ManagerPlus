@@ -26,7 +26,7 @@ public class ClientListAdapter extends BaseAdapter implements Filterable {
     private int mSelectedItem;
 
     public ClientListAdapter(Context context, List<Client_Element> list) {
-        this.mOriginalValues = list;
+        this.modelValues = list;
         this.context = context;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -43,12 +43,12 @@ public class ClientListAdapter extends BaseAdapter implements Filterable {
 
     @Override
     public int getCount() {
-        return mOriginalValues.size();
+        return modelValues.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mOriginalValues.get(position);
+        return modelValues.get(position);
     }
 
     @Override

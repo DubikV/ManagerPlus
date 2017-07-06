@@ -35,7 +35,6 @@ import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.utils.ElementUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -228,8 +227,6 @@ public class ClientListFragment extends Fragment implements FragmentBecameVisibl
 
 
     private void initSearch(){
-
-        final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
         bottomSheetDialog = new BottomSheetDialog(getContext(), R.style.BottomSheetDialog);
 

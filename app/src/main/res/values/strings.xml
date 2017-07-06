@@ -121,6 +121,12 @@
     <string name="deleted_selected_element">Видалити вибраний елемент?</string>
     <string name="error_delete_element">Помилка видалення</string>
     <string name="close_delete_element">Заборонено удаляти елементи</string>
+    <string name="selected_in_list">Виберіть зі списку: </string>
+    <string name="not_selected_element">Не вибрано елемент</string>
+    <string name="selected">Вибрано</string>
+    <string name="selection_list_not_found">Не вказано список вибору</string>
+    <string name="selection">Подбор</string>
+    <string name="selected_element">Вибрати даний елемент?</string>
 
     <!--Document-->
     <string name="error_delete_document_indb">Оскільки документ знаходиться в базі, його помічено на видалення</string>

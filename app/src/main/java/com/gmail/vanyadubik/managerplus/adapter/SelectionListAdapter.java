@@ -11,20 +11,20 @@ import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.gmail.vanyadubik.managerplus.R;
-import com.gmail.vanyadubik.managerplus.model.db.element.Element;
+import com.gmail.vanyadubik.managerplus.model.documents.SelectionItem;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class NameSearchAdapter extends BaseAdapter implements Filterable {
+public class SelectionListAdapter extends BaseAdapter implements Filterable {
 
-    private List<Element> modelValues;
-    private List<Element> mOriginalValues;
+    private List<SelectionItem> modelValues;
+    private List<SelectionItem> mOriginalValues;
     private Context context;
     private LayoutInflater layoutInflater;
 
-    public NameSearchAdapter(Context context, List<Element> modelValues) {
+    public SelectionListAdapter(Context context, List<SelectionItem> modelValues) {
         this.modelValues = modelValues;
         this.context = context;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -55,17 +55,17 @@ public class NameSearchAdapter extends BaseAdapter implements Filterable {
             view = layoutInflater.inflate(android.R.layout.simple_list_item_1, parent, false);
         }
 
-        final Element element = getElement(position);
+        final SelectionItem selectionItem = getSelectionItem(position);
 
         TextView infoNameTextView = (TextView) view.findViewById(android.R.id.text1);
-        infoNameTextView.setText(element.getName());
+        infoNameTextView.setText(selectionItem.getPresentation());
         infoNameTextView.setTextSize(context.getResources().getDimension(R.dimen.text_size_medium));
 
         return view;
     }
 
-    private Element getElement(int position) {
-        return (Element) getItem(position);
+    private SelectionItem getSelectionItem(int position) {
+        return (SelectionItem) getItem(position);
     }
 
     @NonNull
@@ -77,7 +77,7 @@ public class NameSearchAdapter extends BaseAdapter implements Filterable {
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
 
-                modelValues = (ArrayList<Element>) results.values; // has
+                modelValues = (ArrayList<SelectionItem>) results.values; // has
 
                 notifyDataSetChanged();
             }
@@ -86,7 +86,7 @@ public class NameSearchAdapter extends BaseAdapter implements Filterable {
             protected FilterResults performFiltering(CharSequence constraint) {
                 FilterResults results = new FilterResults(); // Holds the
 
-                List<Element> FilteredArrList = new ArrayList<Element>();
+                List<SelectionItem> FilteredArrList = new ArrayList<SelectionItem>();
 
                 if (mOriginalValues == null) {
                     mOriginalValues = new ArrayList<>(modelValues); // saves
@@ -101,12 +101,12 @@ public class NameSearchAdapter extends BaseAdapter implements Filterable {
                     Locale locale = Locale.getDefault();
                     constraint = constraint.toString().toLowerCase(locale);
                     for (int i = 0; i < mOriginalValues.size(); i++) {
-                        Element element = mOriginalValues.get(i);
+                        SelectionItem selectionItem = mOriginalValues.get(i);
 
-                        String data = element.getName();
+                        String data = selectionItem.getPresentation();
                         if (data.toLowerCase(locale).contains(constraint.toString())) {
 
-                            FilteredArrList.add(element);
+                            FilteredArrList.add(selectionItem);
                         }
                     }
                     // set the Filtered result to return

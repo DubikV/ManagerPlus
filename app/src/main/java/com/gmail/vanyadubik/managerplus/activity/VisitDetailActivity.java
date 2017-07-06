@@ -2,6 +2,7 @@ package com.gmail.vanyadubik.managerplus.activity;
 
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.jjobes.slidedatetimepicker.SlideDateTimeListener;
 import com.github.jjobes.slidedatetimepicker.SlideDateTimePicker;
@@ -23,23 +25,31 @@ import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.adapter.ClientSmalListAdapter;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
-import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.model.db.document.Visit_Document;
+import com.gmail.vanyadubik.managerplus.model.db.element.Client_Element;
+import com.gmail.vanyadubik.managerplus.model.documents.SelectionItem;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.utils.PhoneUtils;
 
 import org.joda.time.LocalDateTime;
+
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
 
+import static com.gmail.vanyadubik.managerplus.activity.SelectionActivity.SELECTION_ID_SELECTED_ITEM;
+import static com.gmail.vanyadubik.managerplus.activity.SelectionActivity.SELECTION_LIST_PARAM;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 
 public class VisitDetailActivity extends AppCompatActivity {
+
+    private static final int CAPTURE_SELECTION_CLIENT_ACTIVITY_REQ = 995;
 
     @Inject
     DataRepository dataRepository;
@@ -53,6 +63,7 @@ public class VisitDetailActivity extends AppCompatActivity {
     private LocationPoint visitPosition;
     private SimpleDateFormat dateFormatter;
     private ClientSmalListAdapter clientAdapter;
+    private List<Client_Element> allClientsList;
 
     private SlideDateTimeListener dateTimeListener = new SlideDateTimeListener() {
 
@@ -121,7 +132,17 @@ public class VisitDetailActivity extends AppCompatActivity {
                     int leftEdgeOfRightDrawable = mDetailClientView.getRight()
                             - mDetailClientView.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width();
                     if (event.getRawX() >= leftEdgeOfRightDrawable) {
-                        mDetailClientView.setText("");
+                        List<SelectionItem> selectionItemList = new ArrayList<SelectionItem>();
+                        for(Client_Element clientElement : allClientsList){
+                            selectionItemList.add(
+                                    new SelectionItem(clientElement.getExternalId(),
+                                            clientElement.getName()));
+                        }
+
+                        Intent intent = new Intent(VisitDetailActivity.this, SelectionActivity.class);
+                        intent.putExtra(SELECTION_LIST_PARAM, (Serializable) selectionItemList);
+                        startActivityForResult(intent, CAPTURE_SELECTION_CLIENT_ACTIVITY_REQ);
+
                         return true;
                     }
                 }
@@ -241,12 +262,38 @@ public class VisitDetailActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        List<Client_Element> clientsList = dataRepository.getAllClients();
+        allClientsList = dataRepository.getAllClients();
 
-        clientAdapter = new ClientSmalListAdapter(this, clientsList);
+        clientAdapter = new ClientSmalListAdapter(this, allClientsList);
 
         mDetailClientView.setThreshold(1);
         mDetailClientView.setAdapter(clientAdapter);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == CAPTURE_SELECTION_CLIENT_ACTIVITY_REQ) {
+            if (resultCode == RESULT_OK) {
+
+                String externalIdClient = data.getStringExtra(SELECTION_ID_SELECTED_ITEM);
+
+                if(externalIdClient == null || externalIdClient.isEmpty()){
+                    Toast.makeText(getApplicationContext(),
+                            getResources().getString(R.string.not_selected_element), Toast.LENGTH_SHORT)
+                            .show();
+                    return;
+                }
+
+                client = (Client_Element) dataRepository
+                        .getElementByExternaID(MobileManagerContract.ClientContract.TABLE_NAME,
+                                externalIdClient);
+                mDetailClientView.setText(client.getName());
+
+            }
+        }
 
     }
 
@@ -303,7 +350,7 @@ public class VisitDetailActivity extends AppCompatActivity {
             cancel = true;
         }
 
-        if (TextUtils.isEmpty(mDetailClientView.getText().toString())) {
+        if (client == null) {
             mDetailClientView.setError(getString(R.string.error_field_required));
             focusView = mDetailClientView;
             cancel = true;

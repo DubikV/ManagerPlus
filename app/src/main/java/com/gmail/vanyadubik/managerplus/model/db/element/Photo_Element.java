@@ -1,5 +1,12 @@
 package com.gmail.vanyadubik.managerplus.model.db.element;
 
+import android.content.Context;
+
+import com.gmail.vanyadubik.managerplus.R;
+import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
+import com.gmail.vanyadubik.managerplus.repository.DataRepository;
+import com.gmail.vanyadubik.managerplus.repository.DataRepositoryImpl;
+
 import java.util.Date;
 
 public class Photo_Element extends Element {
@@ -48,6 +55,26 @@ public class Photo_Element extends Element {
 
     public void setInfo(String info) {
         this.info = info;
+    }
+
+    public void saveInDB(Context context){
+
+        DataRepository dataRepository = new DataRepositoryImpl(context.getContentResolver());
+        dataRepository.insertPhoto(this);
+    }
+
+    public String deleteInDB(Context context){
+
+        DataRepository dataRepository = new DataRepositoryImpl(context.getContentResolver());
+
+        if(this.isInDB()) {
+            dataRepository.setElementByExternalId(MobileManagerContract.ClientContract.TABLE_NAME, this);
+            return context.getResources().getString(R.string.error_delete_element_indb);
+        }else{
+            dataRepository.deletedElement(MobileManagerContract.PhotoContract.TABLE_NAME, this.getExternalId());
+            return context.getResources().getString(R.string.deleted_element);
+        }
+
     }
 
     public static Builder builder() {

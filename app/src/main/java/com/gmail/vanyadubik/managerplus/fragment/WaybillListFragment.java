@@ -205,7 +205,7 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
 
                     selectionOn = false;
 
-                    initData();
+                    adapter.getFilter().filter("");
 
                     waybillSearchBtn.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_open));
                     waybillSearchBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
@@ -236,11 +236,7 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
 
     private void initData(){
 
-        if(selectionOn == true){
-            list = dataRepository.getWaybillByPeriod(selectPeriodStart, selectPeriodEnd);
-        }else {
-            list = dataRepository.getAllWaybill();
-        }
+        list = dataRepository.getAllWaybill();
 
         adapter = new WaybillListAdapter(getActivity(), list);
         adapter.setmSelectedItem(list.size());
@@ -267,10 +263,15 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
                 if (touchDate == 1) {
                     selectPeriodStart = date;
                     startdateEditText.setText(dateFormatter.format(date));
+
                 } else {
                     selectPeriodEnd = date;
                     enddateEditText.setText(dateFormatter.format(date));
                 }
+
+                adapter.getFilter().filter(String.valueOf(selectPeriodStart.getTime())
+                        + adapter.filterDivider
+                        +String.valueOf(selectPeriodEnd.getTime()));
             }
 
             @Override
@@ -318,7 +319,9 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
             public void onClick(View v) {
                 selectionOn = true;
 
-                initData();
+                adapter.getFilter().filter(String.valueOf(selectPeriodStart.getTime())
+                        + adapter.filterDivider
+                         +String.valueOf(selectPeriodEnd.getTime()));
 
                 waybillSearchBtn.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_open_color));
                 waybillSearchBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorGrey)));
@@ -333,7 +336,7 @@ public class WaybillListFragment extends Fragment implements FragmentBecameVisib
             public void onClick(View v) {
                 selectionOn = false;
 
-                initData();
+                adapter.getFilter().filter("");
 
                 waybillSearchBtn.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_open));
                 waybillSearchBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));

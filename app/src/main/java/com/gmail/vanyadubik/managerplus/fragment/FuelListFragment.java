@@ -31,7 +31,6 @@ import com.gmail.vanyadubik.managerplus.adapter.FuelListAdapter;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.FragmentBecameVisibleInterface;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
-import com.gmail.vanyadubik.managerplus.model.db.document.Document;
 import com.gmail.vanyadubik.managerplus.model.db.document.Fuel_Document;
 import com.gmail.vanyadubik.managerplus.model.documents.FuelList;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
@@ -195,7 +194,7 @@ public class FuelListFragment extends Fragment implements FragmentBecameVisibleI
 
                     selectionOn = false;
 
-                    initData();
+                    adapter.getFilter().filter("");
 
                     fuelSearchBtn.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_open));
                     fuelSearchBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
@@ -233,20 +232,7 @@ public class FuelListFragment extends Fragment implements FragmentBecameVisibleI
 
         list = new ArrayList<>();
 
-        List<Fuel_Document> fuellist = new ArrayList<>();
-
-        if(selectionOn == true){
-            List<Document> listDocuments = dataRepository.
-                    getDocumentsByPeriod(MobileManagerContract.FuelContract.TABLE_NAME,
-                            selectPeriodStart, selectPeriodEnd);
-
-            for (Document document : listDocuments) {
-                fuellist.add((Fuel_Document) document);
-            }
-
-        }else {
-            fuellist = dataRepository.getAllFuel();
-        }
+        List<Fuel_Document> fuellist = dataRepository.getAllFuel();
 
         for (Fuel_Document fuel_document : fuellist) {
             list.add(
@@ -286,6 +272,11 @@ public class FuelListFragment extends Fragment implements FragmentBecameVisibleI
                     selectPeriodEnd = date;
                     enddateEditText.setText(dateFormatter.format(date));
                 }
+
+                adapter.getFilter().filter(String.valueOf(selectPeriodStart.getTime())
+                        + adapter.filterDivider
+                        +String.valueOf(selectPeriodEnd.getTime()));
+
             }
 
             @Override
@@ -333,7 +324,9 @@ public class FuelListFragment extends Fragment implements FragmentBecameVisibleI
             public void onClick(View v) {
                 selectionOn = true;
 
-                initData();
+                adapter.getFilter().filter(String.valueOf(selectPeriodStart.getTime())
+                        + adapter.filterDivider
+                        +String.valueOf(selectPeriodEnd.getTime()));
 
                 fuelSearchBtn.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_open_color));
                 fuelSearchBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorGrey)));
@@ -348,7 +341,7 @@ public class FuelListFragment extends Fragment implements FragmentBecameVisibleI
             public void onClick(View v) {
                 selectionOn = false;
 
-                initData();
+                adapter.getFilter().filter("");
 
                 fuelSearchBtn.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_open));
                 fuelSearchBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));

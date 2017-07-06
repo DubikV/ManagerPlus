@@ -1,6 +1,11 @@
 package com.gmail.vanyadubik.managerplus.model.db.element;
 
-import com.gmail.vanyadubik.managerplus.model.db.document.Waybill_Document;
+import android.content.Context;
+
+import com.gmail.vanyadubik.managerplus.R;
+import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
+import com.gmail.vanyadubik.managerplus.repository.DataRepository;
+import com.gmail.vanyadubik.managerplus.repository.DataRepositoryImpl;
 
 public class Client_Element extends Element {
 
@@ -26,6 +31,27 @@ public class Client_Element extends Element {
 
     public String getPhone() {
         return phone;
+    }
+
+
+    public void saveInDB(Context context){
+
+        DataRepository dataRepository = new DataRepositoryImpl(context.getContentResolver());
+        dataRepository.insertClient(this);
+    }
+
+    public String deleteInDB(Context context){
+
+        DataRepository dataRepository = new DataRepositoryImpl(context.getContentResolver());
+
+        if(this.isInDB()) {
+            dataRepository.setElementByExternalId(MobileManagerContract.ClientContract.TABLE_NAME, this);
+            return context.getResources().getString(R.string.error_delete_element_indb);
+        }else{
+            dataRepository.deletedElement(MobileManagerContract.ClientContract.TABLE_NAME, this.getExternalId());
+            return context.getResources().getString(R.string.deleted_element);
+        }
+
     }
 
     public static Builder builder() {
