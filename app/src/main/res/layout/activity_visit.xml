@@ -71,16 +71,16 @@
             android:background="@color/colorWhite">
 
             <AutoCompleteTextView
+                android:id="@+id/visit_detail_client"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableEnd="@drawable/ic_three_point"
                 android:hint="@string/visit_client"
+                android:imeOptions="actionDone"
                 android:inputType="textPersonName"
                 android:maxLines="1"
-                android:textSize="@dimen/text_size_medium"
-                android:id="@+id/visit_detail_client"
-                android:drawableEnd="@drawable/ic_detail"
-                android:layout_weight="1"
-                android:imeOptions="actionDone"/>
+                android:textSize="@dimen/text_size_medium"/>
 
         </android.support.design.widget.TextInputLayout>
 

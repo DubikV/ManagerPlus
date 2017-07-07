@@ -156,6 +156,31 @@ public class VisitDetailActivity extends AppCompatActivity {
             }
         });
         mDetailInfoView = (EditText) findViewById(R.id.visit_detail_info);
+
+        mLatView = (EditText) findViewById(R.id.visit_detail_lat_edit);
+        mLongView = (EditText) findViewById(R.id.visit_detail_long_edit);
+
+        Button saveButton = (Button) findViewById(R.id.save_client_detail_button);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAGLOG, "Press button 'save member detail'");
+                saveData();
+            }
+        });
+
+        Button retMemberDet = (Button) findViewById(R.id.close_client_detail_button);
+        retMemberDet.setFocusable(true);
+        retMemberDet.setFocusableInTouchMode(true);
+        retMemberDet.requestFocus();
+        retMemberDet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeView();
+            }
+        });
+
+        initData();
     }
 
     @Override
@@ -195,7 +220,15 @@ public class VisitDetailActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    private void initData(){
         Bundle extras = getIntent().getExtras();
         Date date = LocalDateTime.now().toDate();
         if (extras != null) {
@@ -226,48 +259,17 @@ public class VisitDetailActivity extends AppCompatActivity {
             mDetailDateView.setText(dateFormatter.format(date));
         }
 
-
-
-        mLatView = (EditText) findViewById(R.id.visit_detail_lat_edit);
-        mLongView = (EditText) findViewById(R.id.visit_detail_long_edit);
-
-        if(visitPosition != null) {
-            mLatView.setText(String.valueOf(visitPosition.getLatitude()));
-            mLongView.setText(String.valueOf(visitPosition.getLongitude()));
-        }
-
-        Button saveButton = (Button) findViewById(R.id.save_client_detail_button);
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAGLOG, "Press button 'save member detail'");
-                saveData();
-            }
-        });
-
-        Button retMemberDet = (Button) findViewById(R.id.close_client_detail_button);
-        retMemberDet.setFocusable(true);
-        retMemberDet.setFocusableInTouchMode(true);
-        retMemberDet.requestFocus();
-        retMemberDet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               closeView();
-            }
-        });
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
         allClientsList = dataRepository.getAllClients();
 
         clientAdapter = new ClientSmalListAdapter(this, allClientsList);
 
         mDetailClientView.setThreshold(1);
         mDetailClientView.setAdapter(clientAdapter);
+
+        if(visitPosition != null) {
+            mLatView.setText(String.valueOf(visitPosition.getLatitude()));
+            mLongView.setText(String.valueOf(visitPosition.getLongitude()));
+        }
 
     }
 

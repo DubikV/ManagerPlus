@@ -1,6 +1,7 @@
 package com.gmail.vanyadubik.managerplus.app;
 
 import com.gmail.vanyadubik.managerplus.activity.AddedPhotosActivity;
+import com.gmail.vanyadubik.managerplus.activity.BootAct;
 import com.gmail.vanyadubik.managerplus.activity.ClientDetailActivity;
 import com.gmail.vanyadubik.managerplus.activity.FuelDetailActivity;
 import com.gmail.vanyadubik.managerplus.activity.GalleryActivity;
@@ -42,6 +43,8 @@ import dagger.Component;
         PhotoFileUtilsApiModule.class, ServiceUtilsApiModule.class,
         ElementUtilsApiModule.class})
 public interface DIComponent {
+
+    void inject(BootAct bootAct);
 
     void inject(StartActivity startActivity);
 
