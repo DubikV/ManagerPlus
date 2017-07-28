@@ -44,4 +44,5 @@
     <item name="ic_keyboard_arrow_right_white" type="drawable">@drawable/ic_keyboard_arrow_right_white</item>
     <item name="ic_clear" type="drawable">@drawable/ic_clear</item>
     <item name="ic_clear_white" type="drawable">@drawable/ic_clear_white</item>
+    <item name="ic_edit_white" type="drawable">@drawable/ic_edit_white</item>
 </resources>

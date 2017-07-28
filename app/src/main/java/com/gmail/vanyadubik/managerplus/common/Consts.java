@@ -33,6 +33,9 @@ public class Consts {
     public final static String USING_GPSTRACKING = "usingGpsTrackin";
     public final static String MIN_CURRENT_ACCURACY = "gpsTrackingMinAcuuracy";
 
+    // GOOGLE
+    public final static String GOOGLE_EMAIL_PARAM = "com.google";
+
     // GPS
     public static final long MIN_DISTANCE_WRITE_TRACK = 20; //30 meters  //20 - impression  40???
     public static final long MIN_TIME_WRITE_TRACK = 5; // 10seconds //5 - impression

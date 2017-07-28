@@ -11,6 +11,10 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import com.gmail.vanyadubik.managerplus.gps.service.Provider;
+
+import java.util.List;
+
 import static android.content.Context.LOCATION_SERVICE;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG_GPS;
 
@@ -20,7 +24,6 @@ public class AndroidLocationService implements LocationListener {
     private AndroidLocationUpdateListener androidLocationUpdateListener;
     private Context mContext;
     protected LocationManager locationManager;
-    private boolean isGPSEnabled, isNetworkEnabled;
     private static long timeInterval, distance;
     private boolean isStarted;
 
@@ -28,8 +31,6 @@ public class AndroidLocationService implements LocationListener {
         this.androidLocationUpdateListener = androidLocationUpdateListener;
         this.mContext = mContext;
         this.isStarted = false;
-
-        isGPSEnabled = isNetworkEnabled  = false;
 
         buildlocationManager();
     }
@@ -51,14 +52,6 @@ public class AndroidLocationService implements LocationListener {
         locationManager = (LocationManager) mContext
                 .getSystemService(LOCATION_SERVICE);
 
-        // getting GPS status
-        isGPSEnabled = locationManager
-                .isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        // getting network status
-        isNetworkEnabled = locationManager
-                .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
     }
 
     public void startLocationUpdates() {
@@ -72,60 +65,41 @@ public class AndroidLocationService implements LocationListener {
 
             }
 
-            if (!isGPSEnabled && !isNetworkEnabled) {
+            Provider provider = Provider.FromIndex(0);
 
-                locationManager.requestLocationUpdates(
-                        LocationManager.PASSIVE_PROVIDER,
-                        1000 * timeInterval,
-                        distance,
-                        this);
-                Log.d(TAGLOG_GPS, "pasive provider");
-                location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+            if (provider == Provider.PASSIVE) {
+                List<String> providerList = locationManager.getAllProviders();
+                if (providerList.contains(Provider.PROVIDER_GPS)) {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000 * timeInterval, distance, this);
 
-                androidLocationUpdateListener.startLocation(location);
-
-                androidLocationUpdateListener.cannotReceiveLocationUpdates("isGPSEnabled = " + isGPSEnabled +"; isNetworkEnabled = " + isNetworkEnabled);
-
-                isStarted = true;
-
-            }else {
-
-                if (isGPSEnabled) {
-                    locationManager.requestLocationUpdates(
-                            LocationManager.GPS_PROVIDER,
-                            1000 * timeInterval,
-                            distance,
-                            this);
                     Log.d(TAGLOG_GPS, "GPS used");
+
                     isStarted = true;
                     if (locationManager != null) {
                         location = locationManager
                                 .getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
                         androidLocationUpdateListener.startLocation(location);
-
                     }
                 }
+                if (providerList.contains(Provider.PROVIDER_NETWORK)) {
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000 * timeInterval, distance, this);
 
-                if (isNetworkEnabled) {
-                    if (location == null) {
-                        locationManager.requestLocationUpdates(
-                                LocationManager.NETWORK_PROVIDER,
-                                1000 * timeInterval,
-                                distance,
-                                this);
-                        Log.d(TAGLOG_GPS, "Network used");
-                        isStarted = true;
-                        if (locationManager != null) {
-                            location = locationManager
-                                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    Log.d(TAGLOG_GPS, "Network used");
 
-                            androidLocationUpdateListener.startLocation(location);
+                    isStarted = true;
+                    if (locationManager != null) {
+                        location = locationManager
+                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
-                        }
+                        androidLocationUpdateListener.startLocation(location);
+
                     }
+                    return;
                 }
+                return;
             }
+            locationManager.requestLocationUpdates(provider.getName(), 1000 * timeInterval, distance, this);
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -22,11 +22,14 @@ public class BootAct extends AppCompatActivity {
         Thread splashTread = new Thread() {
             @Override
             public void run() {
-
-                Intent intent = new Intent(BootAct.this, StartActivity.class);
-                startActivity(intent);
-                finish();
-
+                try {
+                    sleep(3000);
+                    Intent intent = new Intent(BootAct.this, StartActivity.class);
+                    startActivity(intent);
+                    finish();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         };
         splashTread.start();

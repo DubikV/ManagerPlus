@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gmail.vanyadubik.managerplus.R;
@@ -28,10 +29,13 @@ import com.gmail.vanyadubik.managerplus.fragment.ClientListFragment;
 import com.gmail.vanyadubik.managerplus.gps.service.GpsTrackingNotification;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
+import com.gmail.vanyadubik.managerplus.ui.LoginDialogNotification;
+import com.gmail.vanyadubik.managerplus.ui.LoginDialogNotificationListener;
 
 import javax.inject.Inject;
 
 import static com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService.MIN_COUNT;
+import static com.gmail.vanyadubik.managerplus.ui.LoginDialogNotification.LOGIN_GOOGLE;
 
 public class StartActivity extends AppCompatActivity{
     @Inject
@@ -186,6 +190,21 @@ public class StartActivity extends AppCompatActivity{
 
 
         });
+
+        ImageView googleAccEdit = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.google_acc_edit);
+        googleAccEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawerLayout.closeDrawers();
+                LoginDialogNotification loginDialogNotification = new LoginDialogNotification(StartActivity.this, LOGIN_GOOGLE, new LoginDialogNotificationListener() {
+                    @Override
+                    public void onLiginDialogResult() {
+
+                    }
+                });
+                loginDialogNotification.showNotification();
+            }
+        });
     }
 
     private void logout() {
@@ -234,6 +253,119 @@ public class StartActivity extends AppCompatActivity{
         button2.setTextSize(getResources().getDimension(R.dimen.alert_text_size));
         // TODO: (end stub) ------------------
     }
+
+//    private void logInGoogleAcc(){
+//
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//
+//        View dialogView = this.getLayoutInflater().inflate(R.layout.login_dialog,null);
+//
+//        final EditText usernameInput=(EditText)dialogView.findViewById(R.id.login);
+//        final EditText passwordInput=(EditText)dialogView.findViewById(R.id.password);
+//        builder.setView(dialogView);
+//        builder.setTitle(getResources().getString(R.string.google_acc_name));
+//        builder.setMessage(getResources().getString(R.string.google_acc_login));
+//
+//        builder.setPositiveButton(getString(R.string.questions_answer_save), new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int which) {
+//                String value1=usernameInput.getText().toString();
+//                String value2=passwordInput.getText().toString();
+//                if(value1.equals(null)&&value2.equals(null));
+//            }
+//        });
+//
+//        builder.setNegativeButton(getString(R.string.questions_answer_cancel), new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//
+//                dialog.dismiss();
+//            }
+//        });
+//
+//        builder.setNeutralButton(getString(R.string.questions_get_from_list), new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//
+//                dialog.dismiss();
+//
+//               // showListGoogleAcc();
+//
+//            }
+//        });
+//
+//        AlertDialog alert = builder.create();
+//        alert.show();
+//
+//        // TODO (start stub): to set size text in AlertDialog
+//        TextView textView = (TextView) alert.findViewById(android.R.id.message);
+//        textView.setTextSize(getResources().getDimension(R.dimen.alert_text_size));
+//        Button button1 = (Button) alert.findViewById(android.R.id.button1);
+//        button1.setTextSize(getResources().getDimension(R.dimen.alert_text_size_medium));
+//        Button button2 = (Button) alert.findViewById(android.R.id.button2);
+//        button2.setTextSize(getResources().getDimension(R.dimen.alert_text_size_medium));
+//        Button button3 = (Button) alert.findViewById(android.R.id.button3);
+//        button3.setTextSize(getResources().getDimension(R.dimen.alert_text_size_medium));
+//        // TODO: (end stub) ------------------
+//    }
+
+//    private void showListGoogleAcc(){
+//
+//        if ( Build.VERSION.SDK_INT >= 23 &&
+//
+//                ContextCompat.checkSelfPermission( getApplicationContext(), Manifest.permission.GET_ACCOUNTS ) != PackageManager.PERMISSION_GRANTED &&
+//                ContextCompat.checkSelfPermission( getApplicationContext(), Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
+//            return;
+//
+//        }
+//
+//        Account[] accountList = AccountManager.get(getApplicationContext()).getAccountsByType(GOOGLE_EMAIL_PARAM);
+//
+//        if(accountList.length == 0){
+//            Toast.makeText(this, getResources().getString(R.string.google_acc_device_not_found), Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//
+//        View dialogView = this.getLayoutInflater().inflate(R.layout.login_dialog,null);
+//
+//        final EditText usernameInput=(EditText)dialogView.findViewById(R.id.login);
+//        final EditText passwordInput=(EditText)dialogView.findViewById(R.id.password);
+//        builder.setView(dialogView);
+//        builder.setTitle(getResources().getString(R.string.google_acc_name));
+//        builder.setMessage(getResources().getString(R.string.google_acc_device_get));
+//
+//        builder.setPositiveButton(getString(R.string.questions_answer_save), new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int which) {
+//                String value1=usernameInput.getText().toString();
+//                String value2=passwordInput.getText().toString();
+//                if(value1.equals(null)&&value2.equals(null));
+//            }
+//        });
+//
+//        builder.setNegativeButton(getString(R.string.questions_answer_cancel), new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//
+//                dialog.dismiss();
+//            }
+//        });
+//
+//        AlertDialog alert = builder.create();
+//        alert.show();
+//
+//        // TODO (start stub): to set size text in AlertDialog
+//        TextView textView = (TextView) alert.findViewById(android.R.id.message);
+//        textView.setTextSize(getResources().getDimension(R.dimen.alert_text_size));
+//        Button button1 = (Button) alert.findViewById(android.R.id.button1);
+//        button1.setTextSize(getResources().getDimension(R.dimen.alert_text_size_medium));
+//        Button button2 = (Button) alert.findViewById(android.R.id.button2);
+//        button2.setTextSize(getResources().getDimension(R.dimen.alert_text_size_medium));
+//        Button button3 = (Button) alert.findViewById(android.R.id.button3);
+//        button3.setTextSize(getResources().getDimension(R.dimen.alert_text_size_medium));
+//        // TODO: (end stub) ------------------
+//    }
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
