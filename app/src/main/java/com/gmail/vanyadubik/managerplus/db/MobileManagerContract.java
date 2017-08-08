@@ -400,4 +400,38 @@ public class MobileManagerContract {
 
     }
 
+    public static final class VisitEventContract implements BaseColumns{
+
+        public static final String TABLE_NAME = "visit_event_list";
+
+        public static final String VISIT_ID = "visit_id";
+        public static final String EVENT_ID = "event_id";
+
+        public static final Uri CONTENT_URI =
+                Uri.withAppendedPath(
+                        MobileManagerContract.CONTENT_URI,
+                        TABLE_NAME);
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE
+                        + "/vnd."
+                        + AUTHORITY + "."
+                        + TABLE_NAME;
+
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE
+                        + "/vnd."
+                        + AUTHORITY + "."
+                        + TABLE_NAME;
+
+        public static final String[] PROJECTION_ALL =
+                {_ID, VISIT_ID, EVENT_ID};
+
+        public static final String[] UNIQUE_COLUMNS =
+                {VISIT_ID};
+
+        public static final String DEFAULT_SORT_ORDER = _ID + " ASC";
+
+    }
+
 }

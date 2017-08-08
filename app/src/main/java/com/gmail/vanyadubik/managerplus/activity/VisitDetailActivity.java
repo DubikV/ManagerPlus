@@ -24,6 +24,7 @@ import com.github.jjobes.slidedatetimepicker.SlideDateTimePicker;
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.adapter.ClientSmalListAdapter;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
+import com.gmail.vanyadubik.managerplus.calendarapi.GoogleCalendarApi;
 import com.gmail.vanyadubik.managerplus.db.MobileManagerContract;
 import com.gmail.vanyadubik.managerplus.model.db.LocationPoint;
 import com.gmail.vanyadubik.managerplus.model.db.document.Visit_Document;
@@ -55,6 +56,8 @@ public class VisitDetailActivity extends AppCompatActivity {
     DataRepository dataRepository;
     @Inject
     PhoneUtils phoneUtils;
+    @Inject
+    GoogleCalendarApi calendarApi;
 
     private Visit_Document visit;
     private Client_Element client;
@@ -380,20 +383,24 @@ public class VisitDetailActivity extends AppCompatActivity {
                 }
                 idPosition = dataRepository.insertLocationPoint(visitPosition);
             }
-            dataRepository.insertVisit(Visit_Document.builder()
+
+            Visit_Document visit_document = Visit_Document.builder()
                     .id(visit.getId())
                     .externalId(visit.getExternalId())
                     .deleted(visit.isDeleted())
                     .inDB(visit.isInDB())
                     .date(visit.getDate())
-                    .dateVisit(visit.getDateVisit())
+                    .dateVisit(visit.getDate())
                     .clientExternalId( client != null ? client.getExternalId() : "")
                     .createLP(visitPosition != null ? visitPosition.getId() : 0)
                     .visitLP(idPosition)
                     .typeVisit(mDetailTypeView.getText().toString())
                     .information(mDetailInfoView.getText().toString())
-                    .build());
+                    .build();
 
+            dataRepository.insertVisit(visit_document);
+
+            calendarApi.upgrateEventByVisit(visit_document);
             finish();
         }
     }

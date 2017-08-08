@@ -19,12 +19,13 @@ import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.Changing
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.ClientContract;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.FuelContract;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.LocationPointContract;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.PhotoContract;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.TrackListContract;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.UserSettings;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.UsingCarContrack;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.VisitContract;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.VisitEventContract;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.WaybillContract;
-import static  com.gmail.vanyadubik.managerplus.db.MobileManagerContract.PhotoContract;
 
 
 public class DataContentProvider extends ContentProvider{
@@ -53,6 +54,8 @@ public class DataContentProvider extends ContentProvider{
     private static final int FUEL_ID = 18;
     private static final int PHOTO_LIST = 19;
     private static final int PHOTO_ID = 20;
+    private static final int VISITEVENT_LIST = 21;
+    private static final int VISITEVENT_ID = 22;
 
     public DataContentProvider() {
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
@@ -76,6 +79,8 @@ public class DataContentProvider extends ContentProvider{
         URI_MATCHER.addURI(AUTHORITY, FuelContract.TABLE_NAME + "/#", FUEL_ID);
         URI_MATCHER.addURI(AUTHORITY, PhotoContract.TABLE_NAME, PHOTO_LIST);
         URI_MATCHER.addURI(AUTHORITY, PhotoContract.TABLE_NAME + "/#", PHOTO_ID);
+        URI_MATCHER.addURI(AUTHORITY, VisitEventContract.TABLE_NAME, VISITEVENT_LIST);
+        URI_MATCHER.addURI(AUTHORITY, VisitEventContract.TABLE_NAME + "/#", VISITEVENT_ID);
     }
     @Override
     public boolean onCreate() {
@@ -135,6 +140,10 @@ public class DataContentProvider extends ContentProvider{
                 return PhotoContract.CONTENT_TYPE;
             case PHOTO_ID:
                 return PhotoContract.CONTENT_ITEM_TYPE;
+            case VISITEVENT_LIST:
+                return VisitEventContract.CONTENT_TYPE;
+            case VISITEVENT_ID:
+                return VisitEventContract.CONTENT_ITEM_TYPE;
 
             default:
                 throw new RuntimeException("Cannot identify uri " + uri.toString());
@@ -290,6 +299,9 @@ public class DataContentProvider extends ContentProvider{
             case PHOTO_ID:
             case PHOTO_LIST:
                 return PhotoContract.TABLE_NAME;
+            case VISITEVENT_ID:
+            case VISITEVENT_LIST:
+                return VisitEventContract.TABLE_NAME;
             default:
                 throw new RuntimeException("Cannot identify uri " + uri.toString());
         }
@@ -327,6 +339,9 @@ public class DataContentProvider extends ContentProvider{
             case PHOTO_ID:
             case PHOTO_LIST:
                 return PhotoContract.UNIQUE_COLUMNS;
+            case VISITEVENT_ID:
+            case VISITEVENT_LIST:
+                return VisitEventContract.UNIQUE_COLUMNS;
             default:
                 throw new RuntimeException("Cannot identify uri " + uri.toString());
         }

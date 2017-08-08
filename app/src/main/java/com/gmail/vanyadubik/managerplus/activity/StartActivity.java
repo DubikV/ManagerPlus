@@ -55,13 +55,14 @@ import static com.gmail.vanyadubik.managerplus.common.Consts.GOOGLE_ACC_IMAGE;
 import static com.gmail.vanyadubik.managerplus.common.Consts.GOOGLE_ACC_NAME;
 import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 import static com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService.MIN_COUNT;
-import static com.gmail.vanyadubik.managerplus.ui.LoginDialogNotification.CAPTURE_LOGIN_DIALOG_GOOGLE_REQ;
 
 public class StartActivity extends AppCompatActivity{
     @Inject
     DataRepository dataRepository;
     @Inject
     ActivityUtils activityUtils;
+
+    private static final int CAPTURE_LOGIN_DIALOG_GOOGLE_REQ = 1001;
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;

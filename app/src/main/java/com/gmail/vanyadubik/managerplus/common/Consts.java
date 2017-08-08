@@ -11,6 +11,7 @@ public class Consts {
     public final static String TAGLOG_SYNC_TRACK = "ManagerPlus_Sync_Track";
     public final static String TAGLOG_TASK = "ManagerPlus_Task_schedure";
     public final static String TAGLOG_IMAGE = "ManagerPlus_Task_image";
+    public final static String TAGLOG_G_CALENDAR = "ManagerPlus_G_Calendar";
 
     public static final String APPLICATION_PROPERTIES = "application.properties";
     public final static String DIRECTORY_APP = "ManagerPlusDir";
