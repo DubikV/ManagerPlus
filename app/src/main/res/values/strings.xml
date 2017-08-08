@@ -23,8 +23,8 @@
     <string name="google_acc_name">Акаунт Google</string>
     <string name="google_acc_login">Введіть email та пароль google акаунту</string>
     <string name="google_email_name">Email</string>
-    <string name="google_acc_device_not_found">На пристрої не знайдено облікових записів Google.</string>
-    <string name="google_acc_device_get">Виберіть обліковий запис із існуючих на пристрої</string>
+    <string name="google_account_not_connect">не вдалося підєднатися до сервісу Google.</string>
+    <string name="google_account_not_found">Не знайдено профіль акаунту</string>
 
     <!-- Settings -->
     <string name="prompt_login">Логін</string>
@@ -111,6 +111,8 @@
     <string name="search">Пошук:</string>
     <string name="enter_world_search">Введіть слово для пошуку</string>
     <string name="questions_get_from_list">Акаунти пристрою</string>
+    <string name="synchronization">Синхронізація</string>
+    <string name="synchronize_visits_google_acc">Синхронізувати події з Google Календарем Акаунту</string>
 
     <!--Name objects-->
     <string name="map_name">Карта</string>

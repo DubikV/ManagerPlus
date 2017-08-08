@@ -2,6 +2,6 @@ package com.gmail.vanyadubik.managerplus.ui;
 
 public interface LoginDialogNotificationListener {
 
-    void onLiginDialogResult();
+    void onLiginDialogResult(Boolean result);
 
 }

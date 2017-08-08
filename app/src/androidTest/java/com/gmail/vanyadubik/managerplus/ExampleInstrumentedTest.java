@@ -1,4 +1,4 @@
-package com.gmail.vanyadubik.mobilemanager;
+package com.gmail.vanyadubik.managerplus;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.gmail.vanyadubik.mobilemanager", appContext.getPackageName());
+        assertEquals("com.gmail.vanyadubik.managerplus", appContext.getPackageName());
     }
 }

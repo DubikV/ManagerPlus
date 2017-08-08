@@ -12,13 +12,15 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <ImageView
-        android:id="@+id/imageIcon"
+    <com.gmail.vanyadubik.managerplus.ui.CircleImageView
+        android:id="@+id/google_acc_icon"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        app:srcCompat="@android:drawable/sym_def_app_icon"/>
+        app:civ_border_color="@color/colorWhite"
+        app:civ_border_width="2dp"
+        app:srcCompat="@drawable/ic_user"
+        android:layout_above="@+id/google_acc_name"/>
 
     <ImageView
         android:id="@+id/google_acc_edit"
@@ -30,11 +32,11 @@
         app:srcCompat="@drawable/ic_edit_white"/>
 
     <TextView
-        android:id="@+id/goole_acc_name"
+        android:id="@+id/google_acc_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/goole_acc_mail"
-        android:layout_alignStart="@+id/goole_acc_mail"
+        android:layout_above="@+id/google_acc_mail"
+        android:layout_alignStart="@+id/google_acc_mail"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:text="Android Studio"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
@@ -42,7 +44,7 @@
         android:textSize="@dimen/textsize_google_acc"/>
 
     <TextView
-        android:id="@+id/goole_acc_mail"
+        android:id="@+id/google_acc_mail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

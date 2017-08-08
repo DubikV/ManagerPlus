@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
@@ -13,6 +14,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +22,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gmail.vanyadubik.managerplus.R;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.TabFragmentVisit;
@@ -29,23 +32,45 @@ import com.gmail.vanyadubik.managerplus.fragment.ClientListFragment;
 import com.gmail.vanyadubik.managerplus.gps.service.GpsTrackingNotification;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
-import com.gmail.vanyadubik.managerplus.ui.LoginDialogNotification;
-import com.gmail.vanyadubik.managerplus.ui.LoginDialogNotificationListener;
+import com.gmail.vanyadubik.managerplus.ui.CircleImageView;
+import com.gmail.vanyadubik.managerplus.utils.ActivityUtils;
+import com.gmail.vanyadubik.managerplus.utils.SharedStorage;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Scope;
+import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
 
+import static com.gmail.vanyadubik.managerplus.common.Consts.GOOGLE_ACC_CONNECTED;
+import static com.gmail.vanyadubik.managerplus.common.Consts.GOOGLE_ACC_CONNECTED_VISITS;
+import static com.gmail.vanyadubik.managerplus.common.Consts.GOOGLE_ACC_EMAIL;
+import static com.gmail.vanyadubik.managerplus.common.Consts.GOOGLE_ACC_ID;
+import static com.gmail.vanyadubik.managerplus.common.Consts.GOOGLE_ACC_IMAGE;
+import static com.gmail.vanyadubik.managerplus.common.Consts.GOOGLE_ACC_NAME;
+import static com.gmail.vanyadubik.managerplus.common.Consts.TAGLOG;
 import static com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService.MIN_COUNT;
-import static com.gmail.vanyadubik.managerplus.ui.LoginDialogNotification.LOGIN_GOOGLE;
+import static com.gmail.vanyadubik.managerplus.ui.LoginDialogNotification.CAPTURE_LOGIN_DIALOG_GOOGLE_REQ;
 
 public class StartActivity extends AppCompatActivity{
     @Inject
     DataRepository dataRepository;
+    @Inject
+    ActivityUtils activityUtils;
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private String mActivityTitle;
+    private CircleImageView googleAccIcon;
+    private TextView googleAccName, googleAccEmail;
     private FragmentManager mFragmentManager;
     private FragmentTransaction mFragmentTransaction;
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +85,8 @@ public class StartActivity extends AppCompatActivity{
         initNavigationView();
 
         initTabs();
+
+        initGoogleAccount();
     }
 
     @Override
@@ -191,20 +218,74 @@ public class StartActivity extends AppCompatActivity{
 
         });
 
+        googleAccIcon = (CircleImageView)navigationView.getHeaderView(0).findViewById(R.id.google_acc_icon);
+        googleAccName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.google_acc_name);
+        googleAccEmail = (TextView)navigationView.getHeaderView(0).findViewById(R.id.google_acc_mail);
+
+        initDataNavogationBar();
+
         ImageView googleAccEdit = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.google_acc_edit);
         googleAccEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDrawerLayout.closeDrawers();
-                LoginDialogNotification loginDialogNotification = new LoginDialogNotification(StartActivity.this, LOGIN_GOOGLE, new LoginDialogNotificationListener() {
-                    @Override
-                    public void onLiginDialogResult() {
-
-                    }
-                });
-                loginDialogNotification.showNotification();
+                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                startActivityForResult(signInIntent, CAPTURE_LOGIN_DIALOG_GOOGLE_REQ);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CAPTURE_LOGIN_DIALOG_GOOGLE_REQ) {
+            if(resultCode == RESULT_OK && data != null &&
+                    data.getExtras() != null) {
+                GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                Log.d(TAGLOG, "handleSignInResult:" + result.isSuccess());
+                if (result.isSuccess()) {
+                    GoogleSignInAccount googleSignInAccount = result.getSignInAccount();
+                    SharedStorage.setBoolean(getApplicationContext(), GOOGLE_ACC_CONNECTED, true);
+                    SharedStorage.setString(getApplicationContext(), GOOGLE_ACC_ID, (String) googleSignInAccount.getId());
+                    SharedStorage.setString(getApplicationContext(), GOOGLE_ACC_NAME, (String) googleSignInAccount.getDisplayName());
+                    SharedStorage.setString(getApplicationContext(), GOOGLE_ACC_EMAIL, (String) googleSignInAccount.getEmail());
+                    SharedStorage.setString(getApplicationContext(), GOOGLE_ACC_IMAGE, String.valueOf(googleSignInAccount.getPhotoUrl()));
+
+                    activityUtils.showQuestion(StartActivity.this, getString(R.string.synchronization), getString(R.string.synchronize_visits_google_acc), new ActivityUtils.QuestionAnswer() {
+                        @Override
+                        public void onPositiveAnsver() {
+                            SharedStorage.setBoolean(getApplicationContext(), GOOGLE_ACC_CONNECTED_VISITS, true);
+                        }
+
+                        @Override
+                        public void onNegativeAnsver() {
+                            SharedStorage.setBoolean(getApplicationContext(), GOOGLE_ACC_CONNECTED_VISITS, false);
+                        }
+                        @Override
+                        public void onNeutralAnsver() {}
+                    });
+                } else {
+                    Toast.makeText(this, getResources().getString(R.string.google_account_not_connect), Toast.LENGTH_LONG).show();
+                    SharedStorage.setBoolean(getApplicationContext(), GOOGLE_ACC_CONNECTED, false);
+                    SharedStorage.setString(getApplicationContext(), GOOGLE_ACC_ID, "");
+                    SharedStorage.setString(getApplicationContext(), GOOGLE_ACC_NAME, "");
+                    SharedStorage.setString(getApplicationContext(), GOOGLE_ACC_EMAIL, "");
+                    SharedStorage.setString(getApplicationContext(), GOOGLE_ACC_IMAGE, "");
+                    SharedStorage.setBoolean(getApplicationContext(), GOOGLE_ACC_CONNECTED_VISITS, false);
+                }
+            }else if(resultCode != RESULT_CANCELED){
+                Toast.makeText(this, getResources().getString(R.string.google_account_not_connect), Toast.LENGTH_LONG).show();
+                SharedStorage.setBoolean(getApplicationContext(), GOOGLE_ACC_CONNECTED, false);
+                SharedStorage.setString(getApplicationContext(), GOOGLE_ACC_ID, "");
+                SharedStorage.setString(getApplicationContext(), GOOGLE_ACC_NAME, "");
+                SharedStorage.setString(getApplicationContext(), GOOGLE_ACC_EMAIL, "");
+                SharedStorage.setString(getApplicationContext(), GOOGLE_ACC_IMAGE, "");
+                SharedStorage.setBoolean(getApplicationContext(), GOOGLE_ACC_CONNECTED_VISITS, false);
+            }
+            initDataNavogationBar();
+        }
+
     }
 
     private void logout() {
@@ -254,119 +335,6 @@ public class StartActivity extends AppCompatActivity{
         // TODO: (end stub) ------------------
     }
 
-//    private void logInGoogleAcc(){
-//
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//
-//        View dialogView = this.getLayoutInflater().inflate(R.layout.login_dialog,null);
-//
-//        final EditText usernameInput=(EditText)dialogView.findViewById(R.id.login);
-//        final EditText passwordInput=(EditText)dialogView.findViewById(R.id.password);
-//        builder.setView(dialogView);
-//        builder.setTitle(getResources().getString(R.string.google_acc_name));
-//        builder.setMessage(getResources().getString(R.string.google_acc_login));
-//
-//        builder.setPositiveButton(getString(R.string.questions_answer_save), new DialogInterface.OnClickListener() {
-//            public void onClick(DialogInterface dialog, int which) {
-//                String value1=usernameInput.getText().toString();
-//                String value2=passwordInput.getText().toString();
-//                if(value1.equals(null)&&value2.equals(null));
-//            }
-//        });
-//
-//        builder.setNegativeButton(getString(R.string.questions_answer_cancel), new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//
-//                dialog.dismiss();
-//            }
-//        });
-//
-//        builder.setNeutralButton(getString(R.string.questions_get_from_list), new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//
-//                dialog.dismiss();
-//
-//               // showListGoogleAcc();
-//
-//            }
-//        });
-//
-//        AlertDialog alert = builder.create();
-//        alert.show();
-//
-//        // TODO (start stub): to set size text in AlertDialog
-//        TextView textView = (TextView) alert.findViewById(android.R.id.message);
-//        textView.setTextSize(getResources().getDimension(R.dimen.alert_text_size));
-//        Button button1 = (Button) alert.findViewById(android.R.id.button1);
-//        button1.setTextSize(getResources().getDimension(R.dimen.alert_text_size_medium));
-//        Button button2 = (Button) alert.findViewById(android.R.id.button2);
-//        button2.setTextSize(getResources().getDimension(R.dimen.alert_text_size_medium));
-//        Button button3 = (Button) alert.findViewById(android.R.id.button3);
-//        button3.setTextSize(getResources().getDimension(R.dimen.alert_text_size_medium));
-//        // TODO: (end stub) ------------------
-//    }
-
-//    private void showListGoogleAcc(){
-//
-//        if ( Build.VERSION.SDK_INT >= 23 &&
-//
-//                ContextCompat.checkSelfPermission( getApplicationContext(), Manifest.permission.GET_ACCOUNTS ) != PackageManager.PERMISSION_GRANTED &&
-//                ContextCompat.checkSelfPermission( getApplicationContext(), Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
-//            return;
-//
-//        }
-//
-//        Account[] accountList = AccountManager.get(getApplicationContext()).getAccountsByType(GOOGLE_EMAIL_PARAM);
-//
-//        if(accountList.length == 0){
-//            Toast.makeText(this, getResources().getString(R.string.google_acc_device_not_found), Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//
-//        View dialogView = this.getLayoutInflater().inflate(R.layout.login_dialog,null);
-//
-//        final EditText usernameInput=(EditText)dialogView.findViewById(R.id.login);
-//        final EditText passwordInput=(EditText)dialogView.findViewById(R.id.password);
-//        builder.setView(dialogView);
-//        builder.setTitle(getResources().getString(R.string.google_acc_name));
-//        builder.setMessage(getResources().getString(R.string.google_acc_device_get));
-//
-//        builder.setPositiveButton(getString(R.string.questions_answer_save), new DialogInterface.OnClickListener() {
-//            public void onClick(DialogInterface dialog, int which) {
-//                String value1=usernameInput.getText().toString();
-//                String value2=passwordInput.getText().toString();
-//                if(value1.equals(null)&&value2.equals(null));
-//            }
-//        });
-//
-//        builder.setNegativeButton(getString(R.string.questions_answer_cancel), new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//
-//                dialog.dismiss();
-//            }
-//        });
-//
-//        AlertDialog alert = builder.create();
-//        alert.show();
-//
-//        // TODO (start stub): to set size text in AlertDialog
-//        TextView textView = (TextView) alert.findViewById(android.R.id.message);
-//        textView.setTextSize(getResources().getDimension(R.dimen.alert_text_size));
-//        Button button1 = (Button) alert.findViewById(android.R.id.button1);
-//        button1.setTextSize(getResources().getDimension(R.dimen.alert_text_size_medium));
-//        Button button2 = (Button) alert.findViewById(android.R.id.button2);
-//        button2.setTextSize(getResources().getDimension(R.dimen.alert_text_size_medium));
-//        Button button3 = (Button) alert.findViewById(android.R.id.button3);
-//        button3.setTextSize(getResources().getDimension(R.dimen.alert_text_size_medium));
-//        // TODO: (end stub) ------------------
-//    }
-
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -378,4 +346,46 @@ public class StartActivity extends AppCompatActivity{
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
+
+    private void initGoogleAccount(){
+
+        GoogleSignInOptions gso = new GoogleSignInOptions
+                .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestScopes(new Scope(Scopes.PLUS_LOGIN))
+                .build();
+
+        // Build the GoogleApiClient object
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+                        Log.d(TAGLOG, "Could not connect to Google Play Services");
+                    }
+                })
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+    }
+
+     private void initDataNavogationBar(){
+
+         if(SharedStorage.getBoolean(getApplicationContext(), GOOGLE_ACC_CONNECTED, false)) {
+             String imageUri = (String) SharedStorage.getString(getApplicationContext(), GOOGLE_ACC_IMAGE, "");
+             if (googleAccIcon != null &&
+                     imageUri != null &&
+                     !imageUri.isEmpty()) {
+                 Picasso.with(getApplicationContext())
+                         .load(imageUri)
+                         .placeholder(this.getResources().getDrawable(R.drawable.ic_user))
+                         .fit()
+                         .into(googleAccIcon);
+             }
+             if(googleAccName!=null) {
+                 googleAccName.setText((String) SharedStorage.getString(getApplicationContext(), GOOGLE_ACC_NAME, ""));
+             }
+             if(googleAccName!=null) {
+                 googleAccEmail.setText((String) SharedStorage.getString(getApplicationContext(), GOOGLE_ACC_EMAIL, ""));
+             }
+         }
+     }
 }
