@@ -131,6 +131,7 @@ public class CalendarApiImpl implements GoogleCalendarApi {
                         visit_document.getInformation(),
                         visit_document.getInformation(),
                         eventId, calendarId);
+                insertVisitEvent(visit_document.getId(), eventId);
             }else{
                 result = addEvent(visit_document.getDateVisit(),
                     visit_document.getDateVisit(),
@@ -222,8 +223,9 @@ public class CalendarApiImpl implements GoogleCalendarApi {
                 new String[]{},
                 VisitEventContract.DEFAULT_SORT_ORDER)) {
 
-            if (cursor == null) return 0;
-
+            if (cursor == null || !cursor.moveToFirst() || cursor.getInt(cursor.getColumnIndex("count()")) == 0) {
+                return 0;
+            }
             return cursor.getInt(cursor.getColumnIndex(VisitEventContract.EVENT_ID));
         }
     }
