@@ -23,8 +23,9 @@
     <string name="google_acc_name">Акаунт Google</string>
     <string name="google_acc_login">Введіть email та пароль google акаунту</string>
     <string name="google_email_name">Email</string>
-    <string name="google_account_not_connect">не вдалося підєднатися до сервісу Google.</string>
+    <string name="google_account_not_connect">Не вдалося підєднатися до сервісу Google.</string>
     <string name="google_account_not_found">Не знайдено профіль акаунту</string>
+    <string name="google_account_not_entered">Не введено профіль акаунту</string>
 
     <!-- Settings -->
     <string name="prompt_login">Логін</string>

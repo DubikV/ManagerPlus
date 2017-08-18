@@ -157,7 +157,7 @@ public class VisitListFragment extends Fragment implements FragmentBecameVisible
                     public void onClick(DialogInterface dialog, int which) {
 
                         Toast.makeText(getActivity(),
-                                elementUtils.deleteDocument(selectedvisit, MobileManagerContract.WaybillContract.TABLE_NAME), Toast.LENGTH_SHORT)
+                                elementUtils.deleteDocument(selectedvisit, MobileManagerContract.VisitContract.TABLE_NAME), Toast.LENGTH_SHORT)
                                 .show();
 
                         initData();

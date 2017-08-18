@@ -646,7 +646,7 @@ public class DataRepositoryImpl implements DataRepository{
                 new String[]{},
                 VisitEventContract.DEFAULT_SORT_ORDER)) {
 
-            if (cursor == null || !cursor.moveToFirst() || cursor.getInt(cursor.getColumnIndex("count()")) == 0) {
+            if (cursor == null || !cursor.moveToFirst()) {
                 return null;
             }
             visitId = cursor.getInt(cursor.getColumnIndex(VisitEventContract.VISIT_ID));

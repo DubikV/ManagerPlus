@@ -29,7 +29,6 @@ import com.gmail.vanyadubik.managerplus.adapter.tabadapter.TabFragmentVisit;
 import com.gmail.vanyadubik.managerplus.adapter.tabadapter.TabFragmentWaybill;
 import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.fragment.ClientListFragment;
-import com.gmail.vanyadubik.managerplus.gps.service.GpsTrackingNotification;
 import com.gmail.vanyadubik.managerplus.repository.DataRepository;
 import com.gmail.vanyadubik.managerplus.service.gps.SyncIntentTrackService;
 import com.gmail.vanyadubik.managerplus.ui.CircleImageView;
@@ -117,7 +116,7 @@ public class StartActivity extends AppCompatActivity{
         }
 
         if (id == R.id.action_startServiceLocation) {
-            startActivity(new Intent(this, GpsTrackingNotification.class).putExtra("fromServiceGpsTrackingNotify", true));
+            startActivity(new Intent(StartActivity.this, MapTrackerActivity.class));
             return true;
         }
 
@@ -275,7 +274,7 @@ public class StartActivity extends AppCompatActivity{
                     SharedStorage.setString(getApplicationContext(), GOOGLE_ACC_IMAGE, "");
                     SharedStorage.setBoolean(getApplicationContext(), GOOGLE_ACC_CONNECTED_VISITS, false);
                 }
-            }else if(resultCode != RESULT_CANCELED){
+            }else if(resultCode == RESULT_CANCELED){
                 Toast.makeText(this, getResources().getString(R.string.google_account_not_connect), Toast.LENGTH_LONG).show();
                 SharedStorage.setBoolean(getApplicationContext(), GOOGLE_ACC_CONNECTED, false);
                 SharedStorage.setString(getApplicationContext(), GOOGLE_ACC_ID, "");

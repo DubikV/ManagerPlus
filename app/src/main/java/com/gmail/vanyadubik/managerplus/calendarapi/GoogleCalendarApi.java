@@ -19,7 +19,9 @@ public interface GoogleCalendarApi {
 
     int upgrateEventByVisit(Visit_Document visit_document);
 
-    int deletedEvent(long eventID);
+    int deleteEvent(long eventID);
+
+    int deleteEventByVisit(Visit_Document visit_document);
 
     long getCalendarID();
 

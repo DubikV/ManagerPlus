@@ -9,6 +9,8 @@
     <dimen name="text_size_medium">16dp</dimen>
     <dimen name="text_size_small">8dp</dimen>
 
+    <dimen name="tab_main_layout_port_height">700dp</dimen>
+    <dimen name="tab_main_layout_land_height">400dp</dimen>
     <dimen name="tab_layout_height">15dp</dimen>
     <dimen name="marging_button_map">7dp</dimen>
 

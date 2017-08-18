@@ -122,25 +122,24 @@ public class CalendarApiImpl implements GoogleCalendarApi {
         int rows = 0;
 
         if(SharedStorage.getBoolean(mContext, GOOGLE_ACC_CONNECTED_VISITS, false)){
-            int eventId = getEventIdByVisitId(visit_document.getId());
+            long eventId = getEventIdByVisitId(visit_document.getId());
             long calendarId = getCalendarID();
-            long result = 0;
             if(eventId> 0){
-                result = upgrateEvent(visit_document.getDateVisit(),
+                long result = upgrateEvent(visit_document.getDateVisit(),
                         visit_document.getDateVisit(),
                         visit_document.getInformation(),
                         visit_document.getInformation(),
                         eventId, calendarId);
-                insertVisitEvent(visit_document.getId(), eventId);
             }else{
-                result = addEvent(visit_document.getDateVisit(),
+                eventId = addEvent(visit_document.getDateVisit(),
                     visit_document.getDateVisit(),
                     visit_document.getInformation(),
                     visit_document.getInformation(),
                     calendarId);
-                }
+                insertVisitEvent(visit_document.getId(), eventId);
+            }
 
-            if(result>0) {
+            if(eventId>0) {
                 addReminders(eventId, 15, Reminders.METHOD_ALERT);
             }
         }
@@ -148,7 +147,22 @@ public class CalendarApiImpl implements GoogleCalendarApi {
     }
 
     @Override
-    public int deletedEvent(long eventID) {
+    public int deleteEventByVisit(Visit_Document visit_document) {
+
+        int rows = 0;
+
+        if(SharedStorage.getBoolean(mContext, GOOGLE_ACC_CONNECTED_VISITS, false)){
+            long eventId = getEventIdByVisitId(visit_document.getId());
+            if(eventId> 0){
+                rows = deleteEvent(eventId);
+            }
+        }
+        return rows;
+
+    }
+
+    @Override
+    public int deleteEvent(long eventID) {
 
         Uri deleteUri = ContentUris.withAppendedId(Events.CONTENT_URI, eventID);
         int rows = contentResolver.delete(deleteUri, null, null);
@@ -219,18 +233,17 @@ public class CalendarApiImpl implements GoogleCalendarApi {
         try (Cursor cursor = contentResolver.query(
                 VisitEventContract.CONTENT_URI,
                 VisitEventContract.PROJECTION_ALL,
-                VisitEventContract.VISIT_ID + "='" + visitId + "'",
-                new String[]{},
-                VisitEventContract.DEFAULT_SORT_ORDER)) {
+                VisitEventContract.VISIT_ID + "=" + visitId,
+                null, VisitEventContract.DEFAULT_SORT_ORDER)) {
 
-            if (cursor == null || !cursor.moveToFirst() || cursor.getInt(cursor.getColumnIndex("count()")) == 0) {
+            if (cursor == null || !cursor.moveToFirst()) {
                 return 0;
             }
             return cursor.getInt(cursor.getColumnIndex(VisitEventContract.EVENT_ID));
         }
     }
 
-    public void insertVisitEvent(int visitId, int eventId) {
+    public void insertVisitEvent(int visitId, long eventId) {
         ContentValues values = new ContentValues();
         values.put(VisitEventContract.VISIT_ID, visitId);
         values.put(VisitEventContract.EVENT_ID, eventId);
