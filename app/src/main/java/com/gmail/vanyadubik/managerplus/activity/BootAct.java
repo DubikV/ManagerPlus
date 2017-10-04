@@ -26,7 +26,6 @@ public class BootAct extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-<<<<<<< HEAD
                     int waited = 0;
 
                     ((ManagerPlusAplication) getApplication()).getComponent().inject(BootAct.this);
@@ -45,16 +44,6 @@ public class BootAct extends AppCompatActivity {
                 } finally {
                     BootAct.this.finish();
                 }
-
-=======
-                    sleep(3000);
-                    Intent intent = new Intent(BootAct.this, StartActivity.class);
-                    startActivity(intent);
-                    finish();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
->>>>>>> 7a66e109a38cb275f64a1f2e522f27a7739588e0
             }
         };
         splashTread.start();
