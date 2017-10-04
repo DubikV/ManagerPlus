@@ -3,11 +3,7 @@ package com.gmail.vanyadubik.managerplus.activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,7 +18,6 @@ import com.gmail.vanyadubik.managerplus.app.ManagerPlusAplication;
 import com.gmail.vanyadubik.managerplus.model.PhotoItem;
 import com.gmail.vanyadubik.managerplus.utils.PhotoFIleUtils;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -55,8 +50,6 @@ public class GalleryActivity extends AppCompatActivity {
                                     int position, long arg3) {
                 if (null != allImages && !allImages.isEmpty())
                    showAskAlert(allImages.get(position).getAbsolutePath());
-                ;
-
             }
         });
 

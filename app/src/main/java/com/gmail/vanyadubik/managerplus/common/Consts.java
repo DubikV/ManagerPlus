@@ -11,6 +11,7 @@ public class Consts {
     public final static String TAGLOG_SYNC_TRACK = "ManagerPlus_Sync_Track";
     public final static String TAGLOG_TASK = "ManagerPlus_Task_schedure";
     public final static String TAGLOG_IMAGE = "ManagerPlus_Task_image";
+    public final static String TAGLOG_G_CALENDAR = "ManagerPlus_G_Calendar";
 
     public static final String APPLICATION_PROPERTIES = "application.properties";
     public final static String DIRECTORY_APP = "ManagerPlusDir";
@@ -32,6 +33,9 @@ public class Consts {
     public final static String DEVELOP_MODE = "developMode";
     public final static String USING_GPSTRACKING = "usingGpsTrackin";
     public final static String MIN_CURRENT_ACCURACY = "gpsTrackingMinAcuuracy";
+
+    // GOOGLE
+    public final static String GOOGLE_EMAIL_PARAM = "com.google";
 
     // GPS
     public static final long MIN_DISTANCE_WRITE_TRACK = 20; //30 meters  //20 - impression  40???
@@ -58,5 +62,14 @@ public class Consts {
     public final static int GPS_SYNK_SERVISE_JOB_ID = 2;
 
     public final static String CLEAR_DATE = "00.00.0000 00:00";
+
+    //Google Account
+    public final static String GOOGLE_ACC_CONNECTED = "google_account_connected";
+    public final static String GOOGLE_ACC_ID = "google_account_id";
+    public final static String GOOGLE_ACC_URL = "google_account_url";
+    public final static String GOOGLE_ACC_EMAIL = "google_account_email";
+    public final static String GOOGLE_ACC_IMAGE = "google_account_image";
+    public final static String GOOGLE_ACC_NAME = "google_account_name";
+    public final static String GOOGLE_ACC_CONNECTED_VISITS = "google_account_connected_visits";
 
 }

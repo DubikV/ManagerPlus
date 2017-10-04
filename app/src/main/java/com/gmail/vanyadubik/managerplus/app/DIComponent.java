@@ -25,6 +25,7 @@ import com.gmail.vanyadubik.managerplus.modules.DataApiModule;
 import com.gmail.vanyadubik.managerplus.modules.ElementUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.ErrorUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.GPSTaskUtilsApiModule;
+import com.gmail.vanyadubik.managerplus.modules.GoogleCalendarApiModule;
 import com.gmail.vanyadubik.managerplus.modules.NetworkUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.PhoneUtilsApiModule;
 import com.gmail.vanyadubik.managerplus.modules.PhotoFileUtilsApiModule;
@@ -41,7 +42,7 @@ import dagger.Component;
         ActivityUtilsApiModule.class, ErrorUtilsApiModule.class,
         PhoneUtilsApiModule.class, GPSTaskUtilsApiModule.class,
         PhotoFileUtilsApiModule.class, ServiceUtilsApiModule.class,
-        ElementUtilsApiModule.class})
+        ElementUtilsApiModule.class, GoogleCalendarApiModule.class})
 public interface DIComponent {
 
     void inject(BootAct bootAct);

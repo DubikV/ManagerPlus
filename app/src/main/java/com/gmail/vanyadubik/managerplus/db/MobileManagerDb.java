@@ -15,6 +15,7 @@ import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.UsingCar
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.ChangingContrack;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.FuelContract;
 import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.PhotoContract;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.VisitEventContract;
 
 public class MobileManagerDb extends SQLiteOpenHelper {
 
@@ -133,6 +134,12 @@ public class MobileManagerDb extends SQLiteOpenHelper {
                 + PhotoContract.INFO + " text,"
                 + "UNIQUE (" + TextUtils.join(",", PhotoContract.UNIQUE_COLUMNS) + ")"
                 + ");");
+        db.execSQL("create table " + VisitEventContract.TABLE_NAME + "("
+                + VisitEventContract._ID + " integer primary key AUTOINCREMENT,"
+                + VisitEventContract.VISIT_ID + " integer,"
+                + VisitEventContract.EVENT_ID + " integer,"
+                + "UNIQUE (" + TextUtils.join(",", VisitEventContract.UNIQUE_COLUMNS) + ")"
+                + ");");
     }
 
     @Override
@@ -147,6 +154,7 @@ public class MobileManagerDb extends SQLiteOpenHelper {
         db.execSQL("drop table if exists " + UsingCarContrack.TABLE_NAME);
         db.execSQL("drop table if exists " + FuelContract.TABLE_NAME);
         db.execSQL("drop table if exists " + PhotoContract.TABLE_NAME);
+        db.execSQL("drop table if exists " + VisitEventContract.TABLE_NAME);
 
         onCreate(db);
 

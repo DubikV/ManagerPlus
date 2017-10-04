@@ -40,6 +40,7 @@ import static com.gmail.vanyadubik.managerplus.repository.ModelConverter.buildPh
 import static com.gmail.vanyadubik.managerplus.repository.ModelConverter.buildVisit;
 import static com.gmail.vanyadubik.managerplus.repository.ModelConverter.buildWaybill;
 import static com.gmail.vanyadubik.managerplus.repository.ModelConverter.convertLocationPoint;
+import static com.gmail.vanyadubik.managerplus.db.MobileManagerContract.VisitEventContract;
 
 public class DataRepositoryImpl implements DataRepository{
 
@@ -636,6 +637,48 @@ public class DataRepositoryImpl implements DataRepository{
     }
 
     @Override
+    public Visit_Document getVisitbyEventId(int eventId) {
+        int visitId = 0;
+        try (Cursor cursor = contentResolver.query(
+                VisitEventContract.CONTENT_URI,
+                VisitEventContract.PROJECTION_ALL,
+                VisitEventContract.EVENT_ID + "='" + eventId + "'",
+                new String[]{},
+                VisitEventContract.DEFAULT_SORT_ORDER)) {
+
+            if (cursor == null || !cursor.moveToFirst()) {
+                return null;
+            }
+            visitId = cursor.getInt(cursor.getColumnIndex(VisitEventContract.VISIT_ID));
+        }
+
+
+
+        try (Cursor cursor = contentResolver.query(VisitContract.CONTENT_URI,
+                VisitContract.PROJECTION_ALL, VisitContract._ID + "='" + visitId + "'",
+                null, VisitContract.DEFAULT_SORT_ORDER)) {
+
+            if (cursor == null || !cursor.moveToFirst()) return null;
+            return buildVisit(cursor);
+        }
+    }
+
+    @Override
+    public int getEventIdByVisitId(int visitId) {
+        try (Cursor cursor = contentResolver.query(
+                VisitEventContract.CONTENT_URI,
+                VisitEventContract.PROJECTION_ALL,
+                VisitEventContract.VISIT_ID + "='" + visitId + "'",
+                new String[]{},
+                VisitEventContract.DEFAULT_SORT_ORDER)) {
+
+            if (cursor == null) return 0;
+
+            return cursor.getInt(cursor.getColumnIndex(VisitEventContract.EVENT_ID));
+        }
+    }
+
+    @Override
     public void insertTrackPoint(LocationPoint locationPoint) {
         ContentValues values = ModelConverter.convertTrackPoint(locationPoint);
         contentResolver.insert(TrackListContract.CONTENT_URI, values);
@@ -796,6 +839,15 @@ public class DataRepositoryImpl implements DataRepository{
         contentResolver.delete(UsingCarContrack.CONTENT_URI, null, null);
         contentResolver.delete(FuelContract.CONTENT_URI, null, null);
         contentResolver.delete(PhotoContract.CONTENT_URI, null, null);
+    }
+
+    @Override
+    public void insertVisitEvent(int visitId, int eventId) {
+        ContentValues values = new ContentValues();
+        values.put(VisitEventContract.VISIT_ID, visitId);
+        values.put(VisitEventContract.EVENT_ID, eventId);
+
+        contentResolver.insert(VisitEventContract.CONTENT_URI, values);
     }
 
 

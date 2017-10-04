@@ -8,7 +8,6 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:srcCompat="@drawable/cast_ic_notification_stop_live_stream"
         android:id="@+id/imageView_fuellist"
         android:layout_weight="1.9"
         android:background="@drawable/shape_body_left"/>

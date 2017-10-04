@@ -70,6 +70,10 @@ public interface DataRepository {
 
     Document getDocumentByExternaID(String nameDocument, String externalId);
 
+    Visit_Document getVisitbyEventId(int eventId);
+
+    int getEventIdByVisitId(int visitId);
+
     void insertTrackPoint(LocationPoint locationPoint);
 
     void SetTrackListUloadedLocationTrack(Date dateFrom, Date dateBy);
@@ -99,4 +103,6 @@ public interface DataRepository {
     void deletedElement(String nameElement, String externalId);
 
     void clearDataBase();
+
+    void insertVisitEvent(int visitId, int eventId);
 }

@@ -19,6 +19,14 @@
     <string name="item_settings">Налаштування</string>
     <string name="item_exit">Вихід</string>
 
+    <!-- Google_Acc -->
+    <string name="google_acc_name">Акаунт Google</string>
+    <string name="google_acc_login">Введіть email та пароль google акаунту</string>
+    <string name="google_email_name">Email</string>
+    <string name="google_account_not_connect">Не вдалося підєднатися до сервісу Google.</string>
+    <string name="google_account_not_found">Не знайдено профіль акаунту</string>
+    <string name="google_account_not_entered">Не введено профіль акаунту</string>
+
     <!-- Settings -->
     <string name="prompt_login">Логін</string>
     <string name="prompt_password">Пароль</string>
@@ -91,7 +99,9 @@
     <string name="questions_data_save">Зберегти дані в базу?</string>
     <string name="questions_title_info">Інфо</string>
     <string name="questions_answer_yes">Так</string>
+    <string name="questions_answer_save">Зберегти</string>
     <string name="questions_answer_no">Ні</string>
+    <string name="questions_answer_cancel">Відмінити</string>
     <string name="questions_answer_ok">Ок</string>
     <string name="questions_title_cancel">Скасувати</string>
     <string name="date_picker_title">Виберіть дату</string>
@@ -101,6 +111,9 @@
     <string name="enter_period">Введіть період</string>
     <string name="search">Пошук:</string>
     <string name="enter_world_search">Введіть слово для пошуку</string>
+    <string name="questions_get_from_list">Акаунти пристрою</string>
+    <string name="synchronization">Синхронізація</string>
+    <string name="synchronize_visits_google_acc">Синхронізувати події з Google Календарем Акаунту</string>
 
     <!--Name objects-->
     <string name="map_name">Карта</string>

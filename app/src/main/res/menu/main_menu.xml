@@ -6,7 +6,7 @@
         android:id="@+id/action_startServiceLocation"
         android:orderInCategory="100"
         android:title="@string/action_sync"
-        android:icon="@drawable/ic_location"
+        android:icon="@drawable/ic_tracking_white"
         app:showAsAction="always" />
 
     <item

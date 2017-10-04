@@ -3,6 +3,7 @@
     <item name="ic_settings" type="drawable">@drawable/ic_settings</item>
     <item name="ic_map" type="drawable">@drawable/ic_map</item>
     <item name="ic_tracking" type="drawable">@drawable/ic_tracking</item>
+    <item name="ic_tracking_white" type="drawable">@drawable/ic_tracking_white</item>
     <item name="ic_worckplase" type="drawable">@drawable/ic_worckplase</item>
     <item name="ic_worckplase_grey" type="drawable">@drawable/ic_worckplase_grey</item>
     <item name="ic_gps_track_connect" type="drawable">@drawable/ic_gps_track_connect</item>
@@ -44,4 +45,6 @@
     <item name="ic_keyboard_arrow_right_white" type="drawable">@drawable/ic_keyboard_arrow_right_white</item>
     <item name="ic_clear" type="drawable">@drawable/ic_clear</item>
     <item name="ic_clear_white" type="drawable">@drawable/ic_clear_white</item>
+    <item name="ic_edit_white" type="drawable">@drawable/ic_edit_white</item>
+    <item name="ic_user" type="drawable">@drawable/ic_user</item>
 </resources>

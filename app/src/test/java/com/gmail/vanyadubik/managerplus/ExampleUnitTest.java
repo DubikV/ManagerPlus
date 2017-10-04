@@ -1,4 +1,4 @@
-package com.gmail.vanyadubik.mobilemanager;
+package com.gmail.vanyadubik.managerplus;
 
 import org.junit.Test;
 
