@@ -9,13 +9,4 @@
         android:pivotY="50%">
     </rotate>
 
-    <rotate
-        android:startOffset = "2000"
-        android:duration="2000"
-        android:fromDegrees="360"
-        android:toDegrees="0"
-        android:pivotX="50%"
-        android:pivotY="50%">
-    </rotate>
-
 </set>
