@@ -15,8 +15,6 @@ import com.gmail.vanyadubik.managerplus.utils.SharedStorage;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Locale;
 
 import static com.gmail.vanyadubik.managerplus.gps.service.GpsTracking.PREF_TYPE_SERVICE;
@@ -32,7 +30,7 @@ public class GpsTrackingNotification extends Activity {
 
         public void onClick(DialogInterface dialog, int id) {
             dialog.cancel();
-            GpsTrackingNotification.this.finish();
+            finish();
         }
     }
 

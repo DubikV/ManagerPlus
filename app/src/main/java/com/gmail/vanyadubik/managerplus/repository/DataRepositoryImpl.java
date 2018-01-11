@@ -314,7 +314,6 @@ public class DataRepositoryImpl implements DataRepository{
         try (Cursor cursor = contentResolver.query(LocationPointContract.CONTENT_URI,
                 LocationPointContract.PROJECTION_ALL, LocationPointContract._ID + "=" + id,
                 null, LocationPointContract.DEFAULT_SORT_ORDER)) {
-
             if (cursor == null || !cursor.moveToFirst()) return null;
             return ModelConverter.buildLocationPoint(cursor);
         }
